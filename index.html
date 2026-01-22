@@ -111,7 +111,6 @@
         }
         iframe { width: 100%; height: 100%; border: none; }
 
-        /* Tarjetas con logos ESPN */
         .events-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -132,15 +131,14 @@
 
         .team { flex: 1; font-size: 13px; font-weight: bold; color: #eee; }
         
-        /* Contenedor de Imagen con Fallback */
         .team img { 
-            width: 50px; height: 50px; object-fit: contain; margin-bottom: 8px;
+            width: 55px; height: 55px; object-fit: contain; margin-bottom: 8px;
             display: block; margin-left: auto; margin-right: auto;
+            background: rgba(255,255,255,0.03); border-radius: 50%; padding: 5px;
         }
 
         .vs-tag { color: var(--primary); font-weight: 900; font-size: 14px; }
 
-        /* Botones de canales directos */
         .btn-grid {
             margin-top: auto;
             display: grid;
@@ -176,7 +174,7 @@
 </nav>
 
 <div class="main-wrapper">
-    <aside class="sidebar" id="sideMenu">Cargando...</aside>
+    <aside class="sidebar" id="sideMenu">Cargando señales...</aside>
     <main class="content">
         <div class="player-area" id="player">
             <div style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#222;">
@@ -184,7 +182,7 @@
                 <p>Listo para transmitir</p>
             </div>
         </div>
-        <h3 style="border-left: 4px solid var(--primary); padding-left: 10px; margin-bottom: 20px;">PARTIDOS EN VIVO</h3>
+        <h3 id="calendarTitle" style="border-left: 4px solid var(--primary); padding-left: 10px; margin-bottom: 20px;">PARTIDOS EN VIVO (HORA ESPAÑA)</h3>
         <div class="events-grid" id="eventsGrid"></div>
     </main>
 </div>
@@ -194,23 +192,39 @@
     const API_CH = `https://api.cdn-live.tv/api/v1/channels/?${USER}`;
     const API_EV = `https://api.cdn-live.tv/api/v1/events/sports/?${USER}`;
 
-    // Función para obtener logo desde ESPN Assets
-    // Usamos el sistema de búsqueda por nombre de ESPN o logos genéricos de ligas
+    // 1. Obtención de Logos (Índice Federaciones/ESPN)
     function getEspnLogo(teamName, category) {
-        // Limpiamos el nombre del equipo para la URL
         const cleanName = teamName.toLowerCase()
+            .trim()
             .replace(/\s+/g, '-')
             .replace(/[^a-z0-9-]/g, '');
         
-        // Mapeo básico para equipos conocidos o usar el buscador de assets de ESPN
-        // ESPN usa IDs numéricos, pero tiene una ruta para "nombres de equipos"
-        return `https://a.espncdn.com/combiner/i?img=/i/teamlogos/${category.toLowerCase()}/500/scoreboard/${cleanName}.png&h=100&w=100&transparent=true`;
+        let sport = category.toLowerCase();
+        if(sport === "soccer") sport = "soccer";
+
+        // URL de alto rendimiento de ESPN Assets
+        return `https://a.espncdn.com/combiner/i?img=/i/teamlogos/${sport}/500/${cleanName}.png&h=120&w=120&transparent=true`;
     }
 
-    // Fallback si el logo de ESPN no carga
-    function handleImgError(img) {
-        img.onerror = null;
-        img.src = 'https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg';
+    // 2. Fallback: Si ESPN no tiene el logo, busca en repositorio de Federaciones
+    function handleImgError(img, teamName) {
+        if (!img.dataset.tried) {
+            img.dataset.tried = "1";
+            const slug = teamName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+            img.src = `https://raw.githubusercontent.com/luukhopman/football-logos/master/logos/${slug}.png`;
+        } else {
+            img.onerror = null;
+            img.src = 'https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg';
+            img.style.opacity = "0.3";
+        }
+    }
+
+    // 3. Corrección Horaria España (UTC+1)
+    function getSpainTime(utcTime) {
+        if(!utcTime || !utcTime.includes(':')) return utcTime;
+        let [h, m] = utcTime.split(':').map(Number);
+        let spainH = (h + 1) % 24; // Ajuste invierno España
+        return `${spainH.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
     }
 
     async function init() {
@@ -221,13 +235,13 @@
 
             renderSidebar(dCh.channels);
             renderEvents(dEv['cdn-live-tv']);
-        } catch (e) { console.log(e); }
+        } catch (e) { console.log("Error inicializando:", e); }
     }
 
     function renderSidebar(channels) {
         const side = document.getElementById('sideMenu');
         const grouped = channels.reduce((acc, ch) => {
-            const c = ch.code.toLowerCase();
+            const c = (ch.code || 'UN').toLowerCase();
             if(!acc[c]) acc[c] = [];
             acc[c].push(ch);
             return acc;
@@ -236,7 +250,7 @@
         side.innerHTML = Object.keys(grouped).sort().map(code => `
             <details data-country="${code}">
                 <summary>
-                    <img src="https://flagcdn.com/w40/${code}.png" class="flag">
+                    <img src="https://flagcdn.com/w40/${code}.png" class="flag" onerror="this.src='https://flagcdn.com/w40/un.png'">
                     ${code.toUpperCase()} (${grouped[code].length})
                 </summary>
                 ${grouped[code].map(ch => `
@@ -246,7 +260,7 @@
         `).join('');
     }
 
-    async function renderEvents(data) {
+    function renderEvents(data) {
         const grid = document.getElementById('eventsGrid');
         grid.innerHTML = "";
         
@@ -261,22 +275,21 @@
             card.className = "card";
             card.setAttribute('data-search', `${ev.homeTeam} ${ev.awayTeam}`.toLowerCase());
             
-            // Ruta de ESPN: para Soccer suele ser 'soccer', para NBA 'nba', etc.
-            let espnCat = ev.cat === "Soccer" ? "soccer" : ev.cat.toLowerCase();
+            let sportTag = ev.cat === "Soccer" ? "soccer" : ev.cat.toLowerCase();
 
             card.innerHTML = `
                 <div style="font-size:10px; display:flex; justify-content:space-between; opacity:0.6; margin-bottom:5px;">
                     <span>${ev.tournament}</span>
-                    <span style="color:var(--primary)">${ev.time}</span>
+                    <span style="color:var(--primary); font-weight:bold;"><i class="fa-regular fa-clock"></i> ${getSpainTime(ev.time)}</span>
                 </div>
                 <div class="match-row">
                     <div class="team">
-                        <img src="${getEspnLogo(ev.homeTeam, espnCat)}" onerror="handleImgError(this)">
+                        <img src="${getEspnLogo(ev.homeTeam, sportTag)}" onerror="handleImgError(this, '${ev.homeTeam}')">
                         ${ev.homeTeam}
                     </div>
                     <div class="vs-tag">VS</div>
                     <div class="team">
-                        <img src="${getEspnLogo(ev.awayTeam, espnCat)}" onerror="handleImgError(this)">
+                        <img src="${getEspnLogo(ev.awayTeam, sportTag)}" onerror="handleImgError(this, '${ev.awayTeam}')">
                         ${ev.awayTeam}
                     </div>
                 </div>
@@ -296,11 +309,6 @@
         const val = e.target.value.toLowerCase();
         document.querySelectorAll('.card').forEach(c => {
             c.style.display = c.getAttribute('data-search').includes(val) ? "flex" : "none";
-        });
-        document.querySelectorAll('details').forEach(d => {
-            const has = d.innerText.toLowerCase().includes(val);
-            d.style.display = has ? "block" : "none";
-            if(val.length > 2 && has) d.open = true;
         });
     });
 
