@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amantes del Futbol | Pro ESPN Edition</title>
+    <title>Amantes del Futbol | Pro Mobile Edition</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -11,7 +11,6 @@
             --dark-bg: #080808;
             --card-bg: #121212;
             --text: #ffffff;
-            --espn-red: #ff0022;
         }
 
         body {
@@ -21,42 +20,45 @@
             margin: 0;
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
         }
 
-        /* Navbar */
+        /* Navbar Responsiva */
         .navbar {
             background: #000;
-            padding: 10px 20px;
+            padding: 15px 20px;
             display: flex;
+            flex-direction: row;
             align-items: center;
             justify-content: space-between;
             border-bottom: 2px solid var(--primary);
-            gap: 20px;
-            z-index: 100;
+            gap: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         .logo {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 900;
             display: flex;
             align-items: center;
             gap: 8px;
             text-transform: uppercase;
+            white-space: nowrap;
         }
 
         .ball-icon {
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
             background: url('https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg') no-repeat center;
             background-size: contain;
         }
 
         .search-box {
-            flex: 1;
-            max-width: 500px;
             position: relative;
+            width: 100%;
+            max-width: 400px;
         }
 
         .search-box input {
@@ -67,99 +69,79 @@
             border-radius: 20px;
             color: white;
             outline: none;
+            box-sizing: border-box;
         }
 
         .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--primary); }
 
-        /* Layout */
+        /* Layout Principal */
         .main-wrapper {
             display: grid;
-            grid-template-columns: 320px 1fr;
+            grid-template-columns: 300px 1fr;
             flex: 1;
-            overflow: hidden;
         }
 
-        /* Sidebar */
+        /* Sidebar (Oculta en móviles por defecto para dar espacio) */
         .sidebar {
             background: var(--card-bg);
             border-right: 1px solid #222;
-            overflow-y: auto;
             padding: 15px;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+            position: sticky;
+            top: 80px;
         }
 
         details { margin-bottom: 8px; background: #1a1a1a; border-radius: 8px; overflow: hidden; }
-        summary { 
-            padding: 12px; cursor: pointer; font-weight: bold; 
-            display: flex; align-items: center; gap: 10px; list-style: none;
-        }
+        summary { padding: 12px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 10px; list-style: none; }
         .flag { width: 22px; border-radius: 2px; }
+        .ch-link { padding: 10px 15px; font-size: 13px; border-top: 1px solid #222; cursor: pointer; }
 
-        .ch-link {
-            padding: 10px 15px; font-size: 13px; border-top: 1px solid #222;
-            cursor: pointer; display: flex; align-items: center; gap: 10px;
-        }
-        .ch-link:hover { background: var(--primary); color: #000; }
-
-        /* Content */
-        .content { padding: 20px; overflow-y: auto; background: #0a0a0a; }
+        /* Contenido */
+        .content { padding: 15px; background: #0a0a0a; }
 
         .player-area {
-            width: 100%; max-width: 950px; margin: 0 auto 30px;
-            aspect-ratio: 16/9; background: #000; border-radius: 12px;
-            overflow: hidden; border: 1px solid #333;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 950px;
+            margin: 0 auto 25px;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            scroll-margin-top: 100px; /* Para que el scroll automático no pegue el reproductor al borde */
         }
         iframe { width: 100%; height: 100%; border: none; }
 
         .events-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 15px;
         }
 
         .card {
             background: var(--card-bg); border-radius: 12px; padding: 15px;
             border: 1px solid #222; display: flex; flex-direction: column;
-            transition: 0.2s;
-        }
-        .card:hover { border-color: var(--primary); }
-
-        .match-row {
-            display: flex; justify-content: space-between; align-items: center;
-            text-align: center; margin: 15px 0;
         }
 
-        .team { flex: 1; font-size: 13px; font-weight: bold; color: #eee; }
-        
-        .team img { 
-            width: 55px; height: 55px; object-fit: contain; margin-bottom: 8px;
-            display: block; margin-left: auto; margin-right: auto;
-            background: rgba(255,255,255,0.03); border-radius: 50%; padding: 5px;
-        }
+        .match-row { display: flex; justify-content: space-between; align-items: center; text-align: center; margin: 12px 0; }
+        .team { flex: 1; font-size: 12px; font-weight: bold; }
+        .team img { width: 45px; height: 45px; object-fit: contain; margin-bottom: 5px; display: block; margin-left: auto; margin-right: auto; }
+        .vs-tag { color: var(--primary); font-weight: 900; font-size: 12px; padding: 0 10px; }
 
-        .vs-tag { color: var(--primary); font-weight: 900; font-size: 14px; }
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: auto; padding-top: 10px; border-top: 1px solid #222; }
+        .btn-ch { padding: 10px 5px; background: #1e1e1e; color: #ccc; text-align: center; font-size: 10px; border-radius: 6px; cursor: pointer; border: 1px solid #333; }
+        .btn-ch:hover { background: var(--primary); color: #000; }
 
-        .btn-grid {
-            margin-top: auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
-            padding-top: 12px;
-            border-top: 1px solid #222;
-        }
-
-        .btn-ch {
-            padding: 8px; background: #1e1e1e; color: #ccc;
-            text-align: center; font-size: 11px; font-weight: 600;
-            border-radius: 4px; cursor: pointer; border: 1px solid #333;
-            display: flex; align-items: center; justify-content: center; gap: 5px;
-        }
-
-        .btn-ch:hover { background: var(--primary); color: #000; border-color: var(--primary); }
-
-        @media (max-width: 850px) {
+        /* Ajustes para Móviles */
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; padding: 10px; }
+            .logo { font-size: 18px; }
             .main-wrapper { grid-template-columns: 1fr; }
-            .sidebar { display: none; }
+            .sidebar { display: none; } /* En móvil se priorizan los eventos */
+            .player-area { margin-bottom: 15px; }
+            .events-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -169,62 +151,51 @@
     <div class="logo">AMANTES DEL FUTB<div class="ball-icon"></div>L</div>
     <div class="search-box">
         <i class="fa-solid fa-search"></i>
-        <input type="text" id="searchInput" placeholder="Busca equipo, país o liga...">
+        <input type="text" id="searchInput" placeholder="Busca tu equipo...">
     </div>
 </nav>
 
 <div class="main-wrapper">
-    <aside class="sidebar" id="sideMenu">Cargando señales...</aside>
+    <aside class="sidebar" id="sideMenu">Cargando...</aside>
     <main class="content">
         <div class="player-area" id="player">
-            <div style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#222;">
-                <i class="fa-solid fa-play-circle fa-5x"></i>
-                <p>Listo para transmitir</p>
+            <div style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#333; text-align: center; padding: 20px;">
+                <i class="fa-solid fa-circle-play fa-4x"></i>
+                <p>Selecciona un partido para comenzar</p>
             </div>
         </div>
-        <h3 id="calendarTitle" style="border-left: 4px solid var(--primary); padding-left: 10px; margin-bottom: 20px;">PARTIDOS EN VIVO (HORA ESPAÑA)</h3>
+        <h3 style="border-left: 4px solid var(--primary); padding-left: 10px; font-size: 16px;">EVENTOS HOY (ESP)</h3>
         <div class="events-grid" id="eventsGrid"></div>
     </main>
 </div>
 
 <script>
-    const USER = "user=cdnlivetv&plan=free";
-    const API_CH = `https://api.cdn-live.tv/api/v1/channels/?${USER}`;
-    const API_EV = `https://api.cdn-live.tv/api/v1/events/sports/?${USER}`;
+    const AUTH = "user=cdnlivetv&plan=free";
+    const API_CH = `https://api.cdn-live.tv/api/v1/channels/?${AUTH}`;
+    const API_EV = `https://api.cdn-live.tv/api/v1/events/sports/?${AUTH}`;
 
-    // 1. Obtención de Logos (Índice Federaciones/ESPN)
-    function getEspnLogo(teamName, category) {
-        const cleanName = teamName.toLowerCase()
-            .trim()
-            .replace(/\s+/g, '-')
-            .replace(/[^a-z0-9-]/g, '');
-        
-        let sport = category.toLowerCase();
-        if(sport === "soccer") sport = "soccer";
-
-        // URL de alto rendimiento de ESPN Assets
-        return `https://a.espncdn.com/combiner/i?img=/i/teamlogos/${sport}/500/${cleanName}.png&h=120&w=120&transparent=true`;
+    function getEspnLogo(name, cat) {
+        const slug = name.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        const sport = cat.toLowerCase() === "soccer" ? "soccer" : cat.toLowerCase();
+        return `https://a.espncdn.com/combiner/i?img=/i/teamlogos/${sport}/500/${slug}.png&h=100&w=100&transparent=true`;
     }
 
-    // 2. Fallback: Si ESPN no tiene el logo, busca en repositorio de Federaciones
-    function handleImgError(img, teamName) {
+    function handleImgError(img, name) {
         if (!img.dataset.tried) {
             img.dataset.tried = "1";
-            const slug = teamName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+            const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
             img.src = `https://raw.githubusercontent.com/luukhopman/football-logos/master/logos/${slug}.png`;
         } else {
             img.onerror = null;
             img.src = 'https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg';
-            img.style.opacity = "0.3";
+            img.style.opacity = "0.2";
         }
     }
 
-    // 3. Corrección Horaria España (UTC+1)
-    function getSpainTime(utcTime) {
-        if(!utcTime || !utcTime.includes(':')) return utcTime;
-        let [h, m] = utcTime.split(':').map(Number);
-        let spainH = (h + 1) % 24; // Ajuste invierno España
-        return `${spainH.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+    function getSpainTime(utc) {
+        if(!utc || !utc.includes(':')) return utc;
+        let [h, m] = utc.split(':').map(Number);
+        return `${((h + 1) % 24).toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
     }
 
     async function init() {
@@ -232,30 +203,23 @@
             const [rCh, rEv] = await Promise.all([fetch(API_CH), fetch(API_EV)]);
             const dCh = await rCh.json();
             const dEv = await rEv.json();
-
             renderSidebar(dCh.channels);
             renderEvents(dEv['cdn-live-tv']);
-        } catch (e) { console.log("Error inicializando:", e); }
+        } catch (e) { console.error(e); }
     }
 
     function renderSidebar(channels) {
         const side = document.getElementById('sideMenu');
         const grouped = channels.reduce((acc, ch) => {
-            const c = (ch.code || 'UN').toLowerCase();
+            const c = (ch.code || 'un').toLowerCase();
             if(!acc[c]) acc[c] = [];
             acc[c].push(ch);
             return acc;
         }, {});
-
         side.innerHTML = Object.keys(grouped).sort().map(code => `
-            <details data-country="${code}">
-                <summary>
-                    <img src="https://flagcdn.com/w40/${code}.png" class="flag" onerror="this.src='https://flagcdn.com/w40/un.png'">
-                    ${code.toUpperCase()} (${grouped[code].length})
-                </summary>
-                ${grouped[code].map(ch => `
-                    <div class="ch-link" onclick="load('${ch.url}')">${ch.name}</div>
-                `).join('')}
+            <details>
+                <summary><img src="https://flagcdn.com/w20/${code}.png" class="flag"> ${code.toUpperCase()}</summary>
+                ${grouped[code].map(ch => `<div class="ch-link" onclick="load('${ch.url}')">${ch.name}</div>`).join('')}
             </details>
         `).join('');
     }
@@ -263,10 +227,8 @@
     function renderEvents(data) {
         const grid = document.getElementById('eventsGrid');
         grid.innerHTML = "";
-        
-        const categories = ["Soccer", "NBA", "NFL", "NHL"];
-        let all = [];
-        categories.forEach(cat => {
+        const all = [];
+        ["Soccer", "NBA", "NFL", "NHL"].forEach(cat => {
             if(data[cat]) data[cat].forEach(e => { e.cat = cat; all.push(e); });
         });
 
@@ -274,35 +236,36 @@
             const card = document.createElement('div');
             card.className = "card";
             card.setAttribute('data-search', `${ev.homeTeam} ${ev.awayTeam}`.toLowerCase());
-            
-            let sportTag = ev.cat === "Soccer" ? "soccer" : ev.cat.toLowerCase();
-
             card.innerHTML = `
-                <div style="font-size:10px; display:flex; justify-content:space-between; opacity:0.6; margin-bottom:5px;">
+                <div style="font-size:10px; display:flex; justify-content:space-between; opacity:0.6; margin-bottom:8px;">
                     <span>${ev.tournament}</span>
-                    <span style="color:var(--primary); font-weight:bold;"><i class="fa-regular fa-clock"></i> ${getSpainTime(ev.time)}</span>
+                    <span style="color:var(--primary); font-weight:bold;">${getSpainTime(ev.time)}</span>
                 </div>
                 <div class="match-row">
                     <div class="team">
-                        <img src="${getEspnLogo(ev.homeTeam, sportTag)}" onerror="handleImgError(this, '${ev.homeTeam}')">
+                        <img src="${getEspnLogo(ev.homeTeam, ev.cat)}" onerror="handleImgError(this, '${ev.homeTeam}')">
                         ${ev.homeTeam}
                     </div>
                     <div class="vs-tag">VS</div>
                     <div class="team">
-                        <img src="${getEspnLogo(ev.awayTeam, sportTag)}" onerror="handleImgError(this, '${ev.awayTeam}')">
+                        <img src="${getEspnLogo(ev.awayTeam, ev.cat)}" onerror="handleImgError(this, '${ev.awayTeam}')">
                         ${ev.awayTeam}
                     </div>
                 </div>
                 <div class="btn-grid">
-                    ${ev.channels.map(ch => `
-                        <div class="btn-ch" onclick="load('${ch.url}')">
-                            <i class="fa-solid fa-satellite-dish"></i> ${ch.channel_name}
-                        </div>
-                    `).join('')}
+                    ${ev.channels.map(ch => `<div class="btn-ch" onclick="load('${ch.url}')">${ch.channel_name}</div>`).join('')}
                 </div>
             `;
             grid.appendChild(card);
         });
+    }
+
+    function load(url) {
+        const playerArea = document.getElementById('player');
+        playerArea.innerHTML = `<iframe src="${url}" allowfullscreen allow="encrypted-media" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>`;
+        
+        // SCROLL AUTOMÁTICO AL REPRODUCTOR
+        playerArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     document.getElementById('searchInput').addEventListener('input', (e) => {
@@ -311,13 +274,6 @@
             c.style.display = c.getAttribute('data-search').includes(val) ? "flex" : "none";
         });
     });
-
-    function load(url) {
-        document.getElementById('player').innerHTML = `
-            <iframe src="${url}" allowfullscreen scrolling="no" allow="encrypted-media" 
-            sandbox="allow-scripts allow-same-origin allow-forms"></iframe>`;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
 
     init();
 </script>
