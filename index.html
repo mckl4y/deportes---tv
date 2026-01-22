@@ -3,36 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CDN Live Sports & TV</title>
+    <title>Sports & TV - Premium</title>
     <style>
         :root { --primary: #ff0000; --bg: #0a0a0a; --card: #151515; --text: #ffffff; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 70px; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 80px; overflow-x: hidden; }
+        
+        /* Cabecera y Buscador */
         header { background: #000; padding: 15px; text-align: center; border-bottom: 2px solid var(--primary); position: sticky; top: 0; z-index: 100; }
+        .search-container { padding: 10px 15px; background: #111; }
+        #search-bar { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #333; background: #000; color: white; box-sizing: border-box; font-size: 16px; }
+
         .container { padding: 15px; max-width: 800px; margin: auto; }
         .hidden { display: none; }
         
-        /* Estilo Canales */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
-        .card { background: var(--card); border-radius: 8px; padding: 10px; text-align: center; border: 1px solid #222; }
-        .card img { width: 100%; height: 80px; object-fit: contain; margin-bottom: 8px; }
-        .card-name { font-size: 13px; font-weight: bold; margin-bottom: 10px; height: 32px; overflow: hidden; }
+        /* Agrupación */
+        .category-title { 
+            background: #1a1a1a; padding: 10px; border-radius: 5px; font-size: 14px; 
+            font-weight: bold; color: var(--primary); text-transform: uppercase;
+            border-left: 4px solid var(--primary); margin: 20px 0 10px 0;
+        }
 
-        /* Estilo Eventos */
-        .event { background: var(--card); border-radius: 10px; margin-bottom: 12px; padding: 15px; display: flex; align-items: center; justify-content: space-between; border-left: 5px solid var(--primary); }
-        .teams { flex: 1; }
-        .teams strong { font-size: 15px; display: block; }
-        .teams small { color: #aaa; font-size: 12px; }
-        .status-live { color: #00ff00; font-weight: bold; font-size: 11px; text-transform: uppercase; }
+        /* Tarjetas de Canales */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+        .card { background: var(--card); border-radius: 8px; padding: 12px; text-align: center; border: 1px solid #222; transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .card img { width: 100%; height: 70px; object-fit: contain; margin-bottom: 8px; }
+        .card-name { font-size: 12px; font-weight: bold; height: 34px; overflow: hidden; margin-bottom: 10px; }
 
-        /* Botones */
-        .btn { background: var(--primary); color: white; text-decoration: none; padding: 8px 12px; border-radius: 5px; font-size: 12px; font-weight: bold; display: inline-block; }
+        /* Filas de Agenda */
+        .event { 
+            background: var(--card); border-radius: 8px; margin-bottom: 8px; padding: 12px; 
+            display: flex; align-items: center; border: 1px solid #222;
+        }
+        .event img { width: 40px; height: 40px; object-fit: contain; margin-right: 12px; border-radius: 50%; background: #222; }
+        .event-info { flex: 1; }
+        .event-info strong { display: block; font-size: 14px; margin-bottom: 2px; }
+        .event-info small { color: #888; font-size: 11px; }
+        .status { font-size: 9px; padding: 2px 6px; border-radius: 4px; background: #333; margin-bottom: 4px; display: inline-block; }
+        .live { background: var(--primary); color: white; animation: pulse 1.5s infinite; }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+
+        /* Botón Único */
+        .btn { background: var(--primary); color: white; text-decoration: none; padding: 8px 16px; border-radius: 5px; font-size: 12px; font-weight: bold; display: inline-block; border: none; cursor: pointer; }
         
-        /* Navegación */
+        /* Navegación Inferior */
         .tab-bar { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; }
-        .tab-item { color: #777; cursor: pointer; font-size: 14px; font-weight: bold; border: none; background: none; }
+        .tab-item { color: #666; cursor: pointer; font-size: 14px; font-weight: bold; background: none; border: none; outline: none; }
         .tab-item.active { color: var(--primary); }
-        
-        h3 { color: var(--primary); font-size: 16px; margin-top: 20px; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 5px; }
     </style>
 </head>
 <body>
@@ -41,9 +59,13 @@
     <h2 id="view-title">📅 AGENDA DEPORTIVA</h2>
 </header>
 
+<div class="search-container">
+    <input type="text" id="search-bar" placeholder="Buscar canal o equipo..." onkeyup="filterContent()">
+</div>
+
 <div class="container">
     <div id="tab-agenda">
-        <div id="events-content">Cargando eventos...</div>
+        <div id="events-content">Cargando agenda oficial...</div>
     </div>
 
     <div id="tab-tv" class="hidden">
@@ -57,76 +79,99 @@
 </nav>
 
 <script>
-    // Configuración según documentación
     const PROXY = "https://api.allorigins.win/get?url=";
     const URL_CHANNELS = "https://api.cdn-live.tv/api/v1/channels/?user=cdnlivetv&plan=free";
     const URL_SPORTS = "https://api.cdn-live.tv/api/v1/events/sports/?user=cdnlivetv&plan=free";
 
+    let allChannels = [];
+    let allSports = {};
+    let currentTab = 'agenda';
+
     function switchTab(tab) {
+        currentTab = tab;
         document.getElementById('tab-agenda').classList.toggle('hidden', tab !== 'agenda');
         document.getElementById('tab-tv').classList.toggle('hidden', tab !== 'tv');
-        document.getElementById('view-title').innerText = tab === 'agenda' ? "📅 AGENDA DEPORTIVA" : "📺 CANALES EN VIVO";
-        document.querySelectorAll('.tab-item').forEach((btn, idx) => {
-            btn.classList.toggle('active', (tab === 'agenda' && idx === 0) || (tab === 'tv' && idx === 1));
-        });
+        document.getElementById('view-title').innerText = tab === 'agenda' ? "📅 AGENDA DEPORTIVA" : "📺 CANALES TV";
+        document.querySelectorAll('.tab-item').forEach((btn, i) => btn.classList.toggle('active', (tab === 'agenda' && i===0) || (tab==='tv' && i===1)));
+        filterContent();
     }
 
     async function fetchData(url) {
-        const response = await fetch(PROXY + encodeURIComponent(url));
-        const data = await response.json();
-        return JSON.parse(data.contents);
+        try {
+            const response = await fetch(PROXY + encodeURIComponent(url));
+            const data = await response.json();
+            return JSON.parse(data.contents);
+        } catch (e) { return null; }
     }
 
-    async function loadSports() {
-        try {
-            const data = await fetchData(URL_SPORTS);
-            const sportsData = data['cdn-live-tv'];
-            const container = document.getElementById('events-content');
-            let html = "";
+    async function init() {
+        const [sportsData, channelsData] = await Promise.all([
+            fetchData(URL_SPORTS),
+            fetchData(URL_CHANNELS)
+        ]);
 
-            const categories = ["Soccer", "NBA", "NFL", "NHL"];
-            categories.forEach(cat => {
-                if (sportsData[cat] && sportsData[cat].length > 0) {
-                    html += `<h3>${cat}</h3>`;
-                    sportsData[cat].forEach(ev => {
-                        html += `
-                        <div class="event">
-                            <div class="teams">
-                                <span class="status-live">${ev.status}</span>
-                                <strong>${ev.homeTeam} vs ${ev.awayTeam}</strong>
-                                <small>${ev.time} | ${ev.tournament}</small>
-                            </div>
-                            <a href="${ev.channels[0].url}" target="_blank" class="btn">VER</a>
-                        </div>`;
-                    });
-                }
-            });
-            container.innerHTML = html || "No hay eventos hoy.";
-        } catch (e) {
-            document.getElementById('events-content').innerHTML = "Error al cargar deportes.";
+        if (sportsData) allSports = sportsData['cdn-live-tv'];
+        if (channelsData) allChannels = channelsData.channels;
+
+        filterContent();
+    }
+
+    function filterContent() {
+        const query = document.getElementById('search-bar').value.toLowerCase();
+        
+        if (currentTab === 'agenda') {
+            renderSports(query);
+        } else {
+            renderChannels(query);
         }
     }
 
-    async function loadChannels() {
-        try {
-            const data = await fetchData(URL_CHANNELS);
-            const container = document.getElementById('channels-content');
-            container.innerHTML = data.channels.map(ch => `
-                <div class="card">
-                    <img src="${ch.image}" onerror="this.src='https://via.placeholder.com/80?text=TV'">
-                    <div class="card-name">${ch.name}</div>
-                    <a href="vlc://${ch.url}" class="btn">VLC</a>
-                </div>
-            `).join('');
-        } catch (e) {
-            document.getElementById('channels-content').innerHTML = "Error al cargar canales.";
-        }
+    function renderSports(query) {
+        const container = document.getElementById('events-content');
+        let html = "";
+        const categories = ["Soccer", "NBA", "NFL", "NHL"];
+
+        categories.forEach(cat => {
+            const filtered = (allSports[cat] || []).filter(ev => 
+                ev.homeTeam.toLowerCase().includes(query) || 
+                ev.awayTeam.toLowerCase().includes(query) ||
+                ev.tournament.toLowerCase().includes(query)
+            );
+
+            if (filtered.length > 0) {
+                html += `<div class="category-title">${cat}</div>`;
+                filtered.forEach(ev => {
+                    const isLive = ev.status.toLowerCase() === 'live';
+                    html += `
+                    <div class="event">
+                        <img src="${ev.homeTeamIMG}" onerror="this.src='https://via.placeholder.com/40?text=S'">
+                        <div class="event-info">
+                            <span class="status ${isLive ? 'live' : ''}">${ev.status}</span>
+                            <strong>${ev.homeTeam} vs ${ev.awayTeam}</strong>
+                            <small>${ev.time} · ${ev.tournament}</small>
+                        </div>
+                        <a href="${ev.channels[0].url}" target="_blank" class="btn">VER EN VIVO</a>
+                    </div>`;
+                });
+            }
+        });
+        container.innerHTML = html || "<p style='text-align:center; padding:20px;'>No se encontraron eventos.</p>";
     }
 
-    // Inicio
-    loadSports();
-    loadChannels();
+    function renderChannels(query) {
+        const container = document.getElementById('channels-content');
+        const filtered = allChannels.filter(ch => ch.name.toLowerCase().includes(query));
+        
+        container.innerHTML = filtered.map(ch => `
+            <div class="card">
+                <img src="${ch.image}" onerror="this.src='https://via.placeholder.com/80?text=TV'">
+                <div class="card-name">${ch.name}</div>
+                <a href="${ch.url}" target="_blank" class="btn">REPRODUCIR</a>
+            </div>
+        `).join('');
+    }
+
+    init();
 </script>
-
 </body>
 </html>
