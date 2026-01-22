@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amantes del Futbol | Todo el Deporte</title>
+    <title>Amantes del Futbol | En Vivo</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --primary: #2ecc71; --dark-bg: #080808; --card-bg: #121212; --text: #ffffff; }
@@ -45,10 +45,10 @@
             .events-section { padding: 15px; }
         }
 
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2100; }
-        .overlay.active { display: block; }
         @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
         .live-dot { color: #ff4757; animation: pulse-red 1s infinite; font-size: 8px; margin-right: 4px; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2100; }
+        .overlay.active { display: block; }
     </style>
 </head>
 <body>
@@ -63,7 +63,7 @@
     <div class="search-container">
         <div class="search-box">
             <i class="fa-solid fa-search"></i>
-            <input type="text" id="searchInput" placeholder="Buscar equipo, liga o canal...">
+            <input type="text" id="searchInput" placeholder="Buscar partido, liga o canal...">
         </div>
     </div>
 </nav>
@@ -78,9 +78,8 @@
                 </div>
             </div>
         </div>
-
         <div class="events-section">
-            <h3 id="eventTitle" style="border-left: 4px solid var(--primary); padding-left: 10px; font-size: 16px; margin-bottom:20px;">TODOS LOS EVENTOS DEL DÍA</h3>
+            <h3 id="eventTitle" style="border-left: 4px solid var(--primary); padding-left: 10px; font-size: 16px; margin-bottom:20px;">PARTIDOS DISPONIBLES</h3>
             <div class="events-grid" id="eventsGrid"></div>
         </div>
     </main>
@@ -101,13 +100,15 @@
         return new Date(utc + (3600000 * 1)); 
     }
 
-    // CARGA SEGURA SIN REDIRECCIONES
     function load(url) {
         document.getElementById('player').innerHTML = `
             <iframe src="${url}" allowfullscreen allow="encrypted-media" 
             sandbox="allow-scripts allow-same-origin allow-forms"></iframe>`;
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        if(window.innerWidth < 768) toggleMenu();
+        if(window.innerWidth < 768) {
+            document.getElementById('sideMenu').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
+        }
     }
 
     async function fetchData() {
@@ -118,10 +119,10 @@
             ]);
             const dCh = await rCh.json();
             const dEv = await rEv.json();
-            allChannels = dCh.channels;
+            allChannels = dCh.channels || [];
             renderSidebar(allChannels);
             processAllEvents(dEv);
-        } catch (e) { console.error("Error cargando datos:", e); }
+        } catch (e) { console.error("Error:", e); }
     }
 
     function processAllEvents(data) {
@@ -129,13 +130,18 @@
         grid.innerHTML = "";
         const unifiedEvents = [];
         
-        // RECORRER TODOS LOS PROVEEDORES (cdn-live-tv, espn, etc)
+        // RECORRIDO SEGURO POR TODOS LOS PROVEEDORES
         Object.keys(data).forEach(provider => {
             const categories = data[provider];
+            if (typeof categories !== 'object') return;
+
             Object.keys(categories).forEach(cat => {
+                if (!Array.isArray(categories[cat])) return;
+
                 categories[cat].forEach(event => {
-                    // Evitar duplicados exactos por nombre de equipo y hora
-                    const id = `${event.homeTeam}-${event.awayTeam}-${event.time}`;
+                    if (!event.homeTeam || !event.channels) return;
+                    
+                    const id = `${event.homeTeam}-${event.awayTeam}-${event.time}`.toLowerCase();
                     if (!unifiedEvents.find(e => e.id === id)) {
                         event.id = id;
                         unifiedEvents.push(event);
@@ -149,7 +155,7 @@
 
         unifiedEvents.sort((a,b) => a.time.localeCompare(b.time)).forEach(ev => {
             let [h, m] = ev.time.split(':').map(Number);
-            h = (h + 1) % 24; // Ajuste manual UTC+1 si la API viene en UTC
+            h = (h + 1) % 24; 
             const evMinutes = (h * 60) + m;
             const isLive = nowMinutes >= evMinutes && nowMinutes < (evMinutes + 135);
 
@@ -158,7 +164,7 @@
             card.setAttribute('data-search', `${ev.homeTeam} ${ev.awayTeam} ${ev.tournament}`.toLowerCase());
             card.innerHTML = `
                 <div style="font-size:10px; display:flex; justify-content:space-between; opacity:0.6; margin-bottom:12px;">
-                    <span style="text-transform:uppercase;">${ev.tournament}</span>
+                    <span style="text-transform:uppercase;">${ev.tournament || 'Evento'}</span>
                     <span style="color:${isLive ? '#ff4757' : 'var(--primary)'}; font-weight:bold;">
                         ${isLive ? '<i class="fa-solid fa-circle live-dot"></i> EN VIVO' : `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`}
                     </span>
@@ -173,7 +179,7 @@
                 </div>`;
             grid.appendChild(card);
         });
-        document.getElementById('eventTitle').innerText = `EVENTOS ENCONTRADOS: ${unifiedEvents.length}`;
+        document.getElementById('eventTitle').innerText = `PARTIDOS DISPONIBLES: ${unifiedEvents.length}`;
     }
 
     function renderSidebar(channels) {
@@ -184,26 +190,4 @@
             acc[c].push(ch);
             return acc;
         }, {});
-        side.innerHTML = `<h3 style="color:var(--primary); font-size:14px; margin-top:0;">CANALES TV</h3>` + 
-            Object.keys(grouped).sort().map(code => `
-            <details style="margin-bottom:5px; background:#1a1a1a; border-radius:8px;">
-                <summary style="padding:10px; cursor:pointer; font-size:12px;">
-                    <img src="https://flagcdn.com/w20/${code}.png" style="width:16px;"> ${code.toUpperCase()}
-                </summary>
-                ${grouped[code].map(ch => `<div style="padding:10px 15px; font-size:11px; cursor:pointer; border-top:1px solid #222;" onclick="load('${ch.url}')">${ch.name}</div>`).join('')}
-            </details>
-        `).join('');
-    }
-
-    function triggerSearch(val) {
-        document.querySelectorAll('.card').forEach(c => {
-            c.style.display = c.getAttribute('data-search').includes(val) ? "block" : "none";
-        });
-    }
-
-    document.getElementById('searchInput').addEventListener('input', (e) => triggerSearch(e.target.value.toLowerCase()));
-    fetchData();
-    setInterval(fetchData, 120000); // Actualización cada 2 minutos
-</script>
-</body>
-</html>
+        side.innerHTML =
