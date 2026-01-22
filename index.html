@@ -55,6 +55,15 @@
             background-size: contain;
         }
 
+        /* Botón de menú para móvil */
+        .menu-toggle {
+            display: none;
+            font-size: 24px;
+            color: var(--primary);
+            cursor: pointer;
+            order: -1; /* Lo pone a la izquierda */
+        }
+
         .search-box {
             position: relative;
             width: 100%;
@@ -81,7 +90,7 @@
             flex: 1;
         }
 
-        /* Sidebar (Oculta en móviles por defecto para dar espacio) */
+        /* Sidebar */
         .sidebar {
             background: var(--card-bg);
             border-right: 1px solid #222;
@@ -90,12 +99,14 @@
             overflow-y: auto;
             position: sticky;
             top: 80px;
+            transition: transform 0.3s ease;
         }
 
         details { margin-bottom: 8px; background: #1a1a1a; border-radius: 8px; overflow: hidden; }
         summary { padding: 12px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 10px; list-style: none; }
         .flag { width: 22px; border-radius: 2px; }
         .ch-link { padding: 10px 15px; font-size: 13px; border-top: 1px solid #222; cursor: pointer; }
+        .ch-link:hover { background: var(--primary); color: #000; }
 
         /* Contenido */
         .content { padding: 15px; background: #0a0a0a; }
@@ -110,7 +121,7 @@
             overflow: hidden;
             border: 1px solid #333;
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            scroll-margin-top: 100px; /* Para que el scroll automático no pegue el reproductor al borde */
+            scroll-margin-top: 100px;
         }
         iframe { width: 100%; height: 100%; border: none; }
 
@@ -136,18 +147,49 @@
 
         /* Ajustes para Móviles */
         @media (max-width: 768px) {
-            .navbar { flex-direction: column; padding: 10px; }
-            .logo { font-size: 18px; }
-            .main-wrapper { grid-template-columns: 1fr; }
-            .sidebar { display: none; } /* En móvil se priorizan los eventos */
+            .menu-toggle { display: block; }
+            .navbar { flex-wrap: wrap; justify-content: space-between; }
+            .logo { font-size: 18px; order: 0; }
+            .search-box { order: 2; max-width: 100%; margin-top: 5px; }
+            
+            .main-wrapper { grid-template-columns: 1fr; position: relative; }
+            
+            /* Sidebar convertida en menú lateral deslizante */
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                height: 100%;
+                width: 280px;
+                z-index: 2000;
+                transform: translateX(-100%);
+                box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+            }
+            .sidebar.active { transform: translateX(0); }
+            
             .player-area { margin-bottom: 15px; }
             .events-grid { grid-template-columns: 1fr; }
         }
+
+        /* Overlay para cerrar el menú al tocar fuera */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1500;
+        }
+        .overlay.active { display: block; }
     </style>
 </head>
 <body>
 
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
 <nav class="navbar">
+    <div class="menu-toggle" onclick="toggleMenu()">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+    </div>
     <div class="logo">AMANTES DEL FUTB<div class="ball-icon"></div>L</div>
     <div class="search-box">
         <i class="fa-solid fa-search"></i>
@@ -173,6 +215,12 @@
     const AUTH = "user=cdnlivetv&plan=free";
     const API_CH = `https://api.cdn-live.tv/api/v1/channels/?${AUTH}`;
     const API_EV = `https://api.cdn-live.tv/api/v1/events/sports/?${AUTH}`;
+
+    // Función para abrir/cerrar menú en móvil
+    function toggleMenu() {
+        document.getElementById('sideMenu').classList.toggle('active');
+        document.getElementById('overlay').classList.toggle('active');
+    }
 
     function getEspnLogo(name, cat) {
         const slug = name.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
@@ -216,10 +264,11 @@
             acc[c].push(ch);
             return acc;
         }, {});
-        side.innerHTML = Object.keys(grouped).sort().map(code => `
+        side.innerHTML = `<h3 style="color:var(--primary); padding-bottom:10px;">CANALES</h3>` + 
+            Object.keys(grouped).sort().map(code => `
             <details>
                 <summary><img src="https://flagcdn.com/w20/${code}.png" class="flag"> ${code.toUpperCase()}</summary>
-                ${grouped[code].map(ch => `<div class="ch-link" onclick="load('${ch.url}')">${ch.name}</div>`).join('')}
+                ${grouped[code].map(ch => `<div class="ch-link" onclick="load('${ch.url}'); toggleMenu();">${ch.name}</div>`).join('')}
             </details>
         `).join('');
     }
@@ -263,8 +312,6 @@
     function load(url) {
         const playerArea = document.getElementById('player');
         playerArea.innerHTML = `<iframe src="${url}" allowfullscreen allow="encrypted-media" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>`;
-        
-        // SCROLL AUTOMÁTICO AL REPRODUCTOR
         playerArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
