@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AMANTES DEL F⚽TBOL</title>
     <style>
         :root { 
@@ -11,11 +11,11 @@
         }
         
         body { 
-            font-family: 'Inter', sans-serif; background: var(--bg); color: white; margin: 0; padding-bottom: 100px;
+            font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: white; margin: 0; padding-bottom: 100px;
             background-attachment: fixed; background-size: cover; background-position: center; transition: background 0.5s ease;
         }
 
-        /* Fondos Dinámicos */
+        /* Fondos Dinámicos por Deporte */
         .bg-futbol { background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1200'); }
         .bg-baloncesto { background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=1200'); }
         .bg-americano { background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1566577739112-5180d4bf9390?q=80&w=1200'); }
@@ -23,43 +23,56 @@
         .bg-default { background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('https://wallpaperaccess.com/full/1331828.jpg'); }
 
         header { padding: 30px 20px 10px; text-align: center; }
-        header h1 { font-size: 22px; font-weight: 900; letter-spacing: 1px; }
+        header h1 { font-size: 20px; font-weight: 900; letter-spacing: 1px; margin: 0; }
         .ball { color: var(--accent); }
 
+        /* Navegación */
         .category-nav {
             display: flex; gap: 10px; overflow-x: auto; padding: 15px 20px;
-            position: sticky; top: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(15px);
+            position: sticky; top: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(15px);
             z-index: 100; border-bottom: 1px solid #222; scrollbar-width: none;
         }
+        .category-nav::-webkit-scrollbar { display: none; }
         .cat-btn {
-            background: #1a1a1a; border: none; color: white; padding: 10px 20px; 
-            border-radius: 25px; font-size: 13px; font-weight: 700; white-space: nowrap; cursor: pointer;
+            background: #1a1a1a; border: none; color: white; padding: 10px 18px; 
+            border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; cursor: pointer;
         }
-        .cat-btn.active { background: var(--accent); color: black; box-shadow: 0 0 15px var(--accent); }
+        .cat-btn.active { background: var(--accent); color: black; }
 
         .container { padding: 15px; max-width: 800px; margin: auto; }
 
+        /* Tarjetas de Eventos */
         .event-card { 
-            background: var(--card-bg); border-radius: 20px; padding: 20px; margin-bottom: 20px;
+            background: var(--card-bg); border-radius: 20px; padding: 18px; margin-bottom: 20px;
             border: 1px solid rgba(255,255,255,0.05);
         }
-        .countdown { font-size: 10px; color: var(--accent); margin-bottom: 5px; font-weight: bold; }
-        
+        .countdown { font-size: 11px; color: var(--accent); margin-bottom: 8px; font-weight: 800; text-transform: uppercase; }
         .event-main { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; text-align: center; }
         .team img { width: 45px; height: 45px; object-fit: contain; margin-bottom: 5px; }
-        .team-name { font-size: 13px; font-weight: 600; display: block; }
-        .score-time { font-size: 18px; font-weight: 900; background: #000; padding: 5px 12px; border-radius: 8px; border: 1px solid #333; }
+        .team-name { font-size: 12px; font-weight: 600; display: block; }
+        .score-time { font-size: 18px; font-weight: 900; background: #000; padding: 6px 12px; border-radius: 10px; border: 1px solid #333; min-width: 60px; }
 
-        .acc-item { background: #111; border-radius: 12px; margin-bottom: 10px; border: 1px solid #222; overflow: hidden; }
-        .acc-header { padding: 15px; cursor: pointer; display: flex; justify-content: space-between; font-weight: 700; font-size: 13px; }
-        .acc-content { display: none; padding: 15px; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; background: #080808; }
+        /* Desplegables Estilo Premium */
+        .acc-item { background: #111; border-radius: 15px; margin-bottom: 10px; border: 1px solid #222; overflow: hidden; }
+        .acc-header { padding: 14px; cursor: pointer; display: flex; justify-content: space-between; font-weight: 700; font-size: 13px; transition: 0.3s; }
+        .acc-header:active { background: #1a1a1a; }
+        .acc-content { display: none; padding: 15px; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; background: #080808; }
         .acc-content.open { display: grid; }
-        .chan-card { background: #1a1a1a; padding: 10px; border-radius: 8px; text-align: center; text-decoration: none; color: white; border: 1px solid #333; font-size: 11px; }
-        .chan-card img { height: 30px; margin-bottom: 5px; }
+        
+        .chan-btn { 
+            background: #1a1a1a; padding: 12px; border-radius: 12px; text-align: center; 
+            cursor: pointer; border: 1px solid #333; color: white; font-size: 11px; font-weight: 600;
+        }
+        .chan-btn img { height: 30px; margin-bottom: 5px; display: block; margin-left: auto; margin-right: auto; }
 
-        .tab-bar { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0 30px; border-top: 1px solid #222; z-index: 1000; }
-        .tab-btn { background: none; border: none; color: #555; font-weight: bold; cursor: pointer; }
-        .tab-btn.active { color: white; border-bottom: 2px solid var(--accent); }
+        /* Modo Cine (Reproductor Protegido) */
+        #player-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; display: none; flex-direction: column; }
+        .player-header { padding: 15px; display: flex; justify-content: space-between; background: #111; align-items: center; border-bottom: 1px solid #222; }
+        #protected-iframe { width: 100%; height: 100%; border: none; }
+
+        .tab-bar { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0 35px; border-top: 1px solid #222; z-index: 1000; }
+        .tab-btn { background: none; border: none; color: #555; font-weight: 800; cursor: pointer; font-size: 11px; }
+        .tab-btn.active { color: white; border-top: 2px solid var(--accent); padding-top: 10px; margin-top: -12px; }
 
         .hidden { display: none; }
     </style>
@@ -77,6 +90,14 @@
     <div class="container" id="tv-content"></div>
 </div>
 
+<div id="player-modal">
+    <div class="player-header">
+        <button onclick="closePlayer()" style="background:#f00; color:#fff; border:none; padding:8px 15px; border-radius:5px; font-weight:bold; cursor:pointer;">✕ CERRAR MODO CINE</button>
+        <span style="font-size:10px; color:var(--accent); font-weight:bold;">ESCUDO ANTI-REDIRECCIÓN ACTIVO</span>
+    </div>
+    <iframe id="protected-iframe" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation" allowfullscreen></iframe>
+</div>
+
 <nav class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('agenda')">RESULTADOS</button>
     <button class="tab-btn" onclick="switchTab('tv')">CANALES TV</button>
@@ -90,42 +111,40 @@
     const COUNTRY_MAP = { 
         "es": ["España", "🇪🇸"], "mx": ["México", "🇲🇽"], "us": ["EE.UU.", "🇺🇸"], "ar": ["Argentina", "🇦🇷"], 
         "gb": ["Reino Unido", "🇬🇧"], "it": ["Italia", "🇮🇹"], "fr": ["Francia", "🇫🇷"], "de": ["Alemania", "🇩🇪"], 
-        "br": ["Brasil", "🇧🇷"], "co": ["Colombia", "🇨🇴"], "cl": ["Chile", "🇨🇱"], "pe": ["Perú", "🇵🇪"]
+        "br": ["Brasil", "🇧🇷"], "co": ["Colombia", "🇨🇴"], "pt": ["Portugal", "🇵🇹"], "cl": ["Chile", "🇨🇱"]
     };
 
-    const TRANSLATE = { "Soccer": "Fútbol", "NBA": "Baloncesto", "NFL": "Americano", "Tennis": "Tenis", "Cricket": "Cricket", "NHL": "Hockey" };
+    const TRANSLATE = { "Soccer": "Fútbol", "NBA": "Baloncesto", "NFL": "Americano", "Tennis": "Tenis", "NHL": "Hockey" };
 
     let db = { sports: {}, channels: [] };
     let currentCat = 'Soccer';
 
-    // Función de caché inteligente
-    function saveCache() { localStorage.setItem('agus_tv_cache', JSON.stringify({ db, time: Date.now() })); }
-    function loadCache() {
-        const cached = localStorage.getItem('agus_tv_cache');
+    // Persistencia de Datos (LocalStorage)
+    function saveToLocal() { localStorage.setItem('agus_sports_db', JSON.stringify({ db, time: Date.now() })); }
+    function loadFromLocal() {
+        const cached = localStorage.getItem('agus_sports_db');
         if (cached) {
-            const data = JSON.parse(cached);
-            db = data.db;
+            const parsed = JSON.parse(cached);
+            db = parsed.db;
             render();
-            return (Date.now() - data.time) < 300000; // Si tiene menos de 5 min, es fresca
+            return (Date.now() - parsed.time) < 600000; // Cache de 10 minutos
         }
         return false;
     }
 
     async function init() {
-        const isFresh = loadCache();
-        if (!isFresh) {
-            try {
-                const [sRes, cRes] = await Promise.all([
-                    fetch(PROXY + encodeURIComponent(API_SPORTS)).then(r => r.json()),
-                    fetch(PROXY + encodeURIComponent(API_CHANNELS)).then(r => r.json())
-                ]);
-                const sData = JSON.parse(sRes.contents);
-                db.sports = sData['cdn-live-tv'] || sData;
-                db.channels = JSON.parse(cRes.contents).channels || [];
-                saveCache();
-                render();
-            } catch (e) { console.error("Error API"); }
-        }
+        loadFromLocal();
+        try {
+            const [sRes, cRes] = await Promise.all([
+                fetch(PROXY + encodeURIComponent(API_SPORTS)).then(r => r.json()),
+                fetch(PROXY + encodeURIComponent(API_CHANNELS)).then(r => r.json())
+            ]);
+            const sData = JSON.parse(sRes.contents);
+            db.sports = sData['cdn-live-tv'] || sData;
+            db.channels = JSON.parse(cRes.contents).channels || [];
+            saveToLocal();
+            render();
+        } catch (e) { console.error("Error cargando datos reales"); }
     }
 
     function render() {
@@ -147,23 +166,6 @@
         render();
     }
 
-    function updateCountdowns() {
-        document.querySelectorAll('.countdown').forEach(el => {
-            const timeStr = el.getAttribute('data-time');
-            if (!timeStr || timeStr.includes(':')) {
-                const now = new Date();
-                const [h, m] = timeStr.split(':');
-                const target = new Date();
-                target.setHours(h, m, 0);
-                if (target < now) target.setDate(target.getDate() + 1);
-                const diff = target - now;
-                const hours = Math.floor(diff / 3600000);
-                const mins = Math.floor((diff % 3600000) / 60000);
-                el.innerText = `EMPIEZA EN: ${hours}h ${mins}m`;
-            }
-        });
-    }
-
     function renderSports() {
         let events = db.sports[currentCat] || [];
         events = events.filter(e => e.status.toLowerCase() !== 'finished');
@@ -174,19 +176,23 @@
             const isLive = e.status.toLowerCase() === 'live';
             html += `
             <div class="event-card">
-                <div class="countdown" data-time="${isLive ? '' : e.time}">${isLive ? '🔴 EN VIVO' : ''}</div>
-                <div style="font-size:10px; color:#666; margin-bottom:10px;">${e.tournament}</div>
+                <div class="countdown" data-time="${e.time}">${isLive ? '🔴 EN VIVO' : 'CARGANDO HORA...'}</div>
+                <div style="font-size:10px; color:#555; margin-bottom:10px; font-weight:700;">${e.tournament}</div>
                 <div class="event-main">
-                    <div class="team"><img src="${e.homeTeamIMG}"> <span class="team-name">${e.homeTeam}</span></div>
+                    <div class="team"><img src="${e.homeTeamIMG}" onerror="this.src='https://via.placeholder.com/40'"> <span class="team-name">${e.homeTeam}</span></div>
                     <div class="score-time">${isLive ? (e.score || 'vs') : e.time}</div>
-                    <div class="team"><img src="${e.awayTeamIMG}"> <span class="team-name">${e.awayTeam}</span></div>
+                    <div class="team"><img src="${e.awayTeamIMG}" onerror="this.src='https://via.placeholder.com/40'"> <span class="team-name">${e.awayTeam}</span></div>
                 </div>
                 <div class="acc-item" style="margin-top:15px; border-color:var(--accent)">
                     <div class="acc-header" onclick="this.nextElementSibling.classList.toggle('open')" style="color:var(--accent)">
-                        VER CANALES <span>▼</span>
+                        VER CANALES DISPONIBLES <span>▼</span>
                     </div>
                     <div class="acc-content">
-                        ${e.channels ? e.channels.map(ch => `<a href="${ch.url}" target="_blank" class="chan-card">📺 ${ch.channel_name}</a>`).join('') : '<p>Próximamente</p>'}
+                        ${e.channels ? e.channels.map(ch => `
+                            <div class="chan-btn" onclick="openPlayer('${ch.url}')">
+                                📺 ${ch.channel_name}
+                            </div>
+                        `).join('') : '<p>Próximamente</p>'}
                     </div>
                 </div>
             </div>`;
@@ -213,15 +219,48 @@
                 </div>
                 <div class="acc-content">
                     ${grouped[code].map(c => `
-                        <a href="${c.url}" target="_blank" class="chan-card">
-                            <img src="${c.image}" onerror="this.src='https://via.placeholder.com/40'"> <br>
+                        <div class="chan-btn" onclick="openPlayer('${c.url}')">
+                            <img src="${c.image}" onerror="this.src='https://via.placeholder.com/40'">
                             ${c.name}
-                        </a>
+                        </div>
                     `).join('')}
                 </div>
             </div>`;
         });
         document.getElementById('tv-content').innerHTML = html;
+    }
+
+    function updateCountdowns() {
+        document.querySelectorAll('.countdown').forEach(el => {
+            const timeStr = el.getAttribute('data-time');
+            if (el.innerText.includes('VIVO')) return;
+            const now = new Date();
+            const [h, m] = timeStr.split(':');
+            const target = new Date();
+            target.setHours(h, m, 0);
+            if (target < now) target.setDate(target.getDate() + 1);
+            const diff = target - now;
+            const hours = Math.floor(diff / 3600000);
+            const mins = Math.floor((diff % 3600000) / 60000);
+            el.innerText = `COMIENZA EN: ${hours}h ${mins}m`;
+        });
+    }
+
+    // Sistema de Reproductor Protegido
+    function openPlayer(url) {
+        const modal = document.getElementById('player-modal');
+        const iframe = document.getElementById('protected-iframe');
+        iframe.src = url;
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Bloquear scroll
+    }
+
+    function closePlayer() {
+        const modal = document.getElementById('player-modal');
+        const iframe = document.getElementById('protected-iframe');
+        iframe.src = "";
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
     }
 
     function switchTab(tab) {
