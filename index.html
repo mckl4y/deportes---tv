@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amantes del Futbol | Modo Cine</title>
+    <title>Amantes del Futbol | Seguro</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -80,7 +80,7 @@
         }
         .search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--primary); font-size: 12px; }
 
-        /* LAYOUT */
+        /* LAYOUT MODO CINE */
         .main-wrapper { display: grid; grid-template-columns: 280px 1fr; flex: 1; width: 100%; }
 
         .sidebar {
@@ -93,14 +93,8 @@
             top: 105px;
         }
 
-        .content { 
-            padding: 0; /* Quitamos padding para el modo cine */
-            background: #0a0a0a; 
-            width: 100%; 
-            box-sizing: border-box; 
-        }
+        .content { padding: 0; background: #0a0a0a; width: 100%; box-sizing: border-box; }
 
-        /* MODO CINE REPRODUCTOR (PC) */
         .player-container { 
             width: 100%; 
             background: #000;
@@ -110,36 +104,30 @@
 
         .player-area { 
             width: 100%; 
-            max-width: 1200px; /* Ancho máximo para no deformar en monitores ultra-wide */
+            max-width: 1200px; 
             margin: 0 auto; 
             aspect-ratio: 16/9; 
             background: #000; 
-            overflow: hidden; 
-        }
-        iframe { width: 100%; height: 100%; border: none; }
-
-        /* CONTENEDOR DE EVENTOS (Con padding para que no toquen los bordes) */
-        .events-section {
-            padding: 0 20px 40px 20px;
         }
 
+        /* SEGURIDAD ANTIPOPUP */
+        iframe { 
+            width: 100%; 
+            height: 100%; 
+            border: none; 
+            background: #000;
+        }
+
+        .events-section { padding: 0 20px 40px 20px; }
         .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .card { background: var(--card-bg); border-radius: 12px; padding: 18px; border: 1px solid #222; transition: 0.3s; }
-        .card:hover { border-color: var(--primary); transform: translateY(-3px); }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 18px; border: 1px solid #222; }
 
-        /* MÓVIL */
         @media (max-width: 768px) {
             .menu-toggle { display: block; }
             .main-wrapper { display: block; }
             .sidebar { position: fixed; left: 0; top: 0; width: 280px; z-index: 2500; transform: translateX(-100%); transition: 0.3s; }
             .sidebar.active { transform: translateX(0); }
-            
-            .player-container { 
-                position: sticky; top: 98px; z-index: 1000; 
-                width: 100vw; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;
-                border-bottom: 2px solid var(--primary);
-            }
-            .player-area { aspect-ratio: 16/9; }
+            .player-container { position: sticky; top: 98px; z-index: 1000; width: 100vw; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; }
             .events-section { padding: 15px; }
         }
 
@@ -167,19 +155,18 @@
 </nav>
 
 <div class="main-wrapper">
-    <aside class="sidebar" id="sideMenu">Cargando canales...</aside>
+    <aside class="sidebar" id="sideMenu">Cargando...</aside>
     <main class="content">
         <div class="player-container">
             <div class="player-area" id="player">
-                <div style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; opacity:0.2;">
+                <div style="height:100%; display:flex; justify-content:center; align-items:center; opacity:0.1;">
                     <i class="fa-solid fa-play-circle fa-5x"></i>
-                    <p style="margin-top:15px; font-weight:bold; letter-spacing: 2px;">SELECCIONA UN PARTIDO</p>
                 </div>
             </div>
         </div>
 
         <div class="events-section">
-            <h3 style="border-left: 4px solid var(--primary); padding-left: 10px; font-size: 16px; margin-bottom:20px; text-transform: uppercase;">PARTIDOS DE HOY (UTC+1)</h3>
+            <h3 style="border-left: 4px solid var(--primary); padding-left: 10px; font-size: 16px; margin-bottom:20px;">PARTIDOS (UTC+1)</h3>
             <div class="events-grid" id="eventsGrid"></div>
         </div>
     </main>
@@ -194,11 +181,26 @@
         document.getElementById('overlay').classList.toggle('active');
     }
 
-    // HORA UTC+1 ESTRICTA
     function getUTC1Time() {
         const now = new Date();
         const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
         return new Date(utc + (3600000 * 1)); 
+    }
+
+    // CARGA CON FILTRO ANTIPOPUP
+    function load(url) {
+        const playerDiv = document.getElementById('player');
+        // El atributo 'sandbox' es la clave para bloquear anuncios y redirecciones
+        playerDiv.innerHTML = `
+            <iframe 
+                src="${url}" 
+                allowfullscreen 
+                allow="encrypted-media" 
+                sandbox="allow-scripts allow-same-origin allow-forms"
+            ></iframe>`;
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if(window.innerWidth < 768 && document.getElementById('sideMenu').classList.contains('active')) toggleMenu();
     }
 
     async function fetchData() {
@@ -223,13 +225,13 @@
             acc[c].push(ch);
             return acc;
         }, {});
-        side.innerHTML = `<h3 style="color:var(--primary); font-size:14px; margin-top:0; margin-bottom:15px;">CANALES TV</h3>` + 
+        side.innerHTML = `<h3 style="color:var(--primary); font-size:14px; margin-top:0;">CANALES TV</h3>` + 
             Object.keys(grouped).sort().map(code => `
-            <details style="margin-bottom:8px; background:#1a1a1a; border-radius:8px; overflow:hidden;">
-                <summary style="padding:12px; font-size:12px; cursor:pointer; display:flex; align-items:center; gap:8px;">
-                    <img src="https://flagcdn.com/w20/${code}.png" style="width:18px;"> ${code.toUpperCase()}
+            <details style="margin-bottom:5px; background:#1a1a1a; border-radius:8px;">
+                <summary style="padding:10px; cursor:pointer; font-size:12px;">
+                    <img src="https://flagcdn.com/w20/${code}.png" style="width:16px;"> ${code.toUpperCase()}
                 </summary>
-                ${grouped[code].map(ch => `<div style="padding:10px 15px; font-size:11px; cursor:pointer; border-top:1px solid #222; background:#141414;" onclick="load('${ch.url}')">${ch.name}</div>`).join('')}
+                ${grouped[code].map(ch => `<div style="padding:10px 15px; font-size:11px; cursor:pointer; border-top:1px solid #222;" onclick="load('${ch.url}')">${ch.name}</div>`).join('')}
             </details>
         `).join('');
     }
@@ -243,44 +245,34 @@
         });
 
         const nowUTC1 = getUTC1Time();
-        const nowTotalMinutes = (nowUTC1.getHours() * 60) + nowUTC1.getMinutes();
+        const nowMinutes = (nowUTC1.getHours() * 60) + nowUTC1.getMinutes();
 
         all.forEach(ev => {
             let [h, m] = ev.time.split(':').map(Number);
-            h = (h + 1) % 24; // Ajuste API a UTC+1
-            const eventTotalMinutes = (h * 60) + m;
-            const eventTimeStr = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-
-            // Un partido es LIVE si ya empezó y no han pasado 130 min
-            const isLive = nowTotalMinutes >= eventTotalMinutes && nowTotalMinutes < (eventTotalMinutes + 130);
+            h = (h + 1) % 24;
+            const evMinutes = (h * 60) + m;
+            const isLive = nowMinutes >= evMinutes && nowMinutes < (evMinutes + 130);
 
             const card = document.createElement('div');
             card.className = "card";
             card.setAttribute('data-search', `${ev.homeTeam} ${ev.awayTeam}`.toLowerCase());
             card.innerHTML = `
-                <div style="font-size:11px; display:flex; justify-content:space-between; opacity:0.5; margin-bottom:12px;">
+                <div style="font-size:10px; display:flex; justify-content:space-between; opacity:0.6; margin-bottom:10px;">
                     <span>${ev.tournament}</span>
                     <span style="color:${isLive ? '#ff4757' : 'var(--primary)'}; font-weight:bold;">
-                        ${isLive ? '<i class="fa-solid fa-circle live-dot"></i> EN VIVO' : eventTimeStr}
+                        ${isLive ? '<i class="fa-solid fa-circle live-dot"></i> EN VIVO' : `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`}
                     </span>
                 </div>
                 <div style="display:flex; justify-content:space-around; align-items:center; margin-bottom:15px; text-align:center;">
-                    <div style="flex:1; font-size:13px; font-weight:bold;">${ev.homeTeam}</div>
-                    <div style="color:var(--primary); font-weight:900; font-size:12px; padding:0 10px;">VS</div>
-                    <div style="flex:1; font-size:13px; font-weight:bold;">${ev.awayTeam}</div>
+                    <div style="flex:1; font-size:12px; font-weight:bold;">${ev.homeTeam}</div>
+                    <div style="color:var(--primary); font-weight:900;">VS</div>
+                    <div style="flex:1; font-size:12px; font-weight:bold;">${ev.awayTeam}</div>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-                    ${ev.channels.map(ch => `<div onclick="load('${ch.url}')" style="background:#222; padding:10px; border-radius:6px; font-size:10px; text-align:center; cursor:pointer; border:1px solid #333; font-weight:500;">${ch.channel_name}</div>`).join('')}
-                </div>
-            `;
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
+                    ${ev.channels.map(ch => `<div onclick="load('${ch.url}')" style="background:#222; padding:8px; border-radius:5px; font-size:9px; text-align:center; cursor:pointer; border:1px solid #333;">${ch.channel_name}</div>`).join('')}
+                </div>`;
             grid.appendChild(card);
         });
-    }
-
-    function load(url) {
-        document.getElementById('player').innerHTML = `<iframe src="${url}" allowfullscreen allow="encrypted-media"></iframe>`;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        if(window.innerWidth < 768 && document.getElementById('sideMenu').classList.contains('active')) toggleMenu();
     }
 
     function triggerSearch(val) {
