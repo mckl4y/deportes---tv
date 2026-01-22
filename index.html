@@ -3,313 +3,309 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amantes del Futbol | Streaming En Vivo</title>
+    <title>Amantes del Futbol | En Vivo</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --primary: #2ecc71;
-            --dark-bg: #0f0f0f;
-            --card-bg: #1a1a1a;
+            --dark-bg: #0b0b0b;
+            --card-bg: #161616;
             --text: #ffffff;
-            --accent: #f1c40f;
         }
 
         body {
             background-color: var(--dark-bg);
             color: var(--text);
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             display: flex;
             flex-direction: column;
             height: 100vh;
         }
 
-        /* Logo Personalizado */
+        /* Logo Amantes del Futbol */
         .header {
-            padding: 15px 20px;
+            padding: 15px;
             background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            text-align: center;
             border-bottom: 2px solid var(--primary);
         }
 
         .logo {
-            font-size: 24px;
-            font-weight: 800;
+            font-size: 26px;
+            font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 1px;
             display: flex;
+            justify-content: center;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
         }
 
-        .logo i {
-            color: var(--primary);
-            font-size: 22px;
+        .logo .ball-icon {
+            width: 30px;
+            height: 30px;
+            background: url('https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg') no-repeat center;
+            background-size: contain;
+            display: inline-block;
         }
 
-        /* Layout Principal */
-        .main-layout {
+        .main-container {
             display: grid;
-            grid-template-columns: 300px 1fr;
-            flex-grow: 1;
+            grid-template-columns: 320px 1fr;
+            flex: 1;
             overflow: hidden;
         }
 
-        /* Sidebar de Canales por País */
+        /* Sidebar Canales */
         .sidebar {
             background: var(--card-bg);
-            border-right: 1px solid #333;
+            border-right: 1px solid #222;
             overflow-y: auto;
-            padding: 10px;
+            padding: 15px;
         }
 
-        .sidebar h3 {
-            font-size: 16px;
-            color: var(--primary);
-            border-bottom: 1px solid #333;
-            padding-bottom: 10px;
-        }
+        .sidebar h2 { font-size: 18px; color: var(--primary); margin-top: 0; }
 
         details {
-            margin-bottom: 8px;
-            background: #252525;
-            border-radius: 5px;
-            overflow: hidden;
+            margin-bottom: 10px;
+            background: #1f1f1f;
+            border-radius: 6px;
         }
 
         summary {
-            padding: 10px;
+            padding: 12px;
             cursor: pointer;
             font-weight: bold;
-            list-style: none;
+            outline: none;
             display: flex;
             justify-content: space-between;
         }
 
-        summary:hover { background: #333; }
-
-        .channel-item {
-            padding: 8px 15px;
+        .channel-link {
+            padding: 10px 15px;
             font-size: 14px;
-            cursor: pointer;
             border-top: 1px solid #333;
+            cursor: pointer;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .channel-item:hover { background: var(--primary); color: black; }
+        .channel-link:hover { background: var(--primary); color: #000; }
 
-        /* Contenido del Jugador */
-        .content {
+        /* Contenido Principal */
+        .main-content {
             padding: 20px;
             overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
         }
 
-        .player-wrapper {
-            position: relative;
+        .player-container {
             width: 100%;
-            max-width: 900px;
-            margin: 0 auto;
-            background: #000;
+            max-width: 960px;
+            margin: 0 auto 30px;
             aspect-ratio: 16/9;
+            background: #000;
             border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
 
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
+        iframe { width: 100%; height: 100%; border: none; }
 
-        /* Grilla de Eventos Hoy */
-        .events-section h2 {
-            font-size: 20px;
-            border-left: 4px solid var(--primary);
-            padding-left: 10px;
-            margin-bottom: 15px;
-        }
-
+        /* Eventos de Hoy */
         .events-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
         }
 
         .event-card {
             background: var(--card-bg);
-            border-radius: 8px;
+            border: 1px solid #222;
+            border-radius: 10px;
             padding: 15px;
-            transition: transform 0.2s;
-            cursor: pointer;
-            border: 1px solid #333;
+            transition: 0.3s;
         }
 
-        .event-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-        }
+        .event-card:hover { border-color: var(--primary); transform: translateY(-3px); }
 
-        .event-info {
+        .event-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
-        .category-badge {
-            font-size: 10px;
+        .badge {
             background: var(--primary);
-            color: black;
-            padding: 2px 6px;
+            color: #000;
+            padding: 3px 8px;
             border-radius: 4px;
             font-weight: bold;
+            font-size: 11px;
         }
 
-        .teams {
-            font-weight: bold;
-            text-align: center;
-            margin: 10px 0;
+        .match-info {
             display: flex;
-            justify-content: center;
-            gap: 10px;
             align-items: center;
-        }
-
-        .event-footer {
-            font-size: 12px;
-            color: #888;
+            justify-content: space-around;
             text-align: center;
+            margin-bottom: 15px;
         }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+        .team-name { font-weight: bold; font-size: 14px; flex: 1; }
 
-        @media (max-width: 768px) {
-            .main-layout { grid-template-columns: 1fr; }
+        .vs { color: var(--primary); font-style: italic; font-weight: 900; margin: 0 10px; }
+
+        .btn-stream {
+            display: block;
+            text-align: center;
+            background: #222;
+            color: #fff;
+            padding: 8px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .btn-stream:hover { background: #333; border: 1px solid var(--primary); }
+
+        /* Mobile */
+        @media (max-width: 850px) {
+            .main-container { grid-template-columns: 1fr; }
             .sidebar { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <header class="header">
-        <div class="logo">
-            Amantes del Futb<i class="fa-solid fa-circle-dot"></i>l
+<header class="header">
+    <div class="logo">
+        AMANTES DEL FUTB<span class="ball-icon"></span>L
+    </div>
+</header>
+
+<div class="main-container">
+    <aside class="sidebar" id="sidebar-channels">
+        <h2><i class="fa-solid fa-globe"></i> Canales por País</h2>
+        <div id="country-list">Cargando...</div>
+    </aside>
+
+    <main class="main-content">
+        <div class="player-container" id="player-box">
+            <div style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                <i class="fa-solid fa-circle-play fa-5x" style="color:#333; margin-bottom:15px;"></i>
+                <p style="color:#666;">Selecciona un evento para ver la transmisión</p>
+            </div>
         </div>
-    </header>
 
-    <main class="main-layout">
-        <aside class="sidebar">
-            <h3><i class="fa-solid fa-globe"></i> Canales por País</h3>
-            <div id="country-container">Cargando canales...</div>
-        </aside>
-
-        <section class="content">
-            <div class="player-wrapper" id="video-box">
-                <div style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#555;">
-                    <i class="fa-solid fa-play-circle fa-4x"></i>
-                    <p>Selecciona un partido o canal para transmitir</p>
-                </div>
+        <h2 style="border-left: 4px solid var(--primary); padding-left: 10px;">⚽ Eventos Deportivos de Hoy</h2>
+        <div class="events-grid" id="events-list">
             </div>
-
-            <div class="events-section">
-                <h2><i class="fa-solid fa-calendar-day"></i> Partidos para Hoy</h2>
-                <div class="events-grid" id="events-display">
-                    </div>
-            </div>
-        </section>
     </main>
+</div>
 
-    <script>
-        const API_CHANNELS = "https://api.cdn-live.tv/api/v1/channels/?user=cdnlivetv&plan=free";
-        const API_EVENTS = "https://api.cdn-live.tv/api/v1/events/sports/?user=cdnlivetv&plan=free";
+<script>
+    const USER_PLAN = "user=cdnlivetv&plan=free";
+    const API_CHANNELS = `https://api.cdn-live.tv/api/v1/channels/?${USER_PLAN}`;
+    const API_SPORTS = `https://api.cdn-live.tv/api/v1/events/sports/?${USER_PLAN}`;
 
-        async function loadDashboard() {
-            try {
-                const [chRes, evRes] = await Promise.all([fetch(API_CHANNELS), fetch(API_EVENTS)]);
-                const channels = await chRes.json();
-                const events = await evRes.json();
+    async function fetchData() {
+        try {
+            const [resCh, resEv] = await Promise.all([fetch(API_CHANNELS), fetch(API_SPORTS)]);
+            const dataCh = await resCh.json();
+            const dataEv = await resEv.json();
 
-                renderSidebar(channels);
-                renderEvents(events);
-            } catch (e) {
-                console.error("Error de conexión:", e);
-            }
+            // Corregido: La data de canales viene en dataCh.channels
+            renderChannels(dataCh.channels);
+            
+            // Corregido: La data de eventos viene en dataEv['cdn-live-tv']
+            renderEvents(dataEv['cdn-live-tv']);
+        } catch (error) {
+            console.error("Error cargando APIs:", error);
         }
+    }
 
-        function renderSidebar(data) {
-            const container = document.getElementById('country-container');
-            const groups = data.reduce((acc, ch) => {
-                acc[ch.country_code] = acc[ch.country_code] || [];
-                acc[ch.country_code].push(ch);
-                return acc;
-            }, {});
+    function renderChannels(channels) {
+        const container = document.getElementById('country-list');
+        if (!channels) return;
 
-            container.innerHTML = Object.keys(groups).sort().map(country => `
-                <details>
-                    <summary>${country} <span>${groups[country].length}</span></summary>
-                    ${groups[country].map(ch => `
-                        <div class="channel-item" onclick="playStream('${ch.player_url}', '${ch.name}')">
-                            <i class="fa-solid fa-tv"></i> ${ch.name}
+        const grouped = channels.reduce((acc, ch) => {
+            const country = ch.code.toUpperCase();
+            if (!acc[country]) acc[country] = [];
+            acc[country].push(ch);
+            return acc;
+        }, {});
+
+        container.innerHTML = Object.keys(grouped).sort().map(country => `
+            <details>
+                <summary>${country} <span>(${grouped[country].length})</span></summary>
+                ${grouped[country].map(ch => `
+                    <div class="channel-link" onclick="loadPlayer('${ch.url}')">
+                        <i class="fa-solid fa-tv"></i> ${ch.name}
+                    </div>
+                `).join('')}
+            </details>
+        `).join('');
+    }
+
+    function renderEvents(sportsData) {
+        const container = document.getElementById('events-list');
+        const categories = ["Soccer", "NBA", "NFL", "NHL"];
+        let html = "";
+
+        categories.forEach(cat => {
+            if (sportsData[cat] && sportsData[cat].length > 0) {
+                sportsData[cat].forEach(match => {
+                    // Un evento puede tener varios canales (asociación de enlaces)
+                    const channelButtons = match.channels.map(ch => `
+                        <div class="btn-stream" onclick="loadPlayer('${ch.url}')">
+                            <i class="fa-solid fa-play"></i> Ver por ${ch.channel_name}
                         </div>
-                    `).join('')}
-                </details>
-            `).join('');
-        }
+                    `).join('');
 
-        function renderEvents(data) {
-            const display = document.getElementById('events-display');
-            let cards = "";
-
-            // Recorremos las categorías (Soccer, NFL, etc.)
-            for (const category in data) {
-                data[category].forEach(ev => {
-                    cards += `
-                        <div class="event-card" onclick="playStream('${ev.player_url}', '${ev.team_home} vs ${ev.team_away}')">
-                            <div class="event-info">
-                                <span class="category-badge">${category}</span>
-                                <span style="color:var(--accent)"><i class="fa-solid fa-clock"></i> ${ev.time}</span>
+                    html += `
+                        <div class="event-card">
+                            <div class="event-header">
+                                <span class="badge">${cat}</span>
+                                <span style="font-size:12px; color:var(--primary)">${match.time}</span>
                             </div>
-                            <div class="teams">
-                                <span>${ev.team_home}</span>
-                                <span style="color:var(--primary)">VS</span>
-                                <span>${ev.team_away}</span>
+                            <div class="match-info">
+                                <div class="team-name">${match.homeTeam}</div>
+                                <div class="vs">VS</div>
+                                <div class="team-name">${match.awayTeam}</div>
                             </div>
-                            <div class="event-footer">
-                                <i class="fa-solid fa-satellite-dish"></i> Vía: ${ev.channel_name}
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                ${channelButtons}
+                            </div>
+                            <div style="text-align:center; font-size:11px; color:#555; margin-top:10px;">
+                                ${match.tournament} | ${match.country}
                             </div>
                         </div>
                     `;
                 });
             }
-            display.innerHTML = cards || "<p>No hay eventos disponibles por ahora.</p>";
-        }
+        });
 
-        function playStream(url, title) {
-            const box = document.getElementById('video-box');
-            // Bloqueo de anuncios mediante sandbox estricto
-            box.innerHTML = `
-                <iframe 
-                    src="${url}" 
-                    allowfullscreen 
-                    scrolling="no" 
-                    sandbox="allow-scripts allow-same-origin allow-forms">
-                </iframe>
-            `;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            console.log("Reproduciendo:", title);
-        }
+        container.innerHTML = html || "<p style='color:#666;'>No hay eventos en vivo en este momento.</p>";
+    }
 
-        loadDashboard();
-    </script>
+    function loadPlayer(url) {
+        const box = document.getElementById('player-box');
+        // Sandbox para bloquear redirecciones y popups de anuncios
+        box.innerHTML = `
+            <iframe 
+                src="${url}" 
+                allowfullscreen 
+                scrolling="no" 
+                allow="encrypted-media"
+                sandbox="allow-scripts allow-same-origin allow-forms">
+            </iframe>`;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    fetchData();
+</script>
+
 </body>
 </html>
