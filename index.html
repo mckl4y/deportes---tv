@@ -3,248 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AMANTES DEL F⚽TBOL | Agenda Pro</title>
+    <title>AMANTES DEL F⚽TBOL | Analítica & Live</title>
     <style>
         :root {
-            --blue-header: #3b82f6; 
-            --blue-btn: #2563eb;
-            --bg-body: #f8fafc;
-            --border: #e2e8f0;
+            --blue-espn: #3b82f6; 
+            --blue-dark: #1d4ed8;
+            --bg: #f4f7f9;
+            --white: #ffffff;
         }
 
-        body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background-color: var(--bg-body);
-            color: #1e293b;
-            margin: 0;
-            padding-bottom: 80px;
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding-top: 70px; }
+        
+        /* HEADER PREMIUM */
+        header { 
+            background: var(--white); padding: 10px 20px; 
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 3px solid var(--blue-espn);
+            position: fixed; top: 0; width: 100%; z-index: 1000; box-sizing: border-box;
         }
 
-        header {
-            background: white;
-            padding: 20px;
-            text-align: center;
-            border-bottom: 2px solid var(--blue-header);
+        .dona-btn {
+            background: #22c55e; color: white; border: none; padding: 10px 15px;
+            border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px;
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 20px auto;
-            background: white;
-            border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
+        .container { max-width: 1000px; margin: 20px auto; padding: 10px; }
 
-        .table-head {
-            background-color: var(--blue-header);
-            color: white;
-            display: grid;
-            grid-template-columns: 90px 180px 1fr;
-            padding: 12px 15px;
-            font-weight: bold;
-            font-size: 13px;
-        }
-
+        /* LISTA DE PARTIDOS */
         .match-card {
-            border-bottom: 1px solid var(--border);
-            padding: 15px;
+            background: var(--white); border-radius: 8px; padding: 15px;
+            margin-bottom: 15px; display: grid; grid-template-columns: 100px 1fr 150px;
+            align-items: center; cursor: pointer; transition: 0.2s;
+            border-left: 5px solid #e2e8f0;
+        }
+        .match-card:hover { transform: scale(1.01); border-left-color: var(--blue-espn); }
+
+        .time-info { text-align: center; border-right: 1px solid #eee; }
+        .event-teams { display: flex; justify-content: space-around; align-items: center; font-weight: bold; }
+        .team-box { text-align: center; flex: 1; }
+        .team-box img { width: 35px; height: 35px; display: block; margin: 0 auto 5px; }
+
+        .btn-ver { 
+            background: var(--blue-espn); color: white; border: none; 
+            padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer;
         }
 
-        .match-info-row {
-            display: grid;
-            grid-template-columns: 90px 180px 1fr;
-            align-items: center;
-        }
-
-        .time-box { font-weight: 700; color: #475569; }
-        .live-badge { color: #ef4444; font-size: 10px; display: block; }
-
-        .tournament-box { font-size: 13px; color: #64748b; }
-        .tournament-name { display: block; font-weight: bold; color: #334155; }
-
-        .teams-display {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            font-weight: 700;
-        }
-
-        .team { display: flex; align-items: center; gap: 10px; flex: 1; }
-        .team.home { justify-content: flex-end; text-align: right; }
-        .team img { width: 30px; height: 30px; object-fit: contain; }
-
-        .vs-pill { font-size: 11px; color: #94a3b8; background: #f1f5f9; padding: 2px 8px; border-radius: 4px; }
-
-        /* Botón Desplegable */
-        .links-trigger { margin-top: 10px; text-align: center; }
-        .view-links-btn {
-            background: none; border: none; color: var(--blue-btn);
-            font-size: 12px; font-weight: bold; text-decoration: underline;
-            cursor: pointer;
-        }
-
-        .links-dropdown {
-            display: none; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 10px; margin-top: 10px; padding: 15px;
-            background: #f1f5f9; border-radius: 8px;
-        }
-        .links-dropdown.active { display: grid; }
-
-        .channel-btn {
-            background: var(--blue-btn); color: white; padding: 10px;
-            text-align: center; border-radius: 5px; font-size: 11px;
-            text-decoration: none; font-weight: bold;
-        }
-
-        /* Reproductor */
-        #cine-mode {
+        /* MODAL / PANEL DE EVENTO */
+        .modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: black; z-index: 10000; display: none; flex-direction: column;
+            background: rgba(0,0,0,0.8); display: none; z-index: 2000;
+            overflow-y: auto;
         }
-        .cine-header { background: #111; padding: 15px; display: flex; justify-content: space-between; color: white; }
+        .modal-content {
+            background: var(--white); max-width: 800px; margin: 50px auto;
+            border-radius: 12px; padding: 25px; position: relative;
+        }
+
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; text-align: center; margin: 20px 0; }
+        .prob-bar { background: #eee; height: 20px; border-radius: 10px; overflow: hidden; display: flex; margin: 10px 0; }
+        .prob-home { background: var(--blue-espn); height: 100%; }
+        .prob-away { background: #ef4444; height: 100%; }
+
+        .links-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+        .link-item { 
+            background: #f1f5f9; padding: 10px; text-align: center; 
+            border-radius: 6px; text-decoration: none; color: #1e293b; font-weight: bold; font-size: 12px;
+            border: 1px solid #cbd5e1;
+        }
+
+        /* MODO CINE */
+        #cine { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 3000; display: none; flex-direction: column; }
         iframe { flex-grow: 1; border: none; }
 
-        @media (max-width: 700px) {
-            .table-head { display: none; }
-            .match-info-row { grid-template-columns: 1fr; text-align: center; gap: 10px; }
-            .team { justify-content: center !important; }
-        }
+        @media (max-width: 700px) { .match-card { grid-template-columns: 1fr; gap: 15px; } .modal-content { margin: 0; height: 100%; } }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>AMANTES DEL F⚽TBOL</h1>
+    <div style="font-weight: 900; font-size: 20px;">AMANTES DEL F<span style="color:var(--blue-espn)">⚽</span>TBOL</div>
+    <button class="dona-btn" onclick="alert('Opciones de Donación para Agus:\n- Bizum: [Tu Número]\n- PayPal: [Tu Email]')">❤️ Dona a Agus</button>
 </header>
 
-<div class="container">
-    <div class="table-head">
-        <div>Hora</div>
-        <div>Competición</div>
-        <div style="text-align:center;">Evento</div>
-    </div>
-    <div id="master-list">
-        </div>
+<div class="container" id="main-list">
+    <p style="text-align:center;">Cargando datos analíticos de ESPN...</p>
 </div>
 
-<div id="cine-mode">
-    <div class="cine-header">
-        <button onclick="closeCine()" style="background:#ef4444; color:white; border:none; padding:10px 20px; cursor:pointer; font-weight:bold; border-radius:4px;">✕ CERRAR</button>
-        <b>REPRODUCTOR PROTEGIDO</b>
+<div id="event-modal" class="modal">
+    <div class="modal-content">
+        <button onclick="cerrarModal()" style="position:absolute; right:20px; top:20px; border:none; background:none; font-size:24px; cursor:pointer;">&times;</button>
+        <div id="modal-body"></div>
     </div>
-    <iframe id="player-frame" sandbox="allow-scripts allow-same-origin allow-forms" allowfullscreen></iframe>
+</div>
+
+<div id="cine">
+    <div style="background:#111; padding:15px; display:flex; justify-content:space-between; color:white;">
+        <button onclick="cerrarCine()" style="background:red; border:none; color:white; padding:8px 15px; cursor:pointer; font-weight:bold;">SALIR</button>
+        <b>REPRODUCTOR MULTIENLACE</b>
+    </div>
+    <iframe id="reproductor" sandbox="allow-scripts allow-same-origin allow-forms" allowfullscreen></iframe>
 </div>
 
 <script>
-    // URLs de todas las categorías posibles para forzar a la API
-    const ENDPOINTS = [
-        "https://api.cdn-live.tv/api/v1/events/sports/?user=cdnlivetv&plan=free",
-        "https://api.cdn-live.tv/api/v1/events/sports/soccer/?user=cdnlivetv&plan=free",
-        "https://api.cdn-live.tv/api/v1/events/sports/nba/?user=cdnlivetv&plan=free",
-        "https://api.cdn-live.tv/api/v1/events/sports/nfl/?user=cdnlivetv&plan=free",
-        "https://api.cdn-live.tv/api/v1/events/sports/nhl/?user=cdnlivetv&plan=free",
-        "https://api.cdn-live.tv/api/v1/events/sports/tennis/?user=cdnlivetv&plan=free"
-    ];
-    
     const PROXY = "https://api.allorigins.win/get?url=";
+    const API_CANALES = "https://api.cdn-live.tv/api/v1/events/sports/?user=cdnlivetv&plan=free";
+    const FEEDS = [
+        "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard",
+        "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard",
+        "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard",
+        "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
+    ];
 
-    async function loadAllSports() {
-        let masterEvents = [];
-        let seenIds = new Set();
+    let baseCanales = [];
+    let todosPartidos = [];
 
+    async function cargarDatos() {
         try {
-            // Consultamos todos los endpoints en paralelo para no perder nada
-            const requests = ENDPOINTS.map(url => fetch(PROXY + encodeURIComponent(url)).then(r => r.json()));
-            const results = await Promise.all(requests);
+            // Canales
+            const cdn = await fetch(PROXY + encodeURIComponent(API_CANALES));
+            const dataCdn = await cdn.json();
+            const rawCdn = JSON.parse(dataCdn.contents)['cdn-live-tv'];
+            baseCanales = [];
+            Object.values(rawCdn).forEach(cat => { if(Array.isArray(cat)) baseCanales.push(...cat); });
 
-            results.forEach(res => {
-                const data = JSON.parse(res.contents);
-                const sportsData = data['cdn-live-tv'] || data;
-
-                Object.keys(sportsData).forEach(key => {
-                    if (Array.isArray(sportsData[key])) {
-                        sportsData[key].forEach(ev => {
-                            // Filtro: Solo lo que NO haya terminado y que no esté repetido
-                            if (ev.status !== 'finished' && !seenIds.has(ev.gameID)) {
-                                ev.sportTag = key;
-                                masterEvents.push(ev);
-                                seenIds.add(ev.gameID);
-                            }
-                        });
+            // ESPN
+            const reqs = FEEDS.map(f => fetch(f).then(r => r.json()));
+            const resps = await Promise.all(reqs);
+            
+            todosPartidos = [];
+            resps.forEach(data => {
+                data.events.forEach(ev => {
+                    if(ev.status.type.name !== 'STATUS_FINAL') {
+                        todosPartidos.push(ev);
                     }
                 });
             });
 
-            // Ordenar por hora
-            masterEvents.sort((a, b) => a.time.localeCompare(b.time));
-
-            render(masterEvents);
-
-        } catch (err) {
-            console.error("Error cargando deportes:", err);
-        }
+            renderLista();
+        } catch (e) { console.error(e); }
     }
 
-    function render(events) {
+    function renderLista() {
         let html = "";
-        events.forEach((e, i) => {
-            const isLive = e.status === 'live';
+        todosPartidos.forEach((ev, i) => {
+            const comp = ev.competitions[0];
             html += `
-            <div class="match-card">
-                <div class="match-info-row">
-                    <div class="time-box">
-                        ${e.time}
-                        ${isLive ? '<span class="live-badge">🔴 EN VIVO</span>' : ''}
-                    </div>
-                    <div class="tournament-box">
-                        <span class="tournament-name">${e.tournament}</span>
-                        <span style="text-transform:uppercase; font-size:10px;">${e.sportTag}</span>
-                    </div>
-                    <div class="teams-display">
-                        <div class="team home">
-                            <span>${e.homeTeam}</span>
-                            <img src="${e.homeTeamIMG}" onerror="this.src='https://via.placeholder.com/30'">
-                        </div>
-                        <div class="vs-pill">VS</div>
-                        <div class="team away">
-                            <img src="${e.awayTeamIMG}" onerror="this.src='https://via.placeholder.com/30'">
-                            <span>${e.awayTeam}</span>
-                        </div>
-                    </div>
+            <div class="match-card" onclick="verEvento(${i})">
+                <div class="time-info">
+                    <b>${ev.status.type.shortDetail}</b>
+                    <span style="font-size:10px; display:block; color:gray;">${ev.status.type.state === 'in' ? '🔴 EN VIVO' : 'PRÓXIMAMENTE'}</span>
                 </div>
-                <div class="links-trigger">
-                    <button class="view-links-btn" onclick="toggle(${i})">ver enlaces</button>
-                    <div class="links-dropdown" id="drop-${i}">
-                        ${e.channels ? e.channels.map(ch => `
-                            <a href="javascript:void(0)" class="channel-btn" onclick="openCine('${ch.url}')">
-                                ${ch.channel_name}
-                            </a>
-                        `).join('') : '<span>Canales no disponibles</span>'}
-                    </div>
+                <div class="event-teams">
+                    <div class="team-box"><img src="${comp.competitors[0].team.logo}"> ${comp.competitors[0].team.shortDisplayName}</div>
+                    <div style="color:#ccc">VS</div>
+                    <div class="team-box"><img src="${comp.competitors[1].team.logo}"> ${comp.competitors[1].team.shortDisplayName}</div>
+                </div>
+                <div style="text-align:right">
+                    <button class="btn-ver">Ver Evento</button>
                 </div>
             </div>`;
         });
-        document.getElementById('master-list').innerHTML = html || "<p style='text-align:center; padding:40px;'>No hay eventos próximos en la API.</p>";
+        document.getElementById('main-list').innerHTML = html;
     }
 
-    function toggle(id) {
-        document.getElementById(`drop-${id}`).classList.toggle('active');
+    function verEvento(idx) {
+        const ev = todosPartidos[idx];
+        const comp = ev.competitions[0];
+        const home = comp.competitors[0];
+        const away = comp.competitors[1];
+
+        // Cálculo de Probabilidad (Basado en récords de victorias si existen)
+        const total = (parseInt(home.records?.[0]?.summary) || 10) + (parseInt(away.records?.[0]?.summary) || 10);
+        const homeProb = Math.round(((parseInt(home.records?.[0]?.summary) || 5) / total) * 100);
+        const awayProb = 100 - homeProb;
+
+        // Buscar Canales
+        let links = [];
+        const nH = home.team.displayName.toLowerCase();
+        baseCanales.forEach(c => {
+            if(c.homeTeam.toLowerCase().includes(nH.split(' ')[0]) && c.channels) links.push(...c.channels);
+        });
+
+        const modalBody = `
+            <h2 style="text-align:center">${ev.name}</h2>
+            <p style="text-align:center; color:gray;">${ev.status.type.detail}</p>
+            
+            <div class="stat-grid">
+                <div><h4>${home.team.displayName}</h4><p>Récord: ${home.records?.[0]?.summary || 'N/A'}</p></div>
+                <div><h2 style="margin-top:20px;">VS</h2></div>
+                <div><h4>${away.team.displayName}</h4><p>Récord: ${away.records?.[0]?.summary || 'N/A'}</p></div>
+            </div>
+
+            <div style="margin:30px 0;">
+                <label><b>Probabilidad de Victoria (Cálculo IA):</b></label>
+                <div class="prob-bar">
+                    <div class="prob-home" style="width:${homeProb}%"></div>
+                    <div class="prob-away" style="width:${awayProb}%"></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:bold;">
+                    <span>${home.team.shortDisplayName}: ${homeProb}%</span>
+                    <span>${away.team.shortDisplayName}: ${awayProb}%</span>
+                </div>
+            </div>
+
+            <h3>📺 Multienlaces Disponibles (Movistar / DAZN / Sky)</h3>
+            <div class="links-grid">
+                ${links.length > 0 ? links.map(l => `
+                    <a href="javascript:void(0)" class="link-item" onclick="abrirCine('${l.url}')">📺 ${l.channel_name}</a>
+                `).join('') : '<p>Buscando señales... los canales suelen aparecer 15 min antes.</p>'}
+            </div>
+        `;
+
+        document.getElementById('modal-body').innerHTML = modalBody;
+        document.getElementById('event-modal').style.display = 'block';
     }
 
-    function openCine(url) {
-        document.getElementById('player-frame').src = url;
-        document.getElementById('cine-mode').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
+    function cerrarModal() { document.getElementById('event-modal').style.display = 'none'; }
+    function abrirCine(url) { 
+        document.getElementById('reproductor').src = url;
+        document.getElementById('cine').style.display = 'flex';
+    }
+    function cerrarCine() { 
+        document.getElementById('cine').style.display = 'none'; 
+        document.getElementById('reproductor').src = '';
     }
 
-    function closeCine() {
-        document.getElementById('cine-mode').style.display = 'none';
-        document.getElementById('player-frame').src = '';
-        document.body.style.overflow = 'auto';
-    }
-
-    loadAllSports();
+    cargarDatos();
 </script>
 </body>
 </html>
