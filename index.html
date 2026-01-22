@@ -3,154 +3,313 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amantes del FutbOl | TV & Sports</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <title>Amantes del Futbol | Streaming En Vivo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg: #050505; --card: #121212; --accent: #f8ff13; --text: #ffffff; --border: #222; }
-        * { box-sizing: border-box; outline: none; }
-        body { margin: 0; font-family: 'Roboto', sans-serif; background-color: var(--bg); color: var(--text); padding-top: 130px; }
+        :root {
+            --primary: #2ecc71;
+            --dark-bg: #0f0f0f;
+            --card-bg: #1a1a1a;
+            --text: #ffffff;
+            --accent: #f1c40f;
+        }
 
-        /* HEADER */
-        .fixed-header { position: fixed; top: 0; width: 100%; z-index: 1000; background: #000; border-bottom: 2px solid var(--accent); }
-        nav { height: 65px; display: flex; align-items: center; padding: 0 20px; justify-content: space-between; }
-        .logo-container { display: flex; align-items: center; font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 900; }
-        .ball-o { width: 20px; height: 20px; background: #fff; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin: 0 3px; position: relative; box-shadow: 0 0 8px var(--accent); }
-        .ball-o::after { content: '⚽'; font-size: 15px; position: absolute; }
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text);
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
 
-        .search-container { padding: 10px 20px; background: #111; display: flex; gap: 10px; justify-content: center; }
-        #main-search { width: 100%; max-width: 500px; background: #000; border: 1px solid #333; padding: 12px; color: white; border-radius: 4px; }
-        .refresh-btn { background: var(--accent); border: none; padding: 0 15px; border-radius: 4px; font-weight: 900; cursor: pointer; }
+        /* Logo Personalizado */
+        .header {
+            padding: 15px 20px;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 2px solid var(--primary);
+        }
 
-        .nav-links { display: flex; gap: 15px; }
-        .nav-btn { background: none; border: none; color: #666; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 13px; padding: 10px 5px; border-bottom: 3px solid transparent; }
-        .nav-btn.active { color: var(--accent); border-bottom: 3px solid var(--accent); }
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
 
-        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
-        
-        /* EVENTOS */
-        .category-header { background: #1a1a1a; padding: 12px; margin: 25px 0 10px; border-left: 4px solid var(--accent); font-weight: 900; color: var(--accent); text-transform: uppercase; }
-        .event-card { display: grid; grid-template-columns: 80px 1fr; gap: 15px; background: var(--card); margin-bottom: 8px; padding: 15px; border-radius: 4px; border: 1px solid var(--border); }
-        .event-time { text-align: center; font-weight: 900; font-size: 13px; color: #fff; }
-        .event-teams { font-size: 16px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
-        .multi-link-select { width: 100%; background: #000; color: #22c55e; border: 1px solid #22c55e; padding: 10px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .logo i {
+            color: var(--primary);
+            font-size: 22px;
+        }
 
-        /* CANALES */
-        .country-block { margin-bottom: 30px; }
-        .country-name { font-size: 16px; font-weight: 900; margin-bottom: 12px; padding-bottom: 5px; border-bottom: 1px solid #333; color: #aaa; }
-        .channels-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
-        .channel-item { background: var(--card); padding: 12px; border-radius: 6px; text-align: center; border: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
-        .channel-item:hover { border-color: var(--accent); transform: scale(1.02); }
-        .channel-item img { height: 35px; max-width: 90%; object-fit: contain; margin-bottom: 8px; filter: drop-shadow(0 0 5px rgba(0,0,0,0.5)); }
-        .channel-item span { font-size: 10px; font-weight: bold; display: block; color: #eee; }
+        /* Layout Principal */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            flex-grow: 1;
+            overflow: hidden;
+        }
 
-        /* PLAYER */
-        #player-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 5000; display: none; flex-direction: column; }
-        .player-bar { padding: 15px; background: #000; display: flex; justify-content: space-between; align-items: center; }
-        iframe { flex-grow: 1; border: none; }
+        /* Sidebar de Canales por País */
+        .sidebar {
+            background: var(--card-bg);
+            border-right: 1px solid #333;
+            overflow-y: auto;
+            padding: 10px;
+        }
 
-        .hidden { display: none; }
-        .status-msg { text-align: center; padding: 40px; color: #666; font-weight: bold; }
+        .sidebar h3 {
+            font-size: 16px;
+            color: var(--primary);
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+
+        details {
+            margin-bottom: 8px;
+            background: #252525;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        summary {
+            padding: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        summary:hover { background: #333; }
+
+        .channel-item {
+            padding: 8px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            border-top: 1px solid #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .channel-item:hover { background: var(--primary); color: black; }
+
+        /* Contenido del Jugador */
+        .content {
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .player-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            background: #000;
+            aspect-ratio: 16/9;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Grilla de Eventos Hoy */
+        .events-section h2 {
+            font-size: 20px;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+            margin-bottom: 15px;
+        }
+
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .event-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+            transition: transform 0.2s;
+            cursor: pointer;
+            border: 1px solid #333;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .event-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .category-badge {
+            font-size: 10px;
+            background: var(--primary);
+            color: black;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .teams {
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .event-footer {
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        @media (max-width: 768px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { display: none; }
+        }
     </style>
 </head>
 <body>
 
-<div class="fixed-header">
-    <nav>
-        <div class="logo-container">AMANTES DEL FUTB<div class="ball-o"></div>L</div>
-        <div class="nav-links">
-            <button id="btn-events" class="nav-btn active" onclick="switchTab('events')">EVENTOS</button>
-            <button id="btn-channels" class="nav-btn" onclick="switchTab('channels')">CANALES TV</button>
+    <header class="header">
+        <div class="logo">
+            Amantes del Futb<i class="fa-solid fa-circle-dot"></i>l
         </div>
-    </nav>
-    <div class="search-container">
-        <input type="text" id="main-search" placeholder="Busca equipo, liga o país..." onkeyup="filterAll()">
-        <button class="refresh-btn" onclick="init()">RECARGAR ↻</button>
-    </div>
-</div>
+    </header>
 
-<div class="container">
-    <div id="section-events">
-        <div id="events-status" class="status-msg">CONECTANDO CON LA PARRILLA...</div>
-        <div id="events-content"></div>
-    </div>
-    <div id="section-channels" class="hidden">
-        <div id="channels-status" class="status-msg">CARGANDO LISTA INTERNACIONAL...</div>
-        <div id="channels-content"></div>
-    </div>
-</div>
+    <main class="main-layout">
+        <aside class="sidebar">
+            <h3><i class="fa-solid fa-globe"></i> Canales por País</h3>
+            <div id="country-container">Cargando canales...</div>
+        </aside>
 
-<div id="player-overlay">
-    <div class="player-bar">
-        <span id="playing-now" style="font-weight:900; color:var(--accent);"></span>
-        <button onclick="closePlayer()" style="background:var(--accent); border:none; padding:10px 20px; font-weight:900; cursor:pointer;">CERRAR</button>
-    </div>
-    <iframe id="main-player" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
-</div>
+        <section class="content">
+            <div class="player-wrapper" id="video-box">
+                <div style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#555;">
+                    <i class="fa-solid fa-play-circle fa-4x"></i>
+                    <p>Selecciona un partido o canal para transmitir</p>
+                </div>
+            </div>
 
-<script>
-    let eventsData = [];
-    let channelsData = [];
+            <div class="events-section">
+                <h2><i class="fa-solid fa-calendar-day"></i> Partidos para Hoy</h2>
+                <div class="events-grid" id="events-display">
+                    </div>
+            </div>
+        </section>
+    </main>
 
-    // Usamos una lista de proxies por si uno falla
-    const proxies = [
-        "https://api.allorigins.win/raw?url=",
-        "https://thingproxy.freeboard.io/fetch/",
-        "https://corsproxy.io/?"
-    ];
+    <script>
+        const API_CHANNELS = "https://api.cdn-live.tv/api/v1/channels/?user=cdnlivetv&plan=free";
+        const API_EVENTS = "https://api.cdn-live.tv/api/v1/events/sports/?user=cdnlivetv&plan=free";
 
-    async function fetchData(url) {
-        // Intenta con el primer proxy, si falla pasa al siguiente
-        for (let proxy of proxies) {
+        async function loadDashboard() {
             try {
-                const response = await fetch(proxy + encodeURIComponent(url + "?t=" + new Date().getTime()));
-                if (response.ok) return await response.json();
-            } catch (e) { continue; }
-        }
-        throw new Error("No se pudo conectar");
-    }
+                const [chRes, evRes] = await Promise.all([fetch(API_CHANNELS), fetch(API_EVENTS)]);
+                const channels = await chRes.json();
+                const events = await evRes.json();
 
-    async function init() {
-        document.getElementById('events-status').innerText = "ACTUALIZANDO EVENTOS...";
-        document.getElementById('channels-status').innerText = "ACTUALIZANDO CANALES...";
-        
-        try {
-            const dataE = await fetchData("https://api.cdn-live.tv/api/v1/events/sports/?user=cdnlivetv&plan=free");
-            const sports = dataE['cdn-live-tv'];
-            eventsData = [];
-            for (let s in sports) {
-                sports[s].forEach(ev => { ev.category = s; eventsData.push(ev); });
+                renderSidebar(channels);
+                renderEvents(events);
+            } catch (e) {
+                console.error("Error de conexión:", e);
             }
-            renderEvents(eventsData);
-            document.getElementById('events-status').classList.add('hidden');
-
-            const dataC = await fetchData("https://api.cdn-live.tv/api/v1/channels/?user=cdnlivetv&plan=free");
-            channelsData = dataC.channels;
-            renderChannels(channelsData);
-            document.getElementById('channels-status').classList.add('hidden');
-
-        } catch (err) {
-            document.getElementById('events-status').innerText = "ERROR DE SEÑAL. PULSA RECARGAR.";
         }
-    }
 
-    function renderEvents(list) {
-        const out = document.getElementById('events-content');
-        const grouped = {};
-        list.forEach(e => {
-            if(!grouped[e.category]) grouped[e.category] = [];
-            grouped[e.category].push(e);
-        });
+        function renderSidebar(data) {
+            const container = document.getElementById('country-container');
+            const groups = data.reduce((acc, ch) => {
+                acc[ch.country_code] = acc[ch.country_code] || [];
+                acc[ch.country_code].push(ch);
+                return acc;
+            }, {});
 
-        let html = '';
-        for(let cat in grouped) {
-            html += `<div class="category-header">🔥 ${cat}</div>`;
-            grouped[cat].forEach(ev => {
-                let options = `<option value="">📺 SELECCIONAR SEÑAL (${ev.channels.length})</option>`;
-                ev.channels.forEach((c, i) => { options += `<option value="${c.url}">Link ${i+1}: ${c.channel_name}</option>`; });
-                
-                html += `
-                <div class="event-card">
-                    <div class="event-time">${ev.time}<br><small style="color:var(--accent)">${ev.status}</small></div>
-                    <div>
-                        <div style="font-size:10px; color:#555; font-weight:bold;">${ev.tournament}</div>
-                        <div class="event-teams">${ev.homeTeam} vs ${ev.awayTeam
+            container.innerHTML = Object.keys(groups).sort().map(country => `
+                <details>
+                    <summary>${country} <span>${groups[country].length}</span></summary>
+                    ${groups[country].map(ch => `
+                        <div class="channel-item" onclick="playStream('${ch.player_url}', '${ch.name}')">
+                            <i class="fa-solid fa-tv"></i> ${ch.name}
+                        </div>
+                    `).join('')}
+                </details>
+            `).join('');
+        }
+
+        function renderEvents(data) {
+            const display = document.getElementById('events-display');
+            let cards = "";
+
+            // Recorremos las categorías (Soccer, NFL, etc.)
+            for (const category in data) {
+                data[category].forEach(ev => {
+                    cards += `
+                        <div class="event-card" onclick="playStream('${ev.player_url}', '${ev.team_home} vs ${ev.team_away}')">
+                            <div class="event-info">
+                                <span class="category-badge">${category}</span>
+                                <span style="color:var(--accent)"><i class="fa-solid fa-clock"></i> ${ev.time}</span>
+                            </div>
+                            <div class="teams">
+                                <span>${ev.team_home}</span>
+                                <span style="color:var(--primary)">VS</span>
+                                <span>${ev.team_away}</span>
+                            </div>
+                            <div class="event-footer">
+                                <i class="fa-solid fa-satellite-dish"></i> Vía: ${ev.channel_name}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            display.innerHTML = cards || "<p>No hay eventos disponibles por ahora.</p>";
+        }
+
+        function playStream(url, title) {
+            const box = document.getElementById('video-box');
+            // Bloqueo de anuncios mediante sandbox estricto
+            box.innerHTML = `
+                <iframe 
+                    src="${url}" 
+                    allowfullscreen 
+                    scrolling="no" 
+                    sandbox="allow-scripts allow-same-origin allow-forms">
+                </iframe>
+            `;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            console.log("Reproduciendo:", title);
+        }
+
+        loadDashboard();
+    </script>
+</body>
+</html>
