@@ -6,95 +6,88 @@
     <title>Agus y su paginita TV</title>
     <style>
         :root { 
-            --accent: #00ff41; --bg: #050505; --card-bg: rgba(20, 20, 20, 0.9);
-            --live: #00ff41; --text-main: #ffffff;
+            --accent: #00ff41; --bg: #050505; --card-bg: rgba(20, 20, 20, 0.95);
+            --live: #00ff41; --upcoming: #f1c40f;
         }
         
         body { 
             font-family: 'Inter', sans-serif; background: var(--bg); color: white; margin: 0; padding-bottom: 100px;
-            transition: background 0.5s ease-in-out; background-attachment: fixed; background-size: cover; background-position: center;
+            transition: background 0.6s ease; background-attachment: fixed; background-size: cover; background-position: center;
         }
 
-        /* Imágenes de fondo por categoría */
+        /* Fondos Dinámicos */
+        .bg-featured { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('https://wallpaperaccess.com/full/1331828.jpg'); } /* Fondo Épico */
         .bg-soccer { background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=2000'); }
         .bg-nba { background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=2000'); }
-        .bg-cricket { background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=2000'); }
-        .bg-default { background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.wallpapersden.com/image/download/cool-football-stadium_bWluZ2mUmZqaraWkpJRmaWllrWdrZ2U.jpg'); }
+        .bg-live { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1504450758481-7338eba7524a?q=80&w=2000'); }
 
         header { padding: 40px 20px 10px; text-align: center; }
-        header h1 { font-size: 28px; font-weight: 900; margin: 0; letter-spacing: -1px; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        header h1 { font-size: 28px; font-weight: 900; margin: 0; letter-spacing: -1px; }
 
-        /* Menú de Categorías */
         .sport-menu {
             display: flex; gap: 10px; overflow-x: auto; padding: 20px;
-            position: sticky; top: 0; z-index: 101; backdrop-filter: blur(15px); background: rgba(0,0,0,0.5);
+            position: sticky; top: 0; z-index: 101; backdrop-filter: blur(20px); background: rgba(0,0,0,0.6);
         }
+        .sport-menu::-webkit-scrollbar { display: none; }
         .sport-btn {
-            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1);
-            color: white; padding: 10px 20px; border-radius: 25px; font-size: 13px;
-            font-weight: 700; white-space: nowrap; cursor: pointer; transition: 0.3s;
+            background: rgba(255,255,255,0.1); border: none; color: white; padding: 10px 22px; 
+            border-radius: 30px; font-size: 13px; font-weight: 800; white-space: nowrap; cursor: pointer;
         }
-        .sport-btn.active { background: var(--accent); color: black; border-color: var(--accent); box-shadow: 0 0 15px var(--accent); }
+        .sport-btn.active { background: var(--accent); color: black; box-shadow: 0 0 15px var(--accent); }
 
         .container { padding: 0 15px; max-width: 800px; margin: auto; }
 
-        /* Tarjetas Estilo DAZN */
+        /* Tarjeta de Partido Mejorada */
         .match-card { 
-            background: var(--card-bg); border-radius: 20px; padding: 20px; margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.1); animation: slideUp 0.4s ease-out;
+            background: var(--card-bg); border-radius: 24px; padding: 20px; margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.08); animation: fadeIn 0.5s ease;
         }
-        .teams-grid { display: grid; grid-template-columns: 1fr 60px 1fr; align-items: center; text-align: center; }
-        .team img { width: 50px; height: 50px; object-fit: contain; margin-bottom: 10px; }
-        .score { font-size: 24px; font-weight: 900; }
+        .match-header { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 15px; color: #aaa; text-transform: uppercase; font-weight: 700; }
+        
+        .teams-grid { display: grid; grid-template-columns: 1fr 70px 1fr; align-items: center; text-align: center; margin-bottom: 15px; }
+        .team img { width: 55px; height: 55px; object-fit: contain; margin-bottom: 8px; }
+        .score { font-size: 26px; font-weight: 900; color: white; }
 
-        /* Acordeón de Canales por País */
-        .country-acc { background: var(--card-bg); border-radius: 12px; margin-bottom: 10px; overflow: hidden; border: 1px solid #333; }
-        .acc-header { padding: 15px; cursor: pointer; display: flex; justify-content: space-between; font-weight: bold; background: rgba(255,255,255,0.03); }
-        .acc-content { display: none; padding: 15px; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
-        .acc-content.open { display: grid; }
+        /* Detalles adicionales (Fecha, Estadio, Lugar) */
+        .match-details { font-size: 12px; text-align: center; color: #777; margin-bottom: 15px; line-height: 1.5; }
+        .match-details b { color: #ccc; }
 
-        /* Skeleton Loading (Carga rápida visual) */
-        .skeleton { height: 100px; background: #1a1a1a; border-radius: 15px; margin-bottom: 15px; position: relative; overflow: hidden; }
-        .skeleton::after { 
-            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-            animation: loading 1.5s infinite;
+        /* Acordeón de Canales dentro del Partido */
+        .stream-dropdown { border-top: 1px solid rgba(255,255,255,0.1); margin-top: 15px; }
+        .stream-toggle { 
+            width: 100%; padding: 12px; background: none; border: none; color: var(--accent); 
+            font-weight: 800; font-size: 12px; cursor: pointer; display: flex; justify-content: space-between;
+        }
+        .stream-list { display: none; padding: 10px 0; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .stream-list.open { display: grid; }
+        .stream-btn { 
+            background: rgba(255,255,255,0.05); color: white; text-decoration: none; padding: 10px; 
+            border-radius: 10px; font-size: 11px; text-align: center; border: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* Botones de Transmisión */
-        .stream-link { 
-            background: #222; color: white; text-decoration: none; padding: 10px; 
-            border-radius: 8px; font-size: 11px; display: flex; align-items: center; gap: 8px; margin-top: 5px;
-        }
+        /* Tab Bar */
+        .tab-bar { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0 35px; border-top: 1px solid #222; z-index: 1000; }
+        .tab-btn { background: none; border: none; color: #555; font-weight: bold; font-size: 12px; cursor: pointer; }
+        .tab-btn.active { color: white; border-top: 2px solid white; padding-top: 10px; margin-top: -12px; }
 
-        .tab-bar { 
-            position: fixed; bottom: 0; width: 100%; background: #000;
-            display: flex; justify-content: space-around; padding: 15px 0 30px; border-top: 1px solid #222;
-        }
-        .tab-btn { background: none; border: none; color: #555; font-weight: bold; cursor: pointer; }
-        .tab-btn.active { color: var(--accent); }
-
-        @keyframes loading { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .hidden { display: none; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="bg-default">
+<body class="bg-featured">
 
 <header><h1>Agus y su paginita TV</h1></header>
 
 <div id="tab-agenda">
     <div class="sport-menu">
-        <button class="sport-btn active" onclick="setCategory('All', 'default')">Destacados</button>
-        <button class="sport-btn" onclick="setCategory('Soccer', 'soccer')">Fútbol</button>
-        <button class="sport-btn" onclick="setCategory('WomenSoccer', 'soccer')">Fútbol Femenino</button>
-        <button class="sport-btn" onclick="setCategory('Amateur', 'soccer')">Ligas Amateur</button>
-        <button class="sport-btn" onclick="setCategory('NBA', 'nba')">NBA</button>
-        <button class="sport-btn" onclick="setCategory('Cricket', 'cricket')">Cricket</button>
+        <button class="sport-btn active" onclick="setCat('Featured', 'featured')">✨ Destacados</button>
+        <button class="sport-btn" onclick="setCat('LiveNow', 'live')">🔴 En Directo</button>
+        <button class="sport-btn" onclick="setCat('Soccer', 'soccer')">Fútbol</button>
+        <button class="sport-btn" onclick="setCat('NBA', 'nba')">NBA</button>
+        <button class="sport-btn" onclick="setCat('NFL', 'nba')">NFL</button>
+        <button class="sport-btn" onclick="setCat('Amateur', 'soccer')">Amateur</button>
     </div>
-    <div class="container" id="agenda-content">
-        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
-    </div>
+    <div class="container" id="agenda-content"></div>
 </div>
 
 <div id="tab-tv" class="hidden">
@@ -103,7 +96,7 @@
 
 <nav class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('agenda')">DEPORTES</button>
-    <button class="tab-btn" onclick="switchTab('tv')">CANALES</button>
+    <button class="tab-btn" onclick="switchTab('tv')">CANALES TV</button>
 </nav>
 
 <script>
@@ -113,15 +106,12 @@
         channels: "https://api.cdn-live.tv/api/v1/channels/?user=cdnlivetv&plan=free"
     };
 
-    const FLAGS = { "es": "🇪🇸", "mx": "🇲🇽", "us": "🇺🇸", "ar": "🇦🇷", "gb": "🇬🇧", "it": "🇮🇹", "fr": "🇫🇷", "de": "🇩🇪", "br": "🇧🇷", "co": "🇨🇴" };
-    const TOP_LEAGUES = ["Premier", "LaLiga", "Champions", "NBA", "NFL"];
-
+    const FLAGS = { "es": "🇪🇸", "mx": "🇲🇽", "us": "🇺🇸", "ar": "🇦🇷", "gb": "🇬🇧", "it": "🇮🇹", "fr": "🇫🇷", "de": "🇩🇪", "br": "🇧🇷" };
     let db = { sports: {}, channels: [] };
-    let currentCat = 'All';
+    let currentCat = 'Featured';
 
-    async function fetchData() {
+    async function init() {
         try {
-            // Carga ultra rápida con cache opcional o Promise.all
             const [s, c] = await Promise.all([
                 fetch(PROXY + encodeURIComponent(APIS.sports)).then(r => r.json()),
                 fetch(PROXY + encodeURIComponent(APIS.channels)).then(r => r.json())
@@ -129,85 +119,59 @@
             db.sports = JSON.parse(s.contents)['cdn-live-tv'] || {};
             db.channels = JSON.parse(c.contents).channels || [];
             render();
-        } catch (e) { console.error("Error cargando AgusTV"); }
+        } catch (e) { document.getElementById('agenda-content').innerHTML = "Error cargando datos."; }
     }
 
-    function setCategory(cat, bg) {
+    function setCat(cat, bg) {
         currentCat = cat;
         document.body.className = 'bg-' + bg;
-        document.querySelectorAll('.sport-btn').forEach(b => b.classList.toggle('active', b.innerText.includes(cat) || (cat==='All' && b.innerText==='Destacados')));
+        document.querySelectorAll('.sport-btn').forEach(b => b.classList.toggle('active', b.innerText.includes(cat) || (cat==='Featured' && b.innerText.includes('Destacados'))));
         render();
     }
 
     function render() {
-        renderSports();
-        renderTV();
-    }
-
-    function renderSports() {
         let h = "";
-        let catsToRender = currentCat === 'All' ? ["Soccer", "NBA", "NFL", "NHL"] : [currentCat];
+        let cats = (currentCat === 'Featured' || currentCat === 'LiveNow') ? ["Soccer", "NBA", "NFL", "NHL"] : [currentCat];
         
-        catsToRender.forEach(cat => {
+        cats.forEach(cat => {
             const events = db.sports[cat] || [];
             events.forEach(e => {
-                const isLive = e.status.toLowerCase() === 'live';
-                const isAmateur = !TOP_LEAGUES.some(l => e.tournament.includes(l));
+                const status = e.status.toLowerCase();
+                if (status === 'finished') return; // No mostrar finalizados
                 
-                // Filtro para Amateur vs Pro
-                if (currentCat === 'Amateur' && !isAmateur) return;
-                if (currentCat === 'Soccer' && isAmateur) return;
+                const isLive = status === 'live';
+                if (currentCat === 'LiveNow' && !isLive) return; // Filtro solo directo
 
                 h += `
                 <div class="match-card">
-                    <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:15px; color:#888;">
-                        <span style="color:${isLive ? 'var(--accent)' : '#ffc107'}">${isLive ? '● EN VIVO' : e.time}</span>
+                    <div class="match-header">
+                        <span style="color:${isLive ? 'var(--live)' : 'var(--upcoming)'}">${isLive ? '● EN DIRECTO' : 'PRÓXIMO'}</span>
                         <span>${e.tournament}</span>
                     </div>
                     <div class="teams-grid">
                         <div class="team"><img src="${e.homeTeamIMG}"><div>${e.homeTeam}</div></div>
-                        <div class="score">${isLive ? (e.score || 'vs') : 'VS'}</div>
+                        <div class="score">${isLive ? (e.score || 'vs') : e.time}</div>
                         <div class="team"><img src="${e.awayTeamIMG}"><div>${e.awayTeam}</div></div>
                     </div>
-                    <div style="margin-top:15px; display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                        ${e.channels ? e.channels.map(ch => `
-                            <a href="${ch.url}" target="_blank" class="stream-link">
-                                ${FLAGS[ch.channel_code] || '🌐'} ${ch.channel_name}
-                            </a>`).join('') : ''}
+                    <div class="match-details">
+                        <b>📅 Fecha:</b> ${e.date || 'Hoy'} &nbsp;|&nbsp; <b>🏟️ Estadio:</b> ${e.stadium || 'TBA'}<br>
+                        <b>📍 Ubicación:</b> ${e.country || 'Internacional'}
+                    </div>
+                    <div class="stream-dropdown">
+                        <button class="stream-toggle" onclick="this.nextElementSibling.classList.toggle('open')">
+                            VER CANALES DISPONIBLES <span>▼</span>
+                        </button>
+                        <div class="stream-list">
+                            ${e.channels ? e.channels.map(ch => `
+                                <a href="${ch.url}" target="_blank" class="stream-btn">
+                                    ${FLAGS[ch.channel_code] || '🌐'} ${ch.channel_name}
+                                </a>`).join('') : '<p>Sin enlaces aún</p>'}
+                        </div>
                     </div>
                 </div>`;
             });
         });
-        document.getElementById('agenda-content').innerHTML = h || "<p style='text-align:center'>No hay eventos activos.</p>";
-    }
-
-    function renderTV() {
-        const grouped = db.channels.reduce((acc, ch) => {
-            const code = ch.code.toLowerCase();
-            if (!acc[code]) acc[code] = [];
-            acc[code].push(ch);
-            return acc;
-        }, {});
-
-        let h = "";
-        Object.keys(grouped).sort().forEach(code => {
-            const flag = FLAGS[code] || "🌐";
-            h += `
-            <div class="country-acc">
-                <div class="acc-header" onclick="this.nextElementSibling.classList.toggle('open')">
-                    <span>${flag} ${code.toUpperCase()}</span> <span>▼</span>
-                </div>
-                <div class="acc-content">
-                    ${grouped[code].map(c => `
-                        <div style="text-align:center; padding:10px; background:rgba(255,255,255,0.05); border-radius:8px;">
-                            <img src="${c.image}" style="width:100%; height:40px; object-fit:contain;">
-                            <a href="${c.url}" target="_blank" style="color:white; font-size:10px; text-decoration:none; display:block; margin-top:5px;">VER</a>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>`;
-        });
-        document.getElementById('tv-content').innerHTML = h;
+        document.getElementById('agenda-content').innerHTML = h || "<p style='text-align:center; padding:50px;'>No hay eventos disponibles aquí.</p>";
     }
 
     function switchTab(t) {
@@ -216,7 +180,7 @@
         document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', (t==='agenda' && i===0) || (t==='tv' && i===1)));
     }
 
-    fetchData();
+    init();
 </script>
 </body>
 </html>
