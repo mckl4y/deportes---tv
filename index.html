@@ -3,135 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amantes del Futbol | Pro</title>
+    <title>Amantes del Futbol | Pro Edition</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #2ecc71; --dark: #080808; --card: #151515; }
-        body { background: var(--dark); color: white; font-family: sans-serif; margin: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh; }
+        :root { --primary: #2ecc71; --bg: #050505; --card: #121212; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
-        /* Logo con la O de Balón */
-        .navbar { background: #000; padding: 10px 20px; border-bottom: 2px solid var(--primary); display: flex; align-items: center; justify-content: space-between; }
+        /* Header con Logo Solicitado */
+        .header { background: #000; padding: 10px 20px; border-bottom: 2px solid var(--primary); display: flex; align-items: center; justify-content: space-between; }
         .logo { font-size: 22px; font-weight: 900; display: flex; align-items: center; gap: 5px; }
-        .ball { width: 25px; height: 25px; background: url('https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg') no-repeat center; background-size: contain; display: inline-block; }
+        .ball-o { width: 24px; height: 24px; background: url('https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg') no-repeat center; background-size: contain; display: inline-block; }
         
-        .main { display: grid; grid-template-columns: 300px 1fr; flex: 1; overflow: hidden; }
+        .container { display: grid; grid-template-columns: 280px 1fr; flex: 1; overflow: hidden; }
+        
+        /* Sidebar */
         .sidebar { background: var(--card); border-right: 1px solid #222; overflow-y: auto; padding: 15px; }
-        .content { padding: 20px; overflow-y: auto; background: #0a0a0a; }
-        
-        .player { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 10px; margin-bottom: 20px; border: 1px solid #333; overflow: hidden; }
+        details { margin-bottom: 8px; background: #1a1a1a; border-radius: 6px; overflow: hidden; }
+        summary { padding: 10px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-weight: bold; list-style: none; }
+        .flag { width: 20px; }
+
+        /* Contenido */
+        .main { padding: 20px; overflow-y: auto; background: #080808; }
+        .player { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; margin-bottom: 25px; border: 1px solid #333; overflow: hidden; }
         iframe { width: 100%; height: 100%; border: none; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
-        .card { background: var(--card); border-radius: 10px; padding: 15px; border: 1px solid #222; }
+        /* Grid de Partidos */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: var(--card); border-radius: 10px; padding: 15px; border: 1px solid #222; position: relative; }
         
-        .match { display: flex; justify-content: space-around; align-items: center; margin: 10px 0; }
-        .team { flex: 1; text-align: center; font-size: 12px; }
-        .team img { width: 45px; height: 45px; object-fit: contain; display: block; margin: 0 auto 5px; background: #1a1a1a; border-radius: 50%; padding: 5px; }
+        .match { display: flex; justify-content: space-between; align-items: center; margin: 15px 0; }
+        .team { flex: 1; text-align: center; }
         
-        .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; border-top: 1px solid #222; padding-top: 10px; }
-        .btn { background: #222; color: #ccc; padding: 8px; font-size: 10px; text-align: center; border-radius: 4px; cursor: pointer; text-decoration: none; }
-        .btn:hover { background: var(--primary); color: #000; }
+        /* Buscador de logos automático */
+        .team img { 
+            width: 55px; height: 55px; object-fit: contain; margin-bottom: 8px; 
+            background: #ffffff10; border-radius: 50%; padding: 5px;
+        }
 
-        details { margin-bottom: 5px; }
-        summary { cursor: pointer; padding: 10px; background: #1a1a1a; border-radius: 5px; list-style: none; font-weight: bold; font-size: 14px; }
-        .ch { padding: 8px 20px; font-size: 13px; cursor: pointer; border-bottom: 1px solid #222; }
-        .ch:hover { color: var(--primary); }
+        .vs { color: var(--primary); font-weight: 900; font-size: 18px; }
+        .info { font-size: 11px; color: #888; margin-bottom: 10px; display: block; }
+
+        /* Canales debajo de cada evento */
+        .links { display: flex; flex-wrap: wrap; gap: 5px; border-top: 1px solid #222; padding-top: 10px; }
+        .link-btn { flex: 1; min-width: 100px; background: #222; color: #fff; padding: 8px; font-size: 11px; text-align: center; border-radius: 4px; cursor: pointer; text-decoration: none; border: 1px solid #333; }
+        .link-btn:hover { background: var(--primary); color: #000; border-color: var(--primary); }
+
+        @media (max-width: 800px) { .container { grid-template-columns: 1fr; } .sidebar { display: none; } }
     </style>
 </head>
 <body>
 
-<nav class="navbar">
-    <div class="logo">AMANTES DEL FUTB<span class="ball"></span>L</div>
-    <input type="text" id="search" placeholder="Buscar equipo..." style="padding:8px; border-radius:20px; border:none; width:30%;">
-</nav>
+<header class="header">
+    <div class="logo">AMANTES DEL FUTB<span class="ball-o"></span>L</div>
+    <div id="reloj" style="color: var(--primary); font-weight: bold; font-family: monospace;"></div>
+</header>
 
-<div class="main">
-    <div class="sidebar" id="sidebar">Cargando países...</div>
-    <div class="content">
-        <div class="player" id="player"><div style="display:flex;height:100%;align-items:center;justify-content:center;color:#444">Selecciona un canal</div></div>
-        <h3 id="reloj" style="color:var(--primary); font-size: 14px;">Cargando hora...</h3>
-        <div class="grid" id="events"></div>
-    </div>
+<div class="container">
+    <aside class="sidebar" id="sidebar">Cargando países...</aside>
+    <main class="main">
+        <div class="player" id="videoArea">
+            <div style="height:100%; display:flex; align-items:center; justify-content:center; color:#333;">
+                <p><i class="fa-solid fa-play fa-3x"></i></p>
+            </div>
+        </div>
+        <div class="grid" id="eventGrid"></div>
+    </main>
 </div>
 
 <script>
     const API = "https://api.cdn-live.tv/api/v1";
     const AUTH = "user=cdnlivetv&plan=free";
 
-    // Hora España corregida (UTC+1)
-    function updateClock() {
-        const ahora = new Date();
-        const opciones = { timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-        document.getElementById('reloj').innerHTML = "🕒 HORA ESPAÑA: " + ahora.toLocaleTimeString('es-ES', opciones);
-    }
-    setInterval(updateClock, 1000);
-
-    // Función de Logos Robusta (Si ESPN falla, se queda el balón)
-    function getLogo(name) {
-        if(!name) return "";
-        const slug = name.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-        return `https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/${slug}.png&w=80&h=80&transparent=true`;
+    // Función para obtener logo automático (Busca por nombre en repositorio de logos)
+    function autoLogo(name) {
+        const clean = name.toLowerCase().trim().replace(/\s+/g, '');
+        // Usamos un servicio de logos dinámico que no requiere API Key
+        return `https://logo.clearbit.com/${clean}.com?size=100`;
     }
 
-    async function load() {
+    // Si el logo automático falla, ponemos el balón
+    function fallback(img) {
+        img.onerror = null;
+        img.src = 'https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg';
+        img.style.opacity = "0.3";
+    }
+
+    // Reloj España corregido
+    function clock() {
+        const now = new Date();
+        document.getElementById('reloj').innerHTML = now.toLocaleTimeString('es-ES', {timeZone: 'Europe/Madrid'}) + " (ESP)";
+    }
+    setInterval(clock, 1000);
+
+    async function init() {
         try {
-            const [resCh, resEv] = await Promise.all([
+            const [rCh, rEv] = await Promise.all([
                 fetch(`${API}/channels/?${AUTH}`),
                 fetch(`${API}/events/sports/?${AUTH}`)
             ]);
-            
-            const dataCh = await resCh.json();
-            const dataEv = await resEv.json();
+            const dCh = await rCh.json();
+            const dEv = await rEv.json();
 
-            // Render Canales
-            const grouped = dataCh.channels.reduce((acc, c) => {
+            // Render Sidebar
+            const groups = dCh.channels.reduce((acc, c) => {
                 const code = (c.code || 'un').toLowerCase();
                 if(!acc[code]) acc[code] = [];
                 acc[code].push(c);
                 return acc;
             }, {});
 
-            document.getElementById('sidebar').innerHTML = Object.keys(grouped).sort().map(code => `
+            document.getElementById('sidebar').innerHTML = Object.keys(groups).sort().map(code => `
                 <details>
-                    <summary><img src="https://flagcdn.com/w20/${code}.png"> ${code.toUpperCase()}</summary>
-                    ${grouped[code].map(c => `<div class="ch" onclick="play('${c.url}')">${c.name}</div>`).join('')}
+                    <summary><img src="https://flagcdn.com/w20/${code}.png" class="flag"> ${code.toUpperCase()}</summary>
+                    ${groups[code].map(c => `<div style="padding:8px 15px; font-size:12px; cursor:pointer;" onclick="play('${c.url}')">${c.name}</div>`).join('')}
                 </details>
             `).join('');
 
             // Render Eventos
-            const all = [...(dataEv['cdn-live-tv'].Soccer || []), ...(dataEv['cdn-live-tv'].NBA || [])];
-            document.getElementById('events').innerHTML = all.map(ev => `
-                <div class="card" data-name="${ev.homeTeam} ${ev.awayTeam}">
-                    <div style="font-size:10px; opacity:0.5">${ev.tournament} | ${ev.time} (UTC)</div>
-                    <div class="match">
-                        <div class="team"><img src="${getLogo(ev.homeTeam)}" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg';this.style.opacity='0.2'">${ev.homeTeam}</div>
-                        <div style="font-weight:bold; color:var(--primary)">VS</div>
-                        <div class="team"><img src="${getLogo(ev.awayTeam)}" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg';this.style.opacity='0.2'">${ev.awayTeam}</div>
-                    </div>
-                    <div class="btns">
-                        ${ev.channels.map(c => `<div class="btn" onclick="play('${c.url}')">${c.channel_name}</div>`).join('')}
-                    </div>
-                </div>
-            `).join('');
+            const events = [...(dEv['cdn-live-tv'].Soccer || []), ...(dEv['cdn-live-tv'].NBA || [])];
+            document.getElementById('eventGrid').innerHTML = events.map(ev => {
+                // Ajuste hora España (+1 sobre UTC)
+                let [h, m] = ev.time.split(':').map(Number);
+                let hEsp = (h + 1) % 24;
+                let tEsp = `${hEsp.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
 
-        } catch (e) {
-            console.error(e);
-            document.getElementById('events').innerHTML = "<p style='color:red'>Error de conexión. Usa un servidor local (Live Server).</p>";
-        }
+                return `
+                <div class="card">
+                    <span class="info">${ev.tournament} | ${tEsp} H. ESPAÑA</span>
+                    <div class="match">
+                        <div class="team">
+                            <img src="${autoLogo(ev.homeTeam)}" onerror="fallback(this)">
+                            <div style="font-size:11px; font-weight:bold;">${ev.homeTeam}</div>
+                        </div>
+                        <div class="vs">VS</div>
+                        <div class="team">
+                            <img src="${autoLogo(ev.awayTeam)}" onerror="fallback(this)">
+                            <div style="font-size:11px; font-weight:bold;">${ev.awayTeam}</div>
+                        </div>
+                    </div>
+                    <div class="links">
+                        ${ev.channels.map(c => `<div class="link-btn" onclick="play('${c.url}')">${c.channel_name}</div>`).join('')}
+                    </div>
+                </div>`;
+            }).join('');
+
+        } catch (e) { console.error(e); }
     }
 
     function play(url) {
-        document.getElementById('player').innerHTML = `<iframe src="${url}" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms"></iframe>`;
+        document.getElementById('videoArea').innerHTML = `<iframe src="${url}" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms"></iframe>`;
+        window.scrollTo({top: 0, behavior: 'smooth'});
     }
 
-    document.getElementById('search').oninput = (e) => {
-        const val = e.target.value.toLowerCase();
-        document.querySelectorAll('.card').forEach(c => {
-            c.style.display = c.dataset.name.toLowerCase().includes(val) ? "block" : "none";
-        });
-    }
-
-    load();
+    init();
 </script>
 </body>
 </html>
