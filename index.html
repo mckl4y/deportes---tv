@@ -3,124 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amantes del Futbol | Seguro</title>
+    <title>Amantes del Futbol | Todo el Deporte</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #2ecc71;
-            --dark-bg: #080808;
-            --card-bg: #121212;
-            --text: #ffffff;
-        }
-
-        body {
-            background-color: var(--dark-bg);
-            color: var(--text);
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+        :root { --primary: #2ecc71; --dark-bg: #080808; --card-bg: #121212; --text: #ffffff; }
+        body { background-color: var(--dark-bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
 
         /* NAVBAR */
-        .navbar {
-            background: #000;
-            padding: 10px 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            border-bottom: 2px solid var(--primary);
-            position: sticky;
-            top: 0;
-            z-index: 2000;
-            gap: 10px;
-        }
-
-        .nav-top {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
-
-        .logo {
-            font-size: 20px;
-            font-weight: 900;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            text-transform: uppercase;
-        }
-
-        .ball-icon {
-            width: 22px;
-            height: 22px;
-            background: url('https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg') no-repeat center;
-            background-size: contain;
-        }
-
-        .menu-toggle {
-            display: none; 
-            font-size: 20px;
-            color: var(--primary);
-            cursor: pointer;
-            position: absolute;
-            left: 0;
-        }
-
+        .navbar { background: #000; padding: 10px 15px; display: flex; flex-direction: column; align-items: center; border-bottom: 2px solid var(--primary); position: sticky; top: 0; z-index: 2000; gap: 10px; }
+        .nav-top { width: 100%; display: flex; justify-content: center; align-items: center; position: relative; }
+        .logo { font-size: 20px; font-weight: 900; display: flex; align-items: center; gap: 6px; text-transform: uppercase; }
+        .ball-icon { width: 22px; height: 22px; background: url('https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg') no-repeat center; background-size: contain; }
+        .menu-toggle { display: none; font-size: 20px; color: var(--primary); cursor: pointer; position: absolute; left: 0; }
         .search-container { width: 100%; display: flex; justify-content: center; }
         .search-box { position: relative; width: 100%; max-width: 280px; }
-        .search-box input {
-            width: 100%; padding: 7px 10px 7px 35px; background: #1a1a1a;
-            border: 1px solid #333; border-radius: 20px; color: white;
-            outline: none; font-size: 13px; text-align: center;
-        }
+        .search-box input { width: 100%; padding: 7px 10px 7px 35px; background: #1a1a1a; border: 1px solid #333; border-radius: 20px; color: white; outline: none; font-size: 13px; text-align: center; }
         .search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--primary); font-size: 12px; }
 
-        /* LAYOUT MODO CINE */
+        /* LAYOUT */
         .main-wrapper { display: grid; grid-template-columns: 280px 1fr; flex: 1; width: 100%; }
-
-        .sidebar {
-            background: var(--card-bg);
-            border-right: 1px solid #222;
-            padding: 15px;
-            height: calc(100vh - 105px);
-            overflow-y: auto;
-            position: sticky;
-            top: 105px;
-        }
-
+        .sidebar { background: var(--card-bg); border-right: 1px solid #222; padding: 15px; height: calc(100vh - 105px); overflow-y: auto; position: sticky; top: 105px; }
         .content { padding: 0; background: #0a0a0a; width: 100%; box-sizing: border-box; }
 
-        .player-container { 
-            width: 100%; 
-            background: #000;
-            margin-bottom: 30px;
-            border-bottom: 1px solid #222;
-        }
+        /* REPRODUCTOR MODO CINE */
+        .player-container { width: 100%; background: #000; margin-bottom: 30px; border-bottom: 1px solid #222; }
+        .player-area { width: 100%; max-width: 1200px; margin: 0 auto; aspect-ratio: 16/9; background: #000; }
+        iframe { width: 100%; height: 100%; border: none; }
 
-        .player-area { 
-            width: 100%; 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            aspect-ratio: 16/9; 
-            background: #000; 
-        }
-
-        /* SEGURIDAD ANTIPOPUP */
-        iframe { 
-            width: 100%; 
-            height: 100%; 
-            border: none; 
-            background: #000;
-        }
-
+        /* SECCIÓN EVENTOS */
         .events-section { padding: 0 20px 40px 20px; }
         .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .card { background: var(--card-bg); border-radius: 12px; padding: 18px; border: 1px solid #222; }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 18px; border: 1px solid #222; transition: 0.2s; }
+        .card:hover { border-color: var(--primary); }
 
         @media (max-width: 768px) {
             .menu-toggle { display: block; }
@@ -149,24 +63,24 @@
     <div class="search-container">
         <div class="search-box">
             <i class="fa-solid fa-search"></i>
-            <input type="text" id="searchInput" placeholder="Buscar equipo o canal...">
+            <input type="text" id="searchInput" placeholder="Buscar equipo, liga o canal...">
         </div>
     </div>
 </nav>
 
 <div class="main-wrapper">
-    <aside class="sidebar" id="sideMenu">Cargando...</aside>
+    <aside class="sidebar" id="sideMenu">Cargando canales...</aside>
     <main class="content">
         <div class="player-container">
             <div class="player-area" id="player">
-                <div style="height:100%; display:flex; justify-content:center; align-items:center; opacity:0.1;">
+                <div style="height:100%; display:flex; justify-content:center; align-items:center; opacity:0.15;">
                     <i class="fa-solid fa-play-circle fa-5x"></i>
                 </div>
             </div>
         </div>
 
         <div class="events-section">
-            <h3 style="border-left: 4px solid var(--primary); padding-left: 10px; font-size: 16px; margin-bottom:20px;">PARTIDOS (UTC+1)</h3>
+            <h3 id="eventTitle" style="border-left: 4px solid var(--primary); padding-left: 10px; font-size: 16px; margin-bottom:20px;">TODOS LOS EVENTOS DEL DÍA</h3>
             <div class="events-grid" id="eventsGrid"></div>
         </div>
     </main>
@@ -187,20 +101,13 @@
         return new Date(utc + (3600000 * 1)); 
     }
 
-    // CARGA CON FILTRO ANTIPOPUP
+    // CARGA SEGURA SIN REDIRECCIONES
     function load(url) {
-        const playerDiv = document.getElementById('player');
-        // El atributo 'sandbox' es la clave para bloquear anuncios y redirecciones
-        playerDiv.innerHTML = `
-            <iframe 
-                src="${url}" 
-                allowfullscreen 
-                allow="encrypted-media" 
-                sandbox="allow-scripts allow-same-origin allow-forms"
-            ></iframe>`;
-        
+        document.getElementById('player').innerHTML = `
+            <iframe src="${url}" allowfullscreen allow="encrypted-media" 
+            sandbox="allow-scripts allow-same-origin allow-forms"></iframe>`;
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        if(window.innerWidth < 768 && document.getElementById('sideMenu').classList.contains('active')) toggleMenu();
+        if(window.innerWidth < 768) toggleMenu();
     }
 
     async function fetchData() {
@@ -213,8 +120,60 @@
             const dEv = await rEv.json();
             allChannels = dCh.channels;
             renderSidebar(allChannels);
-            renderEvents(dEv['cdn-live-tv']);
-        } catch (e) { console.error(e); }
+            processAllEvents(dEv);
+        } catch (e) { console.error("Error cargando datos:", e); }
+    }
+
+    function processAllEvents(data) {
+        const grid = document.getElementById('eventsGrid');
+        grid.innerHTML = "";
+        const unifiedEvents = [];
+        
+        // RECORRER TODOS LOS PROVEEDORES (cdn-live-tv, espn, etc)
+        Object.keys(data).forEach(provider => {
+            const categories = data[provider];
+            Object.keys(categories).forEach(cat => {
+                categories[cat].forEach(event => {
+                    // Evitar duplicados exactos por nombre de equipo y hora
+                    const id = `${event.homeTeam}-${event.awayTeam}-${event.time}`;
+                    if (!unifiedEvents.find(e => e.id === id)) {
+                        event.id = id;
+                        unifiedEvents.push(event);
+                    }
+                });
+            });
+        });
+
+        const nowUTC1 = getUTC1Time();
+        const nowMinutes = (nowUTC1.getHours() * 60) + nowUTC1.getMinutes();
+
+        unifiedEvents.sort((a,b) => a.time.localeCompare(b.time)).forEach(ev => {
+            let [h, m] = ev.time.split(':').map(Number);
+            h = (h + 1) % 24; // Ajuste manual UTC+1 si la API viene en UTC
+            const evMinutes = (h * 60) + m;
+            const isLive = nowMinutes >= evMinutes && nowMinutes < (evMinutes + 135);
+
+            const card = document.createElement('div');
+            card.className = "card";
+            card.setAttribute('data-search', `${ev.homeTeam} ${ev.awayTeam} ${ev.tournament}`.toLowerCase());
+            card.innerHTML = `
+                <div style="font-size:10px; display:flex; justify-content:space-between; opacity:0.6; margin-bottom:12px;">
+                    <span style="text-transform:uppercase;">${ev.tournament}</span>
+                    <span style="color:${isLive ? '#ff4757' : 'var(--primary)'}; font-weight:bold;">
+                        ${isLive ? '<i class="fa-solid fa-circle live-dot"></i> EN VIVO' : `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`}
+                    </span>
+                </div>
+                <div style="display:flex; justify-content:space-around; align-items:center; margin-bottom:15px; text-align:center;">
+                    <div style="flex:1; font-size:12px; font-weight:bold;">${ev.homeTeam}</div>
+                    <div style="color:var(--primary); font-weight:900; padding:0 5px;">VS</div>
+                    <div style="flex:1; font-size:12px; font-weight:bold;">${ev.awayTeam}</div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
+                    ${ev.channels.map(ch => `<div onclick="load('${ch.url}')" style="background:#222; padding:8px; border-radius:5px; font-size:9px; text-align:center; cursor:pointer; border:1px solid #333;">${ch.channel_name}</div>`).join('')}
+                </div>`;
+            grid.appendChild(card);
+        });
+        document.getElementById('eventTitle').innerText = `EVENTOS ENCONTRADOS: ${unifiedEvents.length}`;
     }
 
     function renderSidebar(channels) {
@@ -236,45 +195,6 @@
         `).join('');
     }
 
-    function renderEvents(data) {
-        const grid = document.getElementById('eventsGrid');
-        grid.innerHTML = "";
-        const all = [];
-        ["Soccer", "NBA", "NFL", "NHL"].forEach(cat => {
-            if(data[cat]) data[cat].forEach(e => { e.cat = cat; all.push(e); });
-        });
-
-        const nowUTC1 = getUTC1Time();
-        const nowMinutes = (nowUTC1.getHours() * 60) + nowUTC1.getMinutes();
-
-        all.forEach(ev => {
-            let [h, m] = ev.time.split(':').map(Number);
-            h = (h + 1) % 24;
-            const evMinutes = (h * 60) + m;
-            const isLive = nowMinutes >= evMinutes && nowMinutes < (evMinutes + 130);
-
-            const card = document.createElement('div');
-            card.className = "card";
-            card.setAttribute('data-search', `${ev.homeTeam} ${ev.awayTeam}`.toLowerCase());
-            card.innerHTML = `
-                <div style="font-size:10px; display:flex; justify-content:space-between; opacity:0.6; margin-bottom:10px;">
-                    <span>${ev.tournament}</span>
-                    <span style="color:${isLive ? '#ff4757' : 'var(--primary)'}; font-weight:bold;">
-                        ${isLive ? '<i class="fa-solid fa-circle live-dot"></i> EN VIVO' : `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`}
-                    </span>
-                </div>
-                <div style="display:flex; justify-content:space-around; align-items:center; margin-bottom:15px; text-align:center;">
-                    <div style="flex:1; font-size:12px; font-weight:bold;">${ev.homeTeam}</div>
-                    <div style="color:var(--primary); font-weight:900;">VS</div>
-                    <div style="flex:1; font-size:12px; font-weight:bold;">${ev.awayTeam}</div>
-                </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
-                    ${ev.channels.map(ch => `<div onclick="load('${ch.url}')" style="background:#222; padding:8px; border-radius:5px; font-size:9px; text-align:center; cursor:pointer; border:1px solid #333;">${ch.channel_name}</div>`).join('')}
-                </div>`;
-            grid.appendChild(card);
-        });
-    }
-
     function triggerSearch(val) {
         document.querySelectorAll('.card').forEach(c => {
             c.style.display = c.getAttribute('data-search').includes(val) ? "block" : "none";
@@ -283,7 +203,7 @@
 
     document.getElementById('searchInput').addEventListener('input', (e) => triggerSearch(e.target.value.toLowerCase()));
     fetchData();
-    setInterval(fetchData, 60000);
+    setInterval(fetchData, 120000); // Actualización cada 2 minutos
 </script>
 </body>
 </html>
