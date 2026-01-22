@@ -3,85 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sports Live Tracker</title>
+    <title>Elite Sports & Global TV</title>
     <style>
         :root { 
-            --primary: #ffffff; 
-            --bg: #0f0f0f; 
-            --card: #1a1a1a; 
-            /* Colores solicitados */
-            --live: #28a745;    /* Verde */
-            --finished: #dc3545; /* Rojo */
-            --upcoming: #ffc107; /* Amarillo */
+            --bg: #080808; --card: #121212; --primary: #ffffff;
+            --live: #28a745; --finished: #dc3545; --upcoming: #ffc107;
         }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: white; margin: 0; padding-bottom: 90px; }
         
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: white; margin: 0; padding-bottom: 90px; }
-        header { background: #000; padding: 15px; text-align: center; border-bottom: 2px solid #333; position: sticky; top: 0; z-index: 100; }
-        
-        /* Buscador */
-        .search-box { padding: 12px; background: #111; position: sticky; top: 58px; z-index: 99; }
-        #search { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #333; background: #000; color: white; font-size: 16px; box-sizing: border-box; outline: none; }
-        #search:focus { border-color: var(--live); }
+        /* Cabecera y buscador */
+        header { background: #000; padding: 15px; text-align: center; border-bottom: 1px solid #222; position: sticky; top: 0; z-index: 100; }
+        .search-box { padding: 10px; background: #000; border-bottom: 1px solid #222; position: sticky; top: 55px; z-index: 99; }
+        #search { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #333; background: #111; color: white; font-size: 15px; box-sizing: border-box; outline: none; }
 
-        .container { padding: 15px; max-width: 700px; margin: auto; }
-        .group-title { color: #aaa; font-size: 13px; font-weight: bold; letter-spacing: 1.5px; margin: 25px 0 10px 5px; text-transform: uppercase; }
+        .container { padding: 15px; max-width: 800px; margin: auto; }
+        
+        /* Secciones y Títulos */
+        .section-header { display: flex; align-items: center; gap: 10px; margin: 25px 0 15px; padding-bottom: 8px; border-bottom: 1px solid #222; }
+        .section-header span { font-size: 18px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Tarjeta de Evento */
-        .event-card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 12px; border: 1px solid #222; }
-        .event-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        /* Agenda */
+        .match-card { background: var(--card); border-radius: 15px; padding: 18px; margin-bottom: 15px; border: 1px solid #1a1a1a; }
+        .match-top { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 12px; }
+        .badge { padding: 3px 8px; border-radius: 4px; font-weight: bold; color: #000; }
+        .badge-live { background: var(--live); color: white; animation: pulse 2s infinite; }
+        .badge-upcoming { background: var(--upcoming); }
         
-        /* Badges de Colores */
-        .badge { font-size: 10px; padding: 4px 8px; border-radius: 5px; font-weight: 800; text-transform: uppercase; color: #000; }
-        .badge-live { background: var(--live); color: white; animation: blink 2s infinite; }
-        .badge-finished { background: var(--finished); color: white; }
-        .badge-upcoming { background: var(--upcoming); color: black; }
-        
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
-        .match-box { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 10px 0; }
-        .team { flex: 1; text-align: center; }
-        .team img { width: 45px; height: 45px; object-fit: contain; display: block; margin: 0 auto 8px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
-        .team span { font-size: 14px; font-weight: 600; display: block; line-height: 1.2; }
-        
-        .score-box { background: #000; padding: 8px 15px; border-radius: 8px; font-size: 22px; font-weight: 900; min-width: 60px; text-align: center; border: 1px solid #333; }
-        .tournament { font-size: 11px; color: #888; }
+        .teams-area { display: flex; align-items: center; justify-content: space-between; margin: 10px 0; }
+        .team { flex: 1; text-align: center; font-size: 14px; font-weight: 500; }
+        .team img { width: 40px; height: 40px; object-fit: contain; display: block; margin: 0 auto 8px; }
+        .score-box { background: #000; padding: 8px 15px; border-radius: 8px; font-size: 20px; font-weight: 900; min-width: 50px; text-align: center; border: 1px solid #333; }
 
         /* Canales */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
-        .channel-card { background: var(--card); border-radius: 10px; padding: 15px; text-align: center; border: 1px solid #222; }
-        .channel-card img { width: 100%; height: 60px; object-fit: contain; margin-bottom: 10px; }
+        .country-group { margin-bottom: 30px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
+        .channel-card { background: var(--card); border-radius: 10px; padding: 12px; text-align: center; border: 1px solid #1a1a1a; }
+        .channel-card img { width: 100%; height: 50px; object-fit: contain; margin-bottom: 8px; }
+        .channel-name { font-size: 11px; font-weight: bold; height: 30px; overflow: hidden; }
 
-        /* Botón */
-        .btn { background: #fff; color: #000; text-decoration: none; padding: 10px; border-radius: 6px; font-size: 12px; font-weight: bold; display: block; text-align: center; margin-top: 15px; transition: 0.2s; }
-        .btn:hover { background: #eee; }
-        .btn-live { background: var(--live); color: white; }
-
-        /* Tab Bar */
+        /* Botones y Nav */
+        .btn { background: #fff; color: #000; text-decoration: none; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: bold; display: block; text-align: center; margin-top: 15px; }
         .nav { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; }
-        .tab { color: #555; background: none; border: none; font-weight: bold; cursor: pointer; font-size: 13px; transition: 0.3s; }
-        .tab.active { color: white; border-bottom: 2px solid white; padding-bottom: 5px; }
+        .tab { color: #555; background: none; border: none; font-weight: bold; cursor: pointer; }
+        .tab.active { color: white; border-bottom: 2px solid white; }
+        
         .hidden { display: none; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
 
-<header><h2 id="view-title">📅 AGENDA DEPORTIVA</h2></header>
+<header><h2 id="view-title">📅 TOP DESTACADOS</h2></header>
 
 <div class="search-box">
-    <input type="text" id="search" placeholder="Buscar por equipo o liga..." onkeyup="render()">
+    <input type="text" id="search" placeholder="Buscar equipo, liga o país..." onkeyup="render()">
 </div>
 
 <div class="container">
     <div id="tab-agenda">
-        <div id="agenda-list">Obteniendo partidos...</div>
+        <div id="agenda-list">Cargando eventos destacados...</div>
     </div>
     <div id="tab-tv" class="hidden">
-        <div id="channels-list" class="grid">Cargando canales...</div>
+        <div id="channels-list">Cargando canales por países...</div>
     </div>
 </div>
 
 <nav class="nav">
-    <button class="tab active" onclick="switchTab('agenda')">RESULTADOS</button>
+    <button class="tab active" onclick="switchTab('agenda')">DESTACADOS</button>
     <button class="tab" onclick="switchTab('tv')">CANALES TV</button>
 </nav>
 
@@ -90,98 +78,103 @@
     const API_SPORTS = "https://api.cdn-live.tv/api/v1/events/sports/?user=cdnlivetv&plan=free";
     const API_CHANNELS = "https://api.cdn-live.tv/api/v1/channels/?user=cdnlivetv&plan=free";
 
-    let dataStore = { sports: {}, channels: [] };
-    let activeView = 'agenda';
+    // Filtro de ligas importantes
+    const TOP_LEAGUES = ["LaLiga", "Premier League", "Champions League", "NBA", "NFL", "NHL", "Bundesliga", "Serie A", "Ligue 1", "Libertadores"];
+    
+    // Mapa de banderas
+    const FLAGS = { "us": "🇺🇸", "es": "🇪🇸", "mx": "🇲🇽", "ar": "🇦🇷", "gb": "🇬🇧", "it": "🇮🇹", "fr": "🇫🇷", "de": "🇩🇪", "br": "🇧🇷", "co": "🇨🇴", "ca": "🇨🇦", "pt": "🇵🇹" };
 
-    async function loadData() {
+    let db = { sports: {}, channels: [] };
+    let view = 'agenda';
+
+    async function load() {
         try {
-            const [sRes, cRes] = await Promise.all([
+            const [s, c] = await Promise.all([
                 fetch(PROXY + encodeURIComponent(API_SPORTS)).then(r => r.json()),
                 fetch(PROXY + encodeURIComponent(API_CHANNELS)).then(r => r.json())
             ]);
-            
-            const sJson = JSON.parse(sRes.contents);
-            dataStore.sports = sJson['cdn-live-tv'] || sJson;
-            dataStore.channels = JSON.parse(cRes.contents).channels || [];
-            
+            db.sports = JSON.parse(s.contents)['cdn-live-tv'] || {};
+            db.channels = JSON.parse(c.contents).channels || [];
             render();
-        } catch (e) {
-            document.getElementById('agenda-list').innerHTML = "Error de conexión. Reintenta.";
-        }
+        } catch (e) { document.getElementById('agenda-list').innerText = "Error al cargar datos."; }
     }
 
-    function switchTab(view) {
-        activeView = view;
-        document.getElementById('tab-agenda').classList.toggle('hidden', view !== 'agenda');
-        document.getElementById('tab-tv').classList.toggle('hidden', view !== 'tv');
-        document.getElementById('view-title').innerText = view === 'agenda' ? "📅 AGENDA DEPORTIVA" : "📺 CANALES TV";
-        document.querySelectorAll('.tab').forEach((b, i) => b.classList.toggle('active', (view==='agenda' && i===0) || (view==='tv' && i===1)));
+    function switchTab(t) {
+        view = t;
+        document.getElementById('tab-agenda').classList.toggle('hidden', t !== 'agenda');
+        document.getElementById('tab-tv').classList.toggle('hidden', t !== 'tv');
+        document.getElementById('view-title').innerText = t === 'agenda' ? "📅 TOP DESTACADOS" : "📺 CANALES POR PAÍS";
+        document.querySelectorAll('.tab').forEach((b, i) => b.classList.toggle('active', (t==='agenda' && i===0) || (t==='tv' && i===1)));
         render();
     }
 
     function render() {
         const q = document.getElementById('search').value.toLowerCase();
-        if (activeView === 'agenda') renderAgenda(q); else renderChannels(q);
+        if (view === 'agenda') renderAgenda(q); else renderChannels(q);
     }
 
     function renderAgenda(q) {
-        let html = "";
-        const sports = ["Soccer", "NBA", "NFL", "NHL"];
-        
-        sports.forEach(sport => {
-            const events = (dataStore.sports[sport] || []).filter(e => 
-                e.homeTeam.toLowerCase().includes(q) || e.awayTeam.toLowerCase().includes(q) || e.tournament.toLowerCase().includes(q)
-            );
+        let h = "";
+        ["Soccer", "NBA", "NFL", "NHL"].forEach(cat => {
+            const filtered = (db.sports[cat] || []).filter(e => {
+                const isTop = TOP_LEAGUES.some(l => e.tournament.includes(l)) || e.status === 'live';
+                const matchesSearch = e.homeTeam.toLowerCase().includes(q) || e.awayTeam.toLowerCase().includes(q);
+                return isTop && matchesSearch && e.status !== 'finished'; // Solo directo y próximos
+            });
 
-            if (events.length > 0) {
-                html += `<div class="group-title">${sport}</div>`;
-                events.forEach(e => {
-                    const status = e.status.toLowerCase();
-                    let badgeLabel = e.status;
-                    let badgeClass = 'badge-upcoming';
-                    
-                    if (status === 'live') { badgeClass = 'badge-live'; }
-                    else if (status === 'finished') { badgeClass = 'badge-finished'; }
-                    
-                    const score = (status === 'upcoming') ? e.time : (e.score || 'VS');
-                    
-                    html += `
-                    <div class="event-card">
-                        <div class="event-header">
-                            <span class="badge ${badgeClass}">${badgeLabel}</span>
-                            <span class="tournament">${e.tournament}</span>
+            if (filtered.length > 0) {
+                h += `<div class="section-header"><span>${cat}</span></div>`;
+                filtered.forEach(e => {
+                    const isLive = e.status.toLowerCase() === 'live';
+                    h += `
+                    <div class="match-card">
+                        <div class="match-top">
+                            <span class="badge ${isLive ? 'badge-live' : 'badge-upcoming'}">${e.status}</span>
+                            <span>${e.tournament}</span>
                         </div>
-                        <div class="match-box">
-                            <div class="team">
-                                <img src="${e.homeTeamIMG}" onerror="this.src='https://via.placeholder.com/50?text=? '">
-                                <span>${e.homeTeam}</span>
-                            </div>
-                            <div class="score-box">${score}</div>
-                            <div class="team">
-                                <img src="${e.awayTeamIMG}" onerror="this.src='https://via.placeholder.com/50?text=? '">
-                                <span>${e.awayTeam}</span>
-                            </div>
+                        <div class="teams-area">
+                            <div class="team"><img src="${e.homeTeamIMG}">${e.homeTeam}</div>
+                            <div class="score-box">${isLive ? (e.score || 'vs') : e.time}</div>
+                            <div class="team"><img src="${e.awayTeamIMG}">${e.awayTeam}</div>
                         </div>
-                        ${e.channels && e.channels[0] ? `<a href="${e.channels[0].url}" target="_blank" class="btn ${status === 'live' ? 'btn-live' : ''}">VER TRANSMISIÓN</a>` : ''}
+                        ${e.channels && e.channels[0] ? `<a href="${e.channels[0].url}" target="_blank" class="btn">VER AHORA</a>` : ''}
                     </div>`;
                 });
             }
         });
-        document.getElementById('agenda-list').innerHTML = html || "<p style='text-align:center; color:#555;'>No hay eventos disponibles</p>";
+        document.getElementById('agenda-list').innerHTML = h || "<p style='text-align:center'>No hay eventos destacados en directo.</p>";
     }
 
     function renderChannels(q) {
-        const filtered = dataStore.channels.filter(c => c.name.toLowerCase().includes(q));
-        document.getElementById('channels-list').innerHTML = filtered.map(c => `
-            <div class="channel-card">
-                <img src="${c.image}" onerror="this.src='https://via.placeholder.com/80?text=TV'">
-                <div style="font-size:12px; font-weight:bold; margin-bottom:10px; height:32px; overflow:hidden;">${c.name}</div>
-                <a href="${c.url}" target="_blank" class="btn" style="margin-top:0">VER CANAL</a>
-            </div>
-        `).join('');
+        const grouped = db.channels.reduce((acc, ch) => {
+            const country = ch.code.toLowerCase();
+            if (!acc[country]) acc[country] = [];
+            if (ch.name.toLowerCase().includes(q)) acc[country].push(ch);
+            return acc;
+        }, {});
+
+        let h = "";
+        Object.keys(grouped).sort().forEach(country => {
+            if (grouped[country].length > 0) {
+                const flag = FLAGS[country] || "🌐";
+                h += `<div class="country-group">
+                        <div class="section-header"><span>${flag} ${country.toUpperCase()}</span></div>
+                        <div class="grid">
+                            ${grouped[country].map(c => `
+                                <div class="channel-card">
+                                    <img src="${c.image}">
+                                    <div class="channel-name">${c.name}</div>
+                                    <a href="${c.url}" target="_blank" class="btn" style="margin-top:8px; padding:5px;">VER</a>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>`;
+            }
+        });
+        document.getElementById('channels-list').innerHTML = h || "No se encontraron canales.";
     }
 
-    loadData();
+    load();
 </script>
 </body>
 </html>
