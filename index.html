@@ -3,84 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deportes App</title>
+    <title>Sports App PRO</title>
     <style>
-        body { background: #000; color: #fff; font-family: sans-serif; margin: 0; padding: 10px; padding-bottom: 80px; }
-        .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #111; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #333; }
-        .btn { background: #e50914; color: white; padding: 8px; border-radius: 4px; text-decoration: none; font-size: 12px; font-weight: bold; }
-        .event { background: #1a1a1a; margin: 10px 0; padding: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; border-left: 4px solid #e50914; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .card { background: #1a1a1a; padding: 10px; border-radius: 8px; text-align: center; }
-        .card img { width: 50px; height: 50px; object-fit: contain; }
+        :root { --red: #e50914; --dark: #0a0a0a; --card: #161616; }
+        body { background: var(--dark); color: white; font-family: sans-serif; margin: 0; padding-bottom: 80px; }
+        header { background: #000; padding: 20px; text-align: center; border-bottom: 2px solid var(--red); }
+        .container { padding: 15px; max-width: 600px; margin: auto; }
+        .section-title { color: var(--red); font-size: 14px; letter-spacing: 2px; margin-top: 20px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .card { background: var(--card); padding: 15px; border-radius: 10px; text-align: center; border: 1px solid #222; }
+        .card img { width: 40px; margin-bottom: 10px; }
+        .btn { background: var(--red); color: white; text-decoration: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; font-size: 12px; display: inline-block; }
+        .nav { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; }
+        .nav-item { color: #666; cursor: pointer; font-weight: bold; }
+        .nav-item.active { color: var(--red); }
         .hidden { display: none; }
-        h2 { color: #e50914; border-bottom: 1px solid #333; }
     </style>
 </head>
 <body>
 
-    <div id="view-agenda">
-        <h2>📅 AGENDA</h2>
-        <div id="list-agenda">Cargando...</div>
+<header><h2>SPORTS TV LIVE</h2></header>
+
+<div class="container">
+    <div id="tab-tv">
+        <div class="section-title">CANALES PREMIUM</div>
+        <div class="grid" id="lista-canales">
+            </div>
     </div>
 
-    <div id="view-tv" class="hidden">
-        <h2>📺 CANALES</h2>
-        <div id="list-tv" class="grid">Cargando...</div>
+    <div id="tab-agenda" class="hidden">
+        <div class="section-title">AGENDA DE HOY</div>
+        <div id="lista-agenda">
+            <p style="text-align:center; color:#666;">Cargando eventos locales...</p>
+        </div>
     </div>
+</div>
 
-    <div class="tab-bar">
-        <div onclick="show('agenda')" style="cursor:pointer">📅 Agenda</div>
-        <div onclick="show('tv')" style="cursor:pointer">📺 Canales</div>
-    </div>
+<div class="nav">
+    <div class="nav-item active" id="btn-tv" onclick="switchTab('tv')">📺 CANALES</div>
+    <div class="nav-item" id="btn-agenda" onclick="switchTab('agenda')">📅 AGENDA</div>
+</div>
 
 <script>
-    // NUEVO PROXY MÁS ESTABLE
-    const proxy = "https://corsproxy.io/?";
-    const apiTV = "https://cdn-live.tv/api/v1/channels";
-    const apiEvents = "https://cdn-live.tv/api/events";
+    // --- DATOS MANUALES (SIN BLOQUEOS) ---
+    const canales = [
+        { name: "ABC Live", url: "https://cdn-live.tv/api/v1/channels/player/?name=abc&code=us&user=cdnlivetv&plan=free", img: "https://api.cdn-live.tv/api/v1/channels/images6318/united-states/abc.png" },
+        { name: "ACC Network", url: "https://cdn-live.tv/api/v1/channels/player/?name=acc+network&code=us&user=cdnlivetv&plan=free", img: "https://api.cdn-live.tv/api/v1/channels/images6318/united-states/acc-network.png" },
+        { name: "ESPN 1", url: "https://cdn-live.tv/api/v1/channels/player/?name=espn&code=us&user=cdnlivetv&plan=free", img: "https://api.cdn-live.tv/api/v1/channels/images6318/united-states/espn.png" },
+        { name: "FOX Sports", url: "https://cdn-live.tv/api/v1/channels/player/?name=fox+sports+1&code=us&user=cdnlivetv&plan=free", img: "https://api.cdn-live.tv/api/v1/channels/images6318/united-states/fox-sports-1.png" }
+    ];
 
-    function show(view) {
-        document.getElementById('view-agenda').className = view === 'agenda' ? '' : 'hidden';
-        document.getElementById('view-tv').className = view === 'tv' ? '' : 'hidden';
-    }
+    const eventos = [
+        { home: "Real Madrid", away: "Barcelona", time: "21:00", league: "La Liga" },
+        { home: "Lakers", away: "Warriors", time: "02:00", league: "NBA" }
+    ];
 
-    async function getData() {
-        // Cargar Canales
-        try {
-            const res = await fetch(proxy + encodeURIComponent(apiTV));
-            const data = await res.json();
-            document.getElementById('list-tv').innerHTML = data.channels.map(ch => `
-                <div class="card">
-                    <img src="${ch.image}"><br>
-                    <small>${ch.name}</small><br><br>
-                    <a href="vlc://${ch.url}" class="btn">VLC</a>
+    function render() {
+        // Render Canales
+        document.getElementById('lista-canales').innerHTML = canales.map(c => `
+            <div class="card">
+                <img src="${c.img}"><br>
+                <div style="margin-bottom:10px; font-size:12px;">${c.name}</div>
+                <a href="vlc://${c.url}" class="btn">VLC</a>
+            </div>
+        `).join('');
+
+        // Render Agenda
+        document.getElementById('lista-agenda').innerHTML = eventos.map(e => `
+            <div class="card" style="margin-bottom:10px; text-align:left; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <strong>${e.home} vs ${e.away}</strong><br>
+                    <small style="color:#666">${e.league} - ${e.time}</small>
                 </div>
-            `).join('');
-        } catch (e) { document.getElementById('list-tv').innerHTML = "Error TV. Reintenta."; }
-
-        // Cargar Agenda
-        try {
-            const res = await fetch(proxy + encodeURIComponent(apiEvents));
-            const data = await res.json();
-            const sports = data["cdn-live-tv"];
-            let html = "";
-            ["Soccer", "NBA", "NFL", "NHL"].forEach(s => {
-                if (sports[s]) {
-                    html += `<h3>${s}</h3>`;
-                    sports[s].forEach(ev => {
-                        html += `
-                        <div class="event">
-                            <div><strong>${ev.homeTeam} vs ${ev.awayTeam}</strong><br><small>${ev.time}</small></div>
-                            <a href="${ev.channels[0].url}" target="_blank" class="btn">VER</a>
-                        </div>`;
-                    });
-                }
-            });
-            document.getElementById('list-agenda').innerHTML = html || "No hay eventos.";
-        } catch (e) { document.getElementById('list-agenda').innerHTML = "Error Agenda. Reintenta."; }
+                <a href="#" class="btn">VER</a>
+            </div>
+        `).join('');
     }
 
-    getData();
+    function switchTab(t) {
+        document.getElementById('tab-tv').classList.toggle('hidden', t !== 'tv');
+        document.getElementById('tab-agenda').classList.toggle('hidden', t !== 'agenda');
+        document.getElementById('btn-tv').classList.toggle('active', t === 'tv');
+        document.getElementById('btn-agenda').classList.toggle('active', t === 'agenda');
+    }
+
+    render();
 </script>
 </body>
 </html>
