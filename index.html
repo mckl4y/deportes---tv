@@ -54,7 +54,7 @@
         }
         .event-time { text-align: center; font-weight: 900; color: var(--accent); font-size: 14px; border-right: 1px solid #333; }
         .event-teams { font-size: 15px; font-weight: 900; }
-        .multi-link { margin-top: 10px; background: #000; color: #22c55e; border: 1px solid #22c55e; padding: 8px; width: 100%; font-size: 11px; font-weight: bold; cursor: pointer; border-radius: 3px; }
+        .btn-watch { margin-top: 10px; background: #000; color: #22c55e; border: 1px solid #22c55e; padding: 8px; width: 100%; font-size: 11px; font-weight: bold; cursor: pointer; border-radius: 3px; text-align: center; display: block; text-decoration: none; }
 
         /* CANALES */
         .country-section { margin-bottom: 30px; }
@@ -81,21 +81,21 @@
     <nav>
         <div class="logo-container"><span>amantes del futb</span><div class="ball-o"></div></div>
         <div class="nav-links">
-            <button id="btn-events" class="nav-btn" onclick="switchTab('events')">Eventos</button>
+            <button id="btn-events" class="nav-btn" onclick="switchTab('events')">Eventos Hoy</button>
             <button id="btn-channels" class="nav-btn" onclick="switchTab('channels')">Canales TV</button>
         </div>
     </nav>
     <div class="search-container">
-        <input type="text" id="main-search" placeholder="Buscar por equipo, canal, país u horario (ej: 21:00)..." onkeyup="filterContent()">
+        <input type="text" id="main-search" placeholder="Buscar equipo, liga u horario..." onkeyup="filterContent()">
     </div>
 </div>
 
 <div class="container">
     <div id="tab-events-content">
-        <div id="timeline-list">Cargando eventos...</div>
+        <div id="timeline-list">Cargando eventos programados para hoy...</div>
     </div>
     <div id="tab-channels-content" class="hidden">
-        <div id="countries-list">Cargando canales...</div>
+        <div id="countries-list">Cargando canales de televisión...</div>
     </div>
 </div>
 
@@ -108,16 +108,16 @@
 </div>
 
 <script>
-    let currentTab = localStorage.getItem('lastTab') || 'events'; // MEMORIA DE PESTAÑA
+    let currentTab = localStorage.getItem('lastTab') || 'events';
     let rawEvents = [];
     let rawChannels = [];
 
-    const COUNTRY_MAP = { "us": "Estados Unidos", "gb": "Reino Unido", "es": "España", "fr": "Francia", "de": "Alemania", "it": "Italia", "pl": "Polonia", "au": "Australia", "pt": "Portugal", "br": "Brasil", "sa": "Arabia Saudita", "mx": "México", "ar": "Argentina", "ca": "Canadá", "nl": "Países Bajos", "co": "Colombia", "cl": "Chile", "uy": "Uruguay" };
+    // Mapeo de países para los canales
+    const COUNTRY_MAP = { "us": "Estados Unidos", "gb": "Reino Unido", "es": "España", "fr": "Francia", "de": "Alemania", "mx": "México", "ar": "Argentina", "co": "Colombia", "br": "Brasil" };
 
     function switchTab(tab) {
         currentTab = tab;
-        localStorage.setItem('lastTab', tab); // Guardar en el navegador
-        
+        localStorage.setItem('lastTab', tab);
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(`btn-${tab}`).classList.add('active');
         document.getElementById('main-search').value = '';
@@ -134,43 +134,51 @@
     }
 
     async function init() {
-        try {
-            const [resS, resC] = await Promise.all([
-                fetch("https://api.cdn-live.tv/api/v1/events/sports/?user=cdnlivetv&plan=free"),
-                fetch("https://api.cdn-live.tv/api/v1/channels/?user=cdnlivetv&plan=free")
-            ]);
-            const dataS = await resS.json();
-            const dataC = await resC.json();
-            
-            const hoy = new Date().toISOString().split('T')[0];
-            ['Soccer', 'NBA', 'NFL', 'NHL'].forEach(cat => {
-                if(dataS['cdn-live-tv'][cat]) {
-                    dataS['cdn-live-tv'][cat].filter(ev => ev.start.includes(hoy) || ev.status === 'live')
-                    .forEach(ev => { ev.cat = cat; rawEvents.push(ev); });
-                }
-            });
-            rawEvents.sort((a,b) => a.time.localeCompare(b.time));
-            rawChannels = dataC.channels;
+        // Obtener fecha actual en formato YYYY-MM-DD
+        const hoy = new Date().toISOString().split('T')[0];
 
-            switchTab(currentTab); // Cargar la pestaña guardada
-        } catch(e) { console.error(e); }
+        try {
+            // 1. Cargar Eventos de hoy desde TheSportsDB (v1 free)
+            // Nota: El endpoint eventsday.php devuelve eventos para la fecha especificada
+            const resS = await fetch(`https://www.thesportsdb.com/api/v1/json/123/eventsday.php?d=${hoy}`);
+            const dataS = await resS.json();
+
+            // 2. Cargar Canales (Usamos la API de canales anterior que funciona bien para streaming)
+            const resC = await fetch("https://api.cdn-live.tv/api/v1/channels/?user=cdnlivetv&plan=free");
+            const dataC = await resC.json();
+
+            if(dataS.events) {
+                rawEvents = dataS.events.map(ev => ({
+                    time: ev.strTime ? ev.strTime.substring(0,5) : "TBD",
+                    homeTeam: ev.strHomeTeam,
+                    awayTeam: ev.strAwayTeam,
+                    tournament: ev.strLeague,
+                    cat: ev.strSport,
+                    id: ev.idEvent
+                    // Nota: TheSportsDB Free no da el link de streaming directo, 
+                    // así que habilitamos la búsqueda en canales.
+                }));
+            }
+            
+            rawChannels = dataC.channels;
+            switchTab(currentTab);
+        } catch(e) { 
+            console.error("Error cargando APIs:", e);
+            document.getElementById('timeline-list').innerHTML = "Error al conectar con TheSportsDB.";
+        }
     }
 
     function renderEvents(list) {
         const target = document.getElementById('timeline-list');
-        target.innerHTML = list.map(ev => {
-            let opts = `<option value="">📺 MULTILINKS DISPONIBLES</option>`;
-            ev.channels.forEach(ch => opts += `<option value="${ch.url}">${ch.channel_name}</option>`);
-            return `
+        target.innerHTML = list.map(ev => `
             <div class="event-row">
-                <div class="event-time">${ev.status === 'live' ? '<span class="live-pulse">● VIVO</span>' : ev.time}</div>
+                <div class="event-time">${ev.time}</div>
                 <div>
                     <div style="font-size:10px; color:#666; font-weight:bold;">${ev.cat.toUpperCase()} • ${ev.tournament}</div>
                     <div class="event-teams">${ev.homeTeam} vs ${ev.awayTeam}</div>
-                    <select class="multi-link" onchange="if(this.value) openPlayer(this.value, '${ev.homeTeam} vs ${ev.awayTeam}')">${opts}</select>
+                    <button class="btn-watch" onclick="switchTab('channels')">BUSCAR CANAL EN VIVO 📺</button>
                 </div>
-            </div>`;
-        }).join('') || "<p style='text-align:center; padding:20px; color:#444;'>No hay eventos que coincidan.</p>";
+            </div>`).join('') || "<p style='text-align:center; padding:20px; color:#444;'>No hay eventos programados para hoy en TheSportsDB.</p>";
     }
 
     function renderChannels(list) {
@@ -191,7 +199,7 @@
                     <div class="channel-name">${ch.name}</div>
                 </div>`).join('') + `</div></div>`;
         });
-        target.innerHTML = html || "<p style='text-align:center; padding:20px; color:#444;'>No hay canales que coincidan.</p>";
+        target.innerHTML = html || "<p style='text-align:center; padding:20px; color:#444;'>No hay canales disponibles.</p>";
     }
 
     function filterContent() {
@@ -200,8 +208,7 @@
             const filtered = rawEvents.filter(ev => 
                 ev.homeTeam.toLowerCase().includes(query) || 
                 ev.awayTeam.toLowerCase().includes(query) || 
-                ev.tournament.toLowerCase().includes(query) ||
-                ev.time.includes(query) // FILTRO POR HORARIO
+                ev.time.includes(query)
             );
             renderEvents(filtered);
         } else {
