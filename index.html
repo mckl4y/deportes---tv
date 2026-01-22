@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amantes del FutbOl | Live Sports</title>
+    <title>Amantes del FutbOl | En Vivo</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #050505;
-            --card: #121212;
+            --card: #111111;
             --accent: #f8ff13;
             --text: #ffffff;
             --border: #222;
@@ -31,22 +31,18 @@
             padding: 0 20px; justify-content: space-between;
         }
         
-        /* LOGO CON BALON */
         .logo-container { 
             display: flex; align-items: center; 
             font-family: 'Orbitron', sans-serif; 
-            font-size: 20px; font-weight: 900; 
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-size: 22px; font-weight: 900; 
+            color: #fff;
         }
         .ball-o { 
-            width: 22px; height: 22px; 
-            background: white; border-radius: 50%; 
+            width: 24px; height: 24px; background: #fff; border-radius: 50%; 
             display: inline-flex; align-items: center; justify-content: center;
-            margin-left: 2px;
-            box-shadow: 0 0 10px rgba(255,255,255,0.3);
+            margin: 0 2px; position: relative;
         }
-        .ball-o::after { content: '⚽'; font-size: 16px; }
+        .ball-o::after { content: '⚽'; font-size: 18px; position: absolute; }
 
         .search-container { padding: 10px 20px; background: #111; display: flex; justify-content: center; }
         #main-search {
@@ -62,54 +58,47 @@
         }
         .nav-btn.active { color: var(--accent); border-bottom: 3px solid var(--accent); }
 
-        .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
         
-        /* EVENTOS ESTILO DAZN */
+        /* EVENTOS */
         .category-header {
-            background: linear-gradient(90deg, #1a1a1a, transparent);
-            padding: 10px 15px; margin: 25px 0 10px;
-            border-left: 4px solid var(--accent);
-            font-weight: 900; text-transform: uppercase; font-size: 14px;
+            background: #1a1a1a; padding: 12px 15px; margin: 25px 0 10px;
+            border-left: 4px solid var(--accent); font-weight: 900; 
+            text-transform: uppercase; font-size: 14px; color: var(--accent);
         }
 
         .event-card {
-            display: grid; grid-template-columns: 90px 1fr; gap: 15px;
-            background: var(--card); margin-bottom: 10px; padding: 15px;
+            display: grid; grid-template-columns: 80px 1fr; gap: 15px;
+            background: var(--card); margin-bottom: 8px; padding: 15px;
             border-radius: 4px; border: 1px solid var(--border); align-items: center;
-            transition: 0.3s;
         }
-        .event-card:hover { border-color: #444; background: #181818; }
-        .event-time { text-align: center; font-weight: 900; color: var(--accent); }
-        .event-info { flex-grow: 1; }
-        .event-tournament { font-size: 11px; color: #777; margin-bottom: 4px; font-weight: bold; }
-        .event-teams { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
-
+        .event-time { text-align: center; font-weight: 900; color: #fff; font-size: 13px; }
+        .event-teams { font-size: 16px; font-weight: 700; margin-bottom: 10px; color: #fff; }
+        
         .multi-link-select {
-            width: 100%; max-width: 300px; background: #000; color: #22c55e;
-            border: 1px solid #22c55e; padding: 8px; border-radius: 4px;
-            font-weight: bold; cursor: pointer; font-size: 12px;
+            width: 100%; background: #000; color: #22c55e;
+            border: 1px solid #22c55e; padding: 10px; border-radius: 4px;
+            font-weight: bold; cursor: pointer;
         }
 
-        /* CANALES POR PAISES */
+        /* CANALES */
         .country-block { margin-bottom: 40px; }
-        .country-name { font-size: 18px; font-weight: 900; margin-bottom: 15px; color: #fff; display: flex; align-items: center; gap: 10px; }
+        .country-name { font-size: 18px; font-weight: 900; margin-bottom: 15px; color: #fff; }
         .channels-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
         .channel-item {
             background: var(--card); padding: 15px; border-radius: 6px; text-align: center;
-            border: 1px solid var(--border); cursor: pointer; transition: 0.2s;
+            border: 1px solid var(--border); cursor: pointer;
         }
-        .channel-item:hover { transform: translateY(-3px); border-color: var(--accent); }
-        .channel-item img { height: 40px; max-width: 100%; object-fit: contain; margin-bottom: 8px; }
-        .channel-item span { font-size: 11px; font-weight: bold; display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .channel-item img { height: 40px; max-width: 80%; object-fit: contain; margin-bottom: 8px; }
+        .channel-item span { font-size: 11px; font-weight: bold; display: block; color: #ccc; }
 
         /* PLAYER */
         #player-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 5000; display: none; flex-direction: column; }
-        .player-bar { padding: 15px; background: #000; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
-        iframe { flex-grow: 1; border: none; width: 100%; height: 100%; }
+        .player-bar { padding: 15px; background: #000; display: flex; justify-content: space-between; align-items: center; }
+        iframe { flex-grow: 1; border: none; background: #000; }
 
         .hidden { display: none; }
-        .live-tag { background: #ff0000; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .loader-text { text-align: center; padding: 50px; color: #555; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -123,66 +112,66 @@
         </div>
     </nav>
     <div class="search-container">
-        <input type="text" id="main-search" placeholder="Busca equipos, ligas o canales..." onkeyup="filterAll()">
+        <input type="text" id="main-search" placeholder="Busca equipos, ligas o deportes..." onkeyup="filterAll()">
     </div>
 </div>
 
 <div class="container">
     <div id="section-events">
-        <div id="events-loader">Cargando parrilla masiva...</div>
+        <div id="events-loader" class="loader-text">CARGANDO EVENTOS DEPORTIVOS...</div>
     </div>
     <div id="section-channels" class="hidden">
-        <div id="channels-loader">Cargando canales por países...</div>
+        <div id="channels-loader" class="loader-text">CARGANDO SEÑALES DE TV...</div>
     </div>
 </div>
 
 <div id="player-overlay">
     <div class="player-bar">
-        <span id="playing-now" style="font-weight:900; color:var(--accent); font-size:14px;"></span>
-        <button onclick="closePlayer()" style="background:var(--accent); border:none; padding:10px 20px; font-weight:900; cursor:pointer; border-radius:4px;">CERRAR</button>
+        <span id="playing-now" style="font-weight:900; color:var(--accent);"></span>
+        <button onclick="closePlayer()" style="background:var(--accent); border:none; padding:10px 20px; font-weight:900; cursor:pointer;">CERRAR X</button>
     </div>
-    <iframe id="main-player" allowfullscreen></iframe>
+    <iframe id="main-player" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
 </div>
 
 <script>
     let eventsData = [];
     let channelsData = [];
-    let currentTab = 'events';
 
-    const COUNTRY_NAMES = { "es": "ESPAÑA", "mx": "MÉXICO", "ar": "ARGENTINA", "us": "USA", "gb": "REINO UNIDO", "fr": "FRANCIA", "it": "ITALIA", "pt": "PORTUGAL", "co": "COLOMBIA", "cl": "CHILE" };
+    // Usamos un proxy para evitar el bloqueo de carga (CORS)
+    const PROXY = "https://api.allorigins.win/raw?url=";
+    const API_EVENTS = "https://api.cdn-live.tv/api/v1/events/sports/?user=cdnlivetv&plan=free";
+    const API_CHANNELS = "https://api.cdn-live.tv/api/v1/channels/?user=cdnlivetv&plan=free";
 
-    async function loadData() {
+    async function init() {
         try {
-            const [resEvents, resChannels] = await Promise.all([
-                fetch("https://api.cdn-live.tv/api/v1/events/sports/?user=cdnlivetv&plan=free"),
-                fetch("https://api.cdn-live.tv/api/v1/channels/?user=cdnlivetv&plan=free")
-            ]);
+            // Intentamos cargar eventos
+            const resE = await fetch(PROXY + encodeURIComponent(API_EVENTS));
+            const dataE = await resE.json();
+            const sports = dataE['cdn-live-tv'];
             
-            const rawEv = await resEvents.json();
-            const rawCh = await resChannels.json();
-
-            // Procesar Eventos (Min 40 por categoría si existen)
-            const sports = rawEv['cdn-live-tv'];
-            eventsData = [];
             for (let sport in sports) {
                 sports[sport].forEach(item => {
                     item.category = sport;
                     eventsData.push(item);
                 });
             }
-
-            channelsData = rawCh.channels;
-            
             renderEvents(eventsData);
+
+            // Intentamos cargar canales
+            const resC = await fetch(PROXY + encodeURIComponent(API_CHANNELS));
+            const dataC = await resC.json();
+            channelsData = dataC.channels;
             renderChannels(channelsData);
-        } catch (e) {
-            console.error("Error cargando datos:", e);
+
+        } catch (err) {
+            document.getElementById('events-loader').innerHTML = "Error de conexión. Reintenta en unos segundos.";
+            console.error("Error:", err);
         }
     }
 
     function renderEvents(list) {
         const container = document.getElementById('section-events');
-        if(list.length === 0) { container.innerHTML = "No hay eventos hoy."; return; }
+        if(list.length === 0) return;
 
         const grouped = {};
         list.forEach(e => {
@@ -192,18 +181,18 @@
 
         let html = '';
         for(let cat in grouped) {
-            html += `<div class="category-header">${cat} (${grouped[cat].length})</div>`;
+            html += `<div class="category-header">🏆 ${cat}</div>`;
             grouped[cat].forEach(ev => {
-                let options = `<option value="">📺 SELECCIONAR CANAL</option>`;
-                ev.channels.forEach(c => {
-                    options += `<option value="${c.url}">${c.channel_name}</option>`;
+                let options = `<option value="">📺 VER OPCIONES (${ev.channels.length})</option>`;
+                ev.channels.forEach((c, idx) => {
+                    options += `<option value="${c.url}">Opción ${idx + 1}: ${c.channel_name}</option>`;
                 });
 
                 html += `
                 <div class="event-card">
-                    <div class="event-time">${ev.status === 'live' ? '<span class="live-tag">LIVE</span>' : ev.time}</div>
-                    <div class="event-info">
-                        <div class="event-tournament">${ev.tournament}</div>
+                    <div class="event-time">${ev.time}<br><small>${ev.status.toUpperCase()}</small></div>
+                    <div>
+                        <div style="font-size:11px; color:#666;">${ev.tournament}</div>
                         <div class="event-teams">${ev.homeTeam} vs ${ev.awayTeam}</div>
                         <select class="multi-link-select" onchange="if(this.value) openPlayer(this.value, '${ev.homeTeam} vs ${ev.awayTeam}')">
                             ${options}
@@ -219,7 +208,7 @@
         const container = document.getElementById('section-channels');
         const grouped = {};
         list.forEach(ch => {
-            const country = COUNTRY_NAMES[ch.code] || ch.code.toUpperCase();
+            const country = ch.code.toUpperCase();
             if(!grouped[country]) grouped[country] = [];
             grouped[country].push(ch);
         });
@@ -228,7 +217,7 @@
         Object.keys(grouped).sort().forEach(country => {
             html += `
             <div class="country-block">
-                <div class="country-name">🌍 ${country}</div>
+                <div class="country-name">📍 PAÍS: ${country}</div>
                 <div class="channels-grid">
                     ${grouped[country].map(ch => `
                         <div class="channel-item" onclick="openPlayer('${ch.url}', '${ch.name}')">
@@ -243,27 +232,10 @@
     }
 
     function switchTab(tab) {
-        currentTab = tab;
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(`btn-${tab}`).classList.add('active');
-        
         document.getElementById('section-events').classList.toggle('hidden', tab !== 'events');
         document.getElementById('section-channels').classList.toggle('hidden', tab !== 'channels');
-    }
-
-    function filterAll() {
-        const q = document.getElementById('main-search').value.toLowerCase();
-        if(currentTab === 'events') {
-            const filtered = eventsData.filter(e => 
-                e.homeTeam.toLowerCase().includes(q) || 
-                e.awayTeam.toLowerCase().includes(q) || 
-                e.tournament.toLowerCase().includes(q)
-            );
-            renderEvents(filtered);
-        } else {
-            const filtered = channelsData.filter(c => c.name.toLowerCase().includes(q));
-            renderChannels(filtered);
-        }
     }
 
     function openPlayer(url, title) {
@@ -279,7 +251,15 @@
         document.body.style.overflow = 'auto';
     }
 
-    loadData();
+    function filterAll() {
+        const q = document.getElementById('main-search').value.toLowerCase();
+        const filteredE = eventsData.filter(e => e.homeTeam.toLowerCase().includes(q) || e.awayTeam.toLowerCase().includes(q) || e.category.toLowerCase().includes(q));
+        renderEvents(filteredE);
+        const filteredC = channelsData.filter(c => c.name.toLowerCase().includes(q));
+        renderChannels(filteredC);
+    }
+
+    init();
 </script>
 </body>
 </html>
