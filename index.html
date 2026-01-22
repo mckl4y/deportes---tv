@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amantes del Futbol | En Vivo</title>
+    <title>Amantes del Futbol | Modo Cine</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -93,29 +93,54 @@
             top: 105px;
         }
 
-        .content { padding: 20px; background: #0a0a0a; width: 100%; box-sizing: border-box; }
+        .content { 
+            padding: 0; /* Quitamos padding para el modo cine */
+            background: #0a0a0a; 
+            width: 100%; 
+            box-sizing: border-box; 
+        }
 
-        /* REPRODUCTOR */
-        .player-container { width: 100%; max-width: 900px; margin: 0 auto 25px; position: relative; }
-        .player-area { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; border: 1px solid #333; }
+        /* MODO CINE REPRODUCTOR (PC) */
+        .player-container { 
+            width: 100%; 
+            background: #000;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #222;
+        }
+
+        .player-area { 
+            width: 100%; 
+            max-width: 1200px; /* Ancho máximo para no deformar en monitores ultra-wide */
+            margin: 0 auto; 
+            aspect-ratio: 16/9; 
+            background: #000; 
+            overflow: hidden; 
+        }
         iframe { width: 100%; height: 100%; border: none; }
 
-        /* EVENTOS */
-        .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; }
-        .card { background: var(--card-bg); border-radius: 12px; padding: 15px; border: 1px solid #222; }
+        /* CONTENEDOR DE EVENTOS (Con padding para que no toquen los bordes) */
+        .events-section {
+            padding: 0 20px 40px 20px;
+        }
+
+        .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 18px; border: 1px solid #222; transition: 0.3s; }
+        .card:hover { border-color: var(--primary); transform: translateY(-3px); }
 
         /* MÓVIL */
         @media (max-width: 768px) {
             .menu-toggle { display: block; }
-            .main-wrapper { display: block; width: 100%; }
+            .main-wrapper { display: block; }
             .sidebar { position: fixed; left: 0; top: 0; width: 280px; z-index: 2500; transform: translateX(-100%); transition: 0.3s; }
             .sidebar.active { transform: translateX(0); }
-            .content { padding: 15px; width: 100%; box-sizing: border-box; }
+            
             .player-container { 
                 position: sticky; top: 98px; z-index: 1000; 
-                margin: 0 auto 20px; width: 100vw; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;
+                width: 100vw; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;
+                border-bottom: 2px solid var(--primary);
             }
-            .player-area { border-radius: 0; border-left: none; border-right: none; }
+            .player-area { aspect-ratio: 16/9; }
+            .events-section { padding: 15px; }
         }
 
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2100; }
@@ -146,13 +171,17 @@
     <main class="content">
         <div class="player-container">
             <div class="player-area" id="player">
-                <div style="height:100%; display:flex; justify-content:center; align-items:center; opacity:0.1;">
-                    <i class="fa-solid fa-play-circle fa-4x"></i>
+                <div style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; opacity:0.2;">
+                    <i class="fa-solid fa-play-circle fa-5x"></i>
+                    <p style="margin-top:15px; font-weight:bold; letter-spacing: 2px;">SELECCIONA UN PARTIDO</p>
                 </div>
             </div>
         </div>
-        <h3 style="border-left: 4px solid var(--primary); padding-left: 10px; font-size: 15px; margin-bottom:15px;">PARTIDOS DE HOY (UTC+1)</h3>
-        <div class="events-grid" id="eventsGrid"></div>
+
+        <div class="events-section">
+            <h3 style="border-left: 4px solid var(--primary); padding-left: 10px; font-size: 16px; margin-bottom:20px; text-transform: uppercase;">PARTIDOS DE HOY (UTC+1)</h3>
+            <div class="events-grid" id="eventsGrid"></div>
+        </div>
     </main>
 </div>
 
@@ -165,55 +194,11 @@
         document.getElementById('overlay').classList.toggle('active');
     }
 
-    // Obtener la hora actual exacta en UTC+1 sin importar el país del usuario
+    // HORA UTC+1 ESTRICTA
     function getUTC1Time() {
         const now = new Date();
         const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-        return new Date(utc + (3600000 * 1)); // UTC + 1 hora
-    }
-
-    function renderEvents(data) {
-        const grid = document.getElementById('eventsGrid');
-        grid.innerHTML = "";
-        const all = [];
-        ["Soccer", "NBA", "NFL", "NHL"].forEach(cat => {
-            if(data[cat]) data[cat].forEach(e => { e.cat = cat; all.push(e); });
-        });
-
-        const nowUTC1 = getUTC1Time();
-        const nowTotalMinutes = (nowUTC1.getHours() * 60) + nowUTC1.getMinutes();
-
-        all.forEach(ev => {
-            // Ajuste de hora API a UTC+1 (Sumamos 1 hora a lo que viene de la API)
-            let [h, m] = ev.time.split(':').map(Number);
-            h = (h + 1) % 24;
-            const eventTimeStr = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-            const eventTotalMinutes = (h * 60) + m;
-
-            // Lógica de "En Vivo": si ya empezó y no han pasado más de 125 minutos
-            const isLive = nowTotalMinutes >= eventTotalMinutes && nowTotalMinutes < (eventTotalMinutes + 125);
-
-            const card = document.createElement('div');
-            card.className = "card";
-            card.setAttribute('data-search', `${ev.homeTeam} ${ev.awayTeam}`.toLowerCase());
-            card.innerHTML = `
-                <div style="font-size:10px; display:flex; justify-content:space-between; opacity:0.6; margin-bottom:10px;">
-                    <span>${ev.tournament}</span>
-                    <span style="color:${isLive ? '#ff4757' : 'var(--primary)'}; font-weight:bold;">
-                        ${isLive ? '<i class="fa-solid fa-circle live-dot"></i> EN VIVO' : eventTimeStr}
-                    </span>
-                </div>
-                <div style="display:flex; justify-content:space-around; align-items:center; margin-bottom:12px; text-align:center;">
-                    <div style="flex:1; font-size:12px; font-weight:bold;">${ev.homeTeam}</div>
-                    <div style="color:var(--primary); font-weight:900;">VS</div>
-                    <div style="flex:1; font-size:12px; font-weight:bold;">${ev.awayTeam}</div>
-                </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
-                    ${ev.channels.map(ch => `<div onclick="load('${ch.url}')" style="background:#1e1e1e; padding:8px; border-radius:5px; font-size:9px; text-align:center; cursor:pointer; border:1px solid #333;">${ch.channel_name}</div>`).join('')}
-                </div>
-            `;
-            grid.appendChild(card);
-        });
+        return new Date(utc + (3600000 * 1)); 
     }
 
     async function fetchData() {
@@ -238,13 +223,58 @@
             acc[c].push(ch);
             return acc;
         }, {});
-        side.innerHTML = `<h3 style="color:var(--primary); font-size:14px; margin-top:0;">CANALES TV</h3>` + 
+        side.innerHTML = `<h3 style="color:var(--primary); font-size:14px; margin-top:0; margin-bottom:15px;">CANALES TV</h3>` + 
             Object.keys(grouped).sort().map(code => `
-            <details style="margin-bottom:5px; background:#1a1a1a; border-radius:5px;">
-                <summary style="padding:10px; font-size:12px; cursor:pointer;"><img src="https://flagcdn.com/w20/${code}.png" style="width:16px;"> ${code.toUpperCase()}</summary>
-                ${grouped[code].map(ch => `<div style="padding:8px 15px; font-size:11px; cursor:pointer; border-top:1px solid #222;" onclick="load('${ch.url}')">${ch.name}</div>`).join('')}
+            <details style="margin-bottom:8px; background:#1a1a1a; border-radius:8px; overflow:hidden;">
+                <summary style="padding:12px; font-size:12px; cursor:pointer; display:flex; align-items:center; gap:8px;">
+                    <img src="https://flagcdn.com/w20/${code}.png" style="width:18px;"> ${code.toUpperCase()}
+                </summary>
+                ${grouped[code].map(ch => `<div style="padding:10px 15px; font-size:11px; cursor:pointer; border-top:1px solid #222; background:#141414;" onclick="load('${ch.url}')">${ch.name}</div>`).join('')}
             </details>
         `).join('');
+    }
+
+    function renderEvents(data) {
+        const grid = document.getElementById('eventsGrid');
+        grid.innerHTML = "";
+        const all = [];
+        ["Soccer", "NBA", "NFL", "NHL"].forEach(cat => {
+            if(data[cat]) data[cat].forEach(e => { e.cat = cat; all.push(e); });
+        });
+
+        const nowUTC1 = getUTC1Time();
+        const nowTotalMinutes = (nowUTC1.getHours() * 60) + nowUTC1.getMinutes();
+
+        all.forEach(ev => {
+            let [h, m] = ev.time.split(':').map(Number);
+            h = (h + 1) % 24; // Ajuste API a UTC+1
+            const eventTotalMinutes = (h * 60) + m;
+            const eventTimeStr = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+
+            // Un partido es LIVE si ya empezó y no han pasado 130 min
+            const isLive = nowTotalMinutes >= eventTotalMinutes && nowTotalMinutes < (eventTotalMinutes + 130);
+
+            const card = document.createElement('div');
+            card.className = "card";
+            card.setAttribute('data-search', `${ev.homeTeam} ${ev.awayTeam}`.toLowerCase());
+            card.innerHTML = `
+                <div style="font-size:11px; display:flex; justify-content:space-between; opacity:0.5; margin-bottom:12px;">
+                    <span>${ev.tournament}</span>
+                    <span style="color:${isLive ? '#ff4757' : 'var(--primary)'}; font-weight:bold;">
+                        ${isLive ? '<i class="fa-solid fa-circle live-dot"></i> EN VIVO' : eventTimeStr}
+                    </span>
+                </div>
+                <div style="display:flex; justify-content:space-around; align-items:center; margin-bottom:15px; text-align:center;">
+                    <div style="flex:1; font-size:13px; font-weight:bold;">${ev.homeTeam}</div>
+                    <div style="color:var(--primary); font-weight:900; font-size:12px; padding:0 10px;">VS</div>
+                    <div style="flex:1; font-size:13px; font-weight:bold;">${ev.awayTeam}</div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                    ${ev.channels.map(ch => `<div onclick="load('${ch.url}')" style="background:#222; padding:10px; border-radius:6px; font-size:10px; text-align:center; cursor:pointer; border:1px solid #333; font-weight:500;">${ch.channel_name}</div>`).join('')}
+                </div>
+            `;
+            grid.appendChild(card);
+        });
     }
 
     function load(url) {
@@ -261,7 +291,7 @@
 
     document.getElementById('searchInput').addEventListener('input', (e) => triggerSearch(e.target.value.toLowerCase()));
     fetchData();
-    setInterval(fetchData, 60000); // Actualiza cada minuto para precisión de tiempo
+    setInterval(fetchData, 60000);
 </script>
 </body>
 </html>
