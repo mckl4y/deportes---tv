@@ -8,30 +8,20 @@
     <style>
         :root { --primary: #e50914; --bg: #0f0f0f; --card: #1b1b1b; --text: #eee; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 70px; }
-        
-        /* Navegación Superior */
         header { background: #000; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--primary); }
-        
-        /* Contenedores */
         .container { padding: 15px; max-width: 800px; margin: auto; }
         .hidden { display: none; }
-        
-        /* Tarjetas de Eventos y Canales */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
         .card { background: var(--card); border-radius: 8px; overflow: hidden; transition: 0.3s; border: 1px solid #333; }
-        .card:hover { transform: scale(1.03); }
         .card img { width: 100%; height: 100px; object-fit: contain; background: #222; padding: 5px; }
         .card-info { padding: 10px; font-size: 14px; }
-        
-        /* Evento Deportivo */
-        .event-row { background: var(--card); margin-bottom: 10px; padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 10px; }
-        .event-row img { width: 40px; height: 40px; }
+        .event-row { background: var(--card); margin-bottom: 10px; padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 10px; border-left: 4px solid var(--primary); }
+        .event-row img { width: 40px; height: 40px; object-fit: contain; }
         .btn-play { background: var(--primary); color: white; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; }
-
-        /* Menú Inferior (Tab Bar) */
         .tab-bar { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #333; }
-        .tab-btn { color: #888; background: none; border: none; font-size: 14px; cursor: pointer; }
+        .tab-btn { color: #888; background: none; border: none; font-size: 14px; cursor: pointer; outline: none; }
         .tab-btn.active { color: var(--primary); font-weight: bold; }
+        h3 { border-bottom: 1px solid #333; padding-bottom: 5px; margin-top: 25px; color: var(--primary); }
     </style>
 </head>
 <body>
@@ -44,7 +34,6 @@
     <div id="section-agenda">
         <div id="agenda-list">Cargando eventos...</div>
     </div>
-
     <div id="section-tv" class="hidden">
         <div class="grid" id="tv-grid">Cargando canales...</div>
     </div>
@@ -56,34 +45,26 @@
 </nav>
 
 <script>
-// --- CONFIGURACIÓN DE APIS ---
 const PROXY = "https://api.allorigins.win/raw?url=";
 const API_CHANNELS = PROXY + encodeURIComponent("https://cdn-live.tv/api/v1/channels");
 const API_EVENTS = PROXY + encodeURIComponent("https://cdn-live.tv/api/events");
 
-// --- LÓGICA DE NAVEGACIÓN ---
 function showTab(tab) {
     const isAgenda = tab === 'agenda';
     document.getElementById('section-agenda').classList.toggle('hidden', !isAgenda);
     document.getElementById('section-tv').classList.toggle('hidden', isAgenda);
     document.getElementById('view-title').innerText = isAgenda ? "📅 Agenda Deportiva" : "📺 Canales en Directo";
-    
-    // Actualizar botones
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', 
         (isAgenda && b.innerText.includes('Agenda')) || (!isAgenda && b.innerText.includes('Canales'))
     ));
 }
 
-// --- CARGAR CANALES ---
 async function loadChannels() {
     try {
         const res = await fetch(API_CHANNELS);
         const data = await res.json();
-        // Si los datos vienen dentro de 'contents' (por el proxy), los extraemos
-        const finalData = data.contents ? JSON.parse(data.contents) : data;
-        
         const grid = document.getElementById('tv-grid');
-        grid.innerHTML = finalData.channels.map(ch => `
+        grid.innerHTML = data.channels.map(ch => `
             <div class="card">
                 <img src="${ch.image}" alt="${ch.name}">
                 <div class="card-info">
@@ -93,51 +74,61 @@ async function loadChannels() {
                 </div>
             </div>
         `).join('');
-    } catch (e) { 
-        console.error("Error canales", e);
+    } catch (e) {
         document.getElementById('tv-grid').innerHTML = "Error al cargar canales.";
     }
 }
 
-// --- CARGAR EVENTOS (SIMULADO O REAL) ---
 async function loadEvents() {
     try {
         const res = await fetch(API_EVENTS);
         const data = await res.json();
         const list = document.getElementById('agenda-list');
-        const sports = data["cdn-live-tv"];
         
+        // Manejar la estructura de la API cdn-live
+        const sportsData = data["cdn-live-tv"];
+        if (!sportsData) {
+            list.innerHTML = "No se encontraron datos de eventos.";
+            return;
+        }
+
         let html = "";
-        ["Soccer", "NBA", "NFL", "NHL"].forEach(sport => {
-            if(sports[sport]) {
+        const categorias = ["Soccer", "NBA", "NFL", "NHL"];
+        
+        categorias.forEach(sport => {
+            if (sportsData[sport] && sportsData[sport].length > 0) {
                 html += `<h3>${sport}</h3>`;
-                sports[sport].forEach(ev => {
+                sportsData[sport].forEach(ev => {
+                    const canalUrl = ev.channels && ev.channels[0] ? ev.channels[0].url : "#";
+                    const canalNombre = ev.channels && ev.channels[0] ? ev.channels[0].channel_name : "Ver";
+                    
                     html += `
                         <div class="event-row">
-                            <img src="${ev.homeTeamIMG}" onerror="this.src='https://via.placeholder.com/40'">
+                            <img src="${ev.homeTeamIMG}" onerror="this.src='https://via.placeholder.com/40?text=TV'">
                             <div style="flex-grow:1">
                                 <strong>${ev.homeTeam} vs ${ev.awayTeam}</strong><br>
                                 <small>${ev.time} · ${ev.tournament}</small>
                             </div>
-                            <a href="${ev.channels[0].url}" target="_blank" class="btn-play">VER</a>
+                            <a href="${canalUrl}" target="_blank" class="btn-play">${canalNombre}</a>
                         </div>
                     `;
                 });
             }
         });
-        list.innerHTML = html || "No hay eventos hoy";
-    } catch (e) { console.error("Error eventos", e); }
+        
+        list.innerHTML = html || "No hay eventos en vivo en este momento.";
+    } catch (e) {
+        console.error(e);
+        document.getElementById('agenda-list').innerHTML = "Error al cargar la agenda.";
+    }
 }
 
-// Iniciar
 loadChannels();
 loadEvents();
 
-// Registrar PWA
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./service-worker.js');
 }
 </script>
-
 </body>
 </html>
