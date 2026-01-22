@@ -4,144 +4,93 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sports & TV Live</title>
-    <link rel="manifest" href="manifest.json">
     <style>
         :root { --primary: #e50914; --bg: #0f0f0f; --card: #1b1b1b; --text: #eee; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 70px; }
-        header { background: #000; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--primary); }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 70px; }
+        header { background: #000; padding: 15px; text-align: center; border-bottom: 2px solid var(--primary); }
         .container { padding: 15px; max-width: 800px; margin: auto; }
         .hidden { display: none; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
-        .card { background: var(--card); border-radius: 8px; overflow: hidden; transition: 0.3s; border: 1px solid #333; display: flex; flex-direction: column; }
-        .card img { width: 100%; height: 100px; object-fit: contain; background: #222; padding: 5px; }
-        .card-info { padding: 10px; font-size: 14px; text-align: center; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+        .card { background: var(--card); border-radius: 8px; overflow: hidden; border: 1px solid #333; text-align: center; padding: 10px; }
+        .card img { width: 100%; height: 80px; object-fit: contain; }
         .event-row { background: var(--card); margin-bottom: 10px; padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 10px; border-left: 4px solid var(--primary); }
-        .event-row img { width: 40px; height: 40px; object-fit: contain; }
-        .btn-play { background: var(--primary); color: white; text-decoration: none; padding: 8px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 5px; }
-        .tab-bar { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #333; z-index: 1000; }
-        .tab-btn { color: #888; background: none; border: none; font-size: 14px; cursor: pointer; outline: none; }
+        .event-row img { width: 35px; height: 35px; }
+        .btn-play { background: var(--primary); color: white; text-decoration: none; padding: 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .tab-bar { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; }
+        .tab-btn { color: #888; background: none; border: none; font-size: 16px; cursor: pointer; }
         .tab-btn.active { color: var(--primary); font-weight: bold; }
-        h3 { border-bottom: 1px solid #333; padding-bottom: 5px; margin-top: 25px; color: var(--primary); text-transform: uppercase; font-size: 16px; }
+        h3 { color: var(--primary); border-bottom: 1px solid #333; }
     </style>
 </head>
 <body>
 
-<header>
-    <h2 id="view-title">📅 Agenda Deportiva</h2>
-</header>
+<header><h2 id="view-title">📅 Agenda Deportiva</h2></header>
 
 <div class="container">
-    <div id="section-agenda">
-        <div id="agenda-list">Cargando eventos...</div>
-    </div>
-
-    <div id="section-tv" class="hidden">
-        <div class="grid" id="tv-grid">Cargando canales...</div>
-    </div>
+    <div id="section-agenda"><div id="agenda-list">Cargando...</div></div>
+    <div id="section-tv" class="hidden"><div class="grid" id="tv-grid">Cargando...</div></div>
 </div>
 
 <nav class="tab-bar">
     <button class="tab-btn active" onclick="showTab('agenda')">📅 Agenda</button>
-    <button class="tab-btn" onclick="showTab('tv')">📺 Canales TV</button>
+    <button class="tab-btn" onclick="showTab('tv')">📺 Canales</button>
 </nav>
 
 <script>
-// Usamos un proxy para evitar bloqueos de seguridad (CORS)
-const PROXY = "https://api.allorigins.win/raw?url=";
+// Proxy alternativo más directo
+const PROXY = "https://api.allorigins.win/get?url=";
 const API_CHANNELS = PROXY + encodeURIComponent("https://cdn-live.tv/api/v1/channels");
 const API_EVENTS = PROXY + encodeURIComponent("https://cdn-live.tv/api/events");
 
 function showTab(tab) {
-    const isAgenda = tab === 'agenda';
-    document.getElementById('section-agenda').classList.toggle('hidden', !isAgenda);
-    document.getElementById('section-tv').classList.toggle('hidden', isAgenda);
-    document.getElementById('view-title').innerText = isAgenda ? "📅 Agenda Deportiva" : "📺 Canales en Directo";
-    
-    document.querySelectorAll('.tab-btn').forEach(b => {
-        const isTarget = (isAgenda && b.innerText.includes('Agenda')) || (!isAgenda && b.innerText.includes('Canales'));
-        b.classList.toggle('active', isTarget);
-    });
+    const isA = tab === 'agenda';
+    document.getElementById('section-agenda').classList.toggle('hidden', !isA);
+    document.getElementById('section-tv').classList.toggle('hidden', isA);
+    document.getElementById('view-title').innerText = isA ? "📅 Agenda Deportiva" : "📺 Canales TV";
+    document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', (isA && i===0) || (!isA && i===1)));
 }
 
-async function loadChannels() {
+async function loadData() {
+    // CARGAR CANALES
     try {
-        // Forzamos que no use caché para evitar el error del Service Worker
-        const res = await fetch(API_CHANNELS, { cache: "no-store" });
-        const data = await res.json();
+        const r = await fetch(API_CHANNELS);
+        const d = await r.json();
+        const content = JSON.parse(d.contents); // AllOrigins devuelve un objeto con 'contents'
         const grid = document.getElementById('tv-grid');
-        
-        if (!data.channels) throw new Error("Datos inválidos");
-
-        grid.innerHTML = data.channels.map(ch => `
+        grid.innerHTML = content.channels.map(ch => `
             <div class="card">
-                <img src="${ch.image}" onerror="this.src='https://via.placeholder.com/150?text=TV'">
-                <div class="card-info">
-                    <strong>${ch.name}</strong><br>
-                    <small>${ch.code.toUpperCase()}</small><br>
-                    <a href="vlc://${ch.url}" class="btn-play">▶ ABRIR VLC</a>
-                </div>
+                <img src="${ch.image}" onerror="this.src='https://via.placeholder.com/80?text=TV'">
+                <p><small>${ch.name}</small></p>
+                <a href="vlc://${ch.url}" class="btn-play">VLC</a>
             </div>
         `).join('');
-    } catch (e) {
-        console.error("Error canales:", e);
-        document.getElementById('tv-grid').innerHTML = "<p style='text-align:center'>Error al cargar canales. Intenta refrescar.</p>";
-    }
-}
+    } catch (e) { document.getElementById('tv-grid').innerHTML = "Error TV: Pulsa de nuevo"; }
 
-async function loadEvents() {
+    // CARGAR AGENDA
     try {
-        const res = await fetch(API_EVENTS, { cache: "no-store" });
-        const data = await res.json();
-        const list = document.getElementById('agenda-list');
-        
-        const sportsData = data["cdn-live-tv"];
-        if (!sportsData) {
-            list.innerHTML = "No hay eventos disponibles ahora.";
-            return;
-        }
-
-        let html = "";
-        const categorias = ["Soccer", "NBA", "NFL", "NHL"];
-        
-        categorias.forEach(sport => {
-            if (sportsData[sport] && sportsData[sport].length > 0) {
-                html += `<h3>${sport}</h3>`;
-                sportsData[sport].forEach(ev => {
-                    const canalUrl = ev.channels && ev.channels[0] ? ev.channels[0].url : "#";
-                    const canalNombre = ev.channels && ev.channels[0] ? ev.channels[0].channel_name : "En directo";
-                    
-                    html += `
-                        <div class="event-row">
-                            <img src="${ev.homeTeamIMG}" onerror="this.src='https://via.placeholder.com/40?text=Sport'">
-                            <div style="flex-grow:1">
-                                <strong>${ev.homeTeam} vs ${ev.awayTeam}</strong><br>
-                                <small>${ev.time} · ${ev.tournament}</small>
-                            </div>
-                            <a href="${canalUrl}" target="_blank" class="btn-play">${canalNombre}</a>
-                        </div>
-                    `;
+        const r = await fetch(API_EVENTS);
+        const d = await r.json();
+        const content = JSON.parse(d.contents);
+        const sports = content["cdn-live-tv"];
+        let h = "";
+        ["Soccer", "NBA", "NFL", "NHL"].forEach(s => {
+            if (sports[s] && sports[s].length > 0) {
+                h += `<h3>${s}</h3>`;
+                sports[s].forEach(ev => {
+                    h += `
+                    <div class="event-row">
+                        <img src="${ev.homeTeamIMG}" onerror="this.src='https://via.placeholder.com/30'">
+                        <div style="flex-grow:1"><strong>${ev.homeTeam} vs ${ev.awayTeam}</strong><br><small>${ev.time}</small></div>
+                        <a href="${ev.channels[0].url}" target="_blank" class="btn-play">VER</a>
+                    </div>`;
                 });
             }
         });
-        
-        list.innerHTML = html || "No hay eventos en vivo en este momento.";
-    } catch (e) {
-        console.error("Error eventos:", e);
-        document.getElementById('agenda-list').innerHTML = "<p>Error al cargar la agenda.</p>";
-    }
+        document.getElementById('agenda-list').innerHTML = h || "Sin eventos";
+    } catch (e) { document.getElementById('agenda-list').innerHTML = "Error Agenda: Recarga"; }
 }
 
-// Iniciar carga de datos
-loadChannels();
-loadEvents();
-
-// Intentamos registrar el service worker solo si el archivo existe y no está vacío
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./service-worker.js').catch(() => {
-        console.log("Service worker desactivado intencionalmente.");
-    });
-}
+loadData();
 </script>
-
 </body>
 </html>
