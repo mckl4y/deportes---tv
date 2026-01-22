@@ -118,22 +118,23 @@
             text-align: center; margin: 15px 0;
         }
 
-        .team { flex: 1; font-size: 13px; font-weight: bold; color: #eee; }
+        .team { flex: 1; font-size: 12px; font-weight: bold; color: #eee; }
         
         .logo-container {
-            width: 65px;
-            height: 65px;
+            width: 60px;
+            height: 60px;
             margin: 0 auto 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255,255,255,0.05);
+            background: #1a1a1a;
             border-radius: 50%;
+            border: 1px solid #222;
         }
 
         .team img { 
-            max-width: 50px; 
-            max-height: 50px; 
+            max-width: 45px; 
+            max-height: 45px; 
             object-fit: contain;
         }
 
@@ -150,9 +151,8 @@
 
         .btn-ch {
             padding: 8px; background: #1e1e1e; color: #ccc;
-            text-align: center; font-size: 11px; font-weight: 600;
+            text-align: center; font-size: 10px; font-weight: 600;
             border-radius: 4px; cursor: pointer; border: 1px solid #333;
-            display: flex; align-items: center; justify-content: center; gap: 5px;
         }
 
         .btn-ch:hover { background: var(--primary); color: #000; border-color: var(--primary); }
@@ -169,7 +169,7 @@
     <div class="logo">AMANTES DEL FUTB<div class="ball-icon"></div>L</div>
     <div class="search-box">
         <i class="fa-solid fa-search"></i>
-        <input type="text" id="searchInput" placeholder="Busca equipo, país o liga...">
+        <input type="text" id="searchInput" placeholder="Buscar equipo...">
     </div>
 </nav>
 
@@ -178,11 +178,11 @@
     <main class="content">
         <div class="player-area" id="player">
             <div style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#222;">
-                <i class="fa-solid fa-play-circle fa-5x"></i>
-                <p>Selecciona una transmisión</p>
+                <i class="fa-solid fa-circle-play fa-5x"></i>
+                <p>Selecciona un canal</p>
             </div>
         </div>
-        <h3 style="border-left: 4px solid var(--primary); padding-left: 10px; margin-bottom: 20px;">PARTIDOS HOY (HORA ESPAÑA)</h3>
+        <h3 style="border-left: 4px solid var(--primary); padding-left: 10px; margin-bottom: 20px;">CALENDARIO HOY ESPAÑA</h3>
         <div class="events-grid" id="eventsGrid"></div>
     </main>
 </div>
@@ -192,37 +192,19 @@
     const API_CH = `https://api.cdn-live.tv/api/v1/channels/?${USER}`;
     const API_EV = `https://api.cdn-live.tv/api/v1/events/sports/?${USER}`;
 
-    const cacheLogos = {};
-
-    // Nueva función de logos usando la API de búsqueda de ESPN
-    async function fetchEspnLogo(teamName, sport) {
-        if(cacheLogos[teamName]) return cacheLogos[teamName];
-        
-        let category = sport.toLowerCase() === "soccer" ? "soccer" : sport.toLowerCase();
-        
-        try {
-            const response = await fetch(`https://site.web.api.espn.com/apis/search/v2?limit=1&type=team&variant=alphabetical&query=${encodeURIComponent(teamName)}`);
-            const data = await response.json();
-            
-            if (data.results && data.results[0] && data.results[0].contents && data.results[0].contents[0]) {
-                const logoUrl = data.results[0].contents[0].logos[0].href;
-                cacheLogos[teamName] = logoUrl;
-                return logoUrl;
-            }
-        } catch (e) { console.warn("Error buscando logo:", teamName); }
-        
-        return 'https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg';
+    // Generador de logos rápido (evita el error de búsqueda)
+    function getQuickLogo(teamName) {
+        const slug = teamName.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        // Usamos la ruta estática de ESPN que es más rápida y no da error de CORS
+        return `https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/${slug}.png&w=100&h=100&transparent=true`;
     }
 
-    // Corrección Horaria: La API suele enviar UTC. Sumamos 1 hora (invierno) o 2 (verano) para España.
-    function convertToSpainTime(originalTime) {
-        if (!originalTime.includes(":")) return originalTime;
-        let [hours, minutes] = originalTime.split(":").map(Number);
-        
-        // Ajuste manual (La API suele venir en UTC, España es UTC+1 en invierno)
-        hours = (hours + 1) % 24;
-        
-        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    // Corrección horaria España (UTC+1 en invierno)
+    function getSpainTime(utcTime) {
+        if(!utcTime || !utcTime.includes(':')) return utcTime;
+        let [h, m] = utcTime.split(':').map(Number);
+        h = (h + 1) % 24; 
+        return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
     }
 
     async function init() {
@@ -232,87 +214,66 @@
             const dEv = await rEv.json();
             renderSidebar(dCh.channels);
             renderEvents(dEv['cdn-live-tv']);
-        } catch (e) { console.log(e); }
+        } catch (e) {
+            document.body.innerHTML += '<div style="position:fixed; bottom:10px; right:10px; background:red; padding:10px;">Error al cargar datos</div>';
+        }
     }
 
     function renderSidebar(channels) {
         const side = document.getElementById('sideMenu');
         const grouped = channels.reduce((acc, ch) => {
-            const c = ch.code.toLowerCase();
+            const c = (ch.code || 'UN').toLowerCase();
             if(!acc[c]) acc[c] = [];
             acc[c].push(ch);
             return acc;
         }, {});
 
         side.innerHTML = Object.keys(grouped).sort().map(code => `
-            <details data-country="${code}">
-                <summary>
-                    <img src="https://flagcdn.com/w40/${code}.png" class="flag">
-                    ${code.toUpperCase()} (${grouped[code].length})
-                </summary>
-                ${grouped[code].map(ch => `
-                    <div class="ch-link" onclick="load('${ch.url}')">${ch.name}</div>
-                `).join('')}
+            <details>
+                <summary><img src="https://flagcdn.com/w40/${code}.png" class="flag" onerror="this.src='https://flagcdn.com/w40/un.png'"> ${code.toUpperCase()}</summary>
+                ${grouped[code].map(ch => `<div class="ch-link" onclick="load('${ch.url}')">${ch.name}</div>`).join('')}
             </details>
         `).join('');
     }
 
-    async function renderEvents(data) {
+    function renderEvents(data) {
         const grid = document.getElementById('eventsGrid');
         grid.innerHTML = "";
-        const all = [];
-        ["Soccer", "NBA", "NFL", "NHL"].forEach(cat => {
-            if(data[cat]) data[cat].forEach(e => { e.cat = cat; all.push(e); });
-        });
+        const all = [...(data.Soccer || []), ...(data.NBA || []), ...(data.NFL || []), ...(data.NHL || [])];
 
-        for (const ev of all) {
+        all.forEach(ev => {
             const card = document.createElement('div');
             card.className = "card";
-            card.setAttribute('data-search', `${ev.homeTeam} ${ev.awayTeam}`.toLowerCase());
-            
-            // Cargamos los logos de forma asíncrona
-            const logoH = await fetchEspnLogo(ev.homeTeam, ev.cat);
-            const logoA = await fetchEspnLogo(ev.awayTeam, ev.cat);
-
             card.innerHTML = `
                 <div style="font-size:10px; display:flex; justify-content:space-between; opacity:0.6; margin-bottom:5px;">
                     <span>${ev.tournament}</span>
-                    <span style="color:var(--primary); font-weight:bold;"><i class="fa-regular fa-clock"></i> ${convertToSpainTime(ev.time)}</span>
+                    <span style="color:var(--primary)">${getSpainTime(ev.time)}</span>
                 </div>
                 <div class="match-row">
                     <div class="team">
                         <div class="logo-container">
-                            <img src="${logoH}" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg'">
+                            <img src="${getQuickLogo(ev.homeTeam)}" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg';this.style.opacity='0.2'">
                         </div>
                         ${ev.homeTeam}
                     </div>
                     <div class="vs-tag">VS</div>
                     <div class="team">
                         <div class="logo-container">
-                            <img src="${logoA}" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg'">
+                            <img src="${getQuickLogo(ev.awayTeam)}" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg';this.style.opacity='0.2'">
                         </div>
                         ${ev.awayTeam}
                     </div>
                 </div>
                 <div class="btn-grid">
-                    ${ev.channels.map(ch => `
-                        <div class="btn-ch" onclick="load('${ch.url}')">
-                            <i class="fa-solid fa-satellite-dish"></i> ${ch.channel_name}
-                        </div>
-                    `).join('')}
+                    ${ev.channels.map(ch => `<div class="btn-ch" onclick="load('${ch.url}')">${ch.channel_name}</div>`).join('')}
                 </div>
             `;
             grid.appendChild(card);
-        }
+        });
     }
 
-    document.getElementById('searchInput').addEventListener('input', (e) => {
-        const val = e.target.value.toLowerCase();
-        document.querySelectorAll('.card').forEach(c => c.style.display = c.getAttribute('data-search').includes(val) ? "flex" : "none");
-    });
-
     function load(url) {
-        document.getElementById('player').innerHTML = `<iframe src="${url}" allowfullscreen scrolling="no" allow="encrypted-media" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>`;
+        document.getElementById('player').innerHTML = `<iframe src="${url}" allowfullscreen scrolling="no" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>`;
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
