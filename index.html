@@ -120,15 +120,14 @@
 
         .team { flex: 1; font-size: 13px; font-weight: bold; color: #eee; }
         
-        /* Contenedor de Logo Mejorado */
         .logo-container {
-            width: 60px;
-            height: 60px;
+            width: 65px;
+            height: 65px;
             margin: 0 auto 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255,255,255,0.03);
+            background: rgba(255,255,255,0.05);
             border-radius: 50%;
         }
 
@@ -175,15 +174,15 @@
 </nav>
 
 <div class="main-wrapper">
-    <aside class="sidebar" id="sideMenu">Cargando...</aside>
+    <aside class="sidebar" id="sideMenu">Cargando canales...</aside>
     <main class="content">
         <div class="player-area" id="player">
             <div style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#222;">
                 <i class="fa-solid fa-play-circle fa-5x"></i>
-                <p>Selecciona un partido para comenzar</p>
+                <p>Selecciona una transmisión</p>
             </div>
         </div>
-        <h3 style="border-left: 4px solid var(--primary); padding-left: 10px; margin-bottom: 20px;">PARTIDOS EN VIVO</h3>
+        <h3 style="border-left: 4px solid var(--primary); padding-left: 10px; margin-bottom: 20px;">PARTIDOS HOY (HORA ESPAÑA)</h3>
         <div class="events-grid" id="eventsGrid"></div>
     </main>
 </div>
@@ -193,30 +192,37 @@
     const API_CH = `https://api.cdn-live.tv/api/v1/channels/?${USER}`;
     const API_EV = `https://api.cdn-live.tv/api/v1/events/sports/?${USER}`;
 
-    // Lógica Inmortal de Logos
-    function getTeamLogo(teamName, category) {
-        const name = teamName.toLowerCase().trim();
-        const slug = name.replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const cacheLogos = {};
+
+    // Nueva función de logos usando la API de búsqueda de ESPN
+    async function fetchEspnLogo(teamName, sport) {
+        if(cacheLogos[teamName]) return cacheLogos[teamName];
         
-        // Prioridad 1: ESPN API (Scoreboard Assets)
-        // Intentamos con la ruta de clubes genérica que suele aceptar nombres
-        return `https://a.espncdn.com/i/teamlogos/soccer/500/${slug}.png`;
+        let category = sport.toLowerCase() === "soccer" ? "soccer" : sport.toLowerCase();
+        
+        try {
+            const response = await fetch(`https://site.web.api.espn.com/apis/search/v2?limit=1&type=team&variant=alphabetical&query=${encodeURIComponent(teamName)}`);
+            const data = await response.json();
+            
+            if (data.results && data.results[0] && data.results[0].contents && data.results[0].contents[0]) {
+                const logoUrl = data.results[0].contents[0].logos[0].href;
+                cacheLogos[teamName] = logoUrl;
+                return logoUrl;
+            }
+        } catch (e) { console.warn("Error buscando logo:", teamName); }
+        
+        return 'https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg';
     }
 
-    // Fallback en cascada
-    function handleImgError(img, teamName) {
-        // Si falla ESPN, intentamos con World Football (GitHub que pasaste)
-        if (!img.dataset.retry) {
-            img.dataset.retry = "1";
-            const slug = teamName.toLowerCase().replace(/\s+/g, '-');
-            img.src = `https://raw.githubusercontent.com/luukhopman/football-logos/master/logos/${slug}.png`;
-        } 
-        // Si falla ese también, ponemos el balón por defecto
-        else {
-            img.onerror = null;
-            img.src = 'https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg';
-            img.style.opacity = "0.3";
-        }
+    // Corrección Horaria: La API suele enviar UTC. Sumamos 1 hora (invierno) o 2 (verano) para España.
+    function convertToSpainTime(originalTime) {
+        if (!originalTime.includes(":")) return originalTime;
+        let [hours, minutes] = originalTime.split(":").map(Number);
+        
+        // Ajuste manual (La API suele venir en UTC, España es UTC+1 en invierno)
+        hours = (hours + 1) % 24;
+        
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
     }
 
     async function init() {
@@ -259,27 +265,31 @@
             if(data[cat]) data[cat].forEach(e => { e.cat = cat; all.push(e); });
         });
 
-        all.forEach(ev => {
+        for (const ev of all) {
             const card = document.createElement('div');
             card.className = "card";
             card.setAttribute('data-search', `${ev.homeTeam} ${ev.awayTeam}`.toLowerCase());
             
+            // Cargamos los logos de forma asíncrona
+            const logoH = await fetchEspnLogo(ev.homeTeam, ev.cat);
+            const logoA = await fetchEspnLogo(ev.awayTeam, ev.cat);
+
             card.innerHTML = `
                 <div style="font-size:10px; display:flex; justify-content:space-between; opacity:0.6; margin-bottom:5px;">
                     <span>${ev.tournament}</span>
-                    <span style="color:var(--primary)">${ev.time}</span>
+                    <span style="color:var(--primary); font-weight:bold;"><i class="fa-regular fa-clock"></i> ${convertToSpainTime(ev.time)}</span>
                 </div>
                 <div class="match-row">
                     <div class="team">
                         <div class="logo-container">
-                            <img src="${getTeamLogo(ev.homeTeam, ev.cat)}" onerror="handleImgError(this, '${ev.homeTeam}')">
+                            <img src="${logoH}" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg'">
                         </div>
                         ${ev.homeTeam}
                     </div>
                     <div class="vs-tag">VS</div>
                     <div class="team">
                         <div class="logo-container">
-                            <img src="${getTeamLogo(ev.awayTeam, ev.cat)}" onerror="handleImgError(this, '${ev.awayTeam}')">
+                            <img src="${logoA}" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg'">
                         </div>
                         ${ev.awayTeam}
                     </div>
@@ -293,17 +303,12 @@
                 </div>
             `;
             grid.appendChild(card);
-        });
+        }
     }
 
     document.getElementById('searchInput').addEventListener('input', (e) => {
         const val = e.target.value.toLowerCase();
         document.querySelectorAll('.card').forEach(c => c.style.display = c.getAttribute('data-search').includes(val) ? "flex" : "none");
-        document.querySelectorAll('details').forEach(d => {
-            const has = d.innerText.toLowerCase().includes(val);
-            d.style.display = has ? "block" : "none";
-            if(val.length > 2 && has) d.open = true;
-        });
     });
 
     function load(url) {
