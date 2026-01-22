@@ -23,150 +23,106 @@
             min-height: 100vh;
         }
 
-        /* NAVBAR RE-ESTRUCTURADA */
+        /* NAVBAR - CORRECCIÓN DE ALINEACIÓN */
         .navbar {
             background: #000;
-            padding: 12px 20px;
+            padding: 10px 15px;
             display: flex;
-            flex-direction: row;
             align-items: center;
             justify-content: space-between;
             border-bottom: 2px solid var(--primary);
             position: sticky;
             top: 0;
             z-index: 2000;
+            height: 60px; /* Altura fija para evitar saltos */
+            box-sizing: border-box;
         }
 
         .logo {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 900;
             display: flex;
             align-items: center;
             gap: 6px;
             text-transform: uppercase;
-            white-space: nowrap;
         }
 
         .ball-icon {
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
             background: url('https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg') no-repeat center;
             background-size: contain;
         }
 
         .menu-toggle {
-            font-size: 22px;
+            font-size: 20px;
             color: var(--primary);
             cursor: pointer;
-            width: 30px;
+            padding-right: 10px;
         }
 
-        /* BUSCADOR ESTÉTICO */
+        /* BUSCADOR - FIJADO PARA MÓVIL */
         .search-box {
             position: relative;
-            width: 100%;
-            max-width: 350px; /* Tamaño controlado en PC */
+            flex: 0 1 250px; /* No crece más de 250px en PC */
         }
 
         .search-box input {
             width: 100%;
-            padding: 8px 15px 8px 35px;
+            padding: 6px 12px 6px 30px;
             background: #1a1a1a;
             border: 1px solid #333;
-            border-radius: 20px;
+            border-radius: 15px;
             color: white;
             outline: none;
-            font-size: 14px;
-            transition: all 0.3s;
+            font-size: 13px;
         }
 
-        .search-box input:focus { border-color: var(--primary); background: #222; }
-        .search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--primary); font-size: 13px; }
+        .search-box i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--primary); font-size: 12px; }
 
         /* Layout */
-        .main-wrapper { display: grid; grid-template-columns: 300px 1fr; flex: 1; }
+        .main-wrapper { display: grid; grid-template-columns: 280px 1fr; flex: 1; }
 
         .sidebar {
             background: var(--card-bg);
             border-right: 1px solid #222;
             padding: 15px;
-            height: calc(100vh - 70px);
+            height: calc(100vh - 60px);
             overflow-y: auto;
             position: sticky;
-            top: 70px;
-            z-index: 1000;
+            top: 60px;
         }
-
-        details { margin-bottom: 8px; background: #1a1a1a; border-radius: 8px; overflow: hidden; }
-        summary { padding: 12px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 10px; list-style: none; font-size: 14px; }
-        .flag { width: 18px; border-radius: 2px; }
-        .ch-link { padding: 10px 15px; font-size: 13px; border-top: 1px solid #222; cursor: pointer; }
 
         .content { padding: 15px; background: #0a0a0a; }
 
-        /* Player */
+        /* Player Area */
         .player-area {
-            width: 100%; max-width: 950px; margin: 0 auto 25px; aspect-ratio: 16/9;
-            background: #000; border-radius: 12px; overflow: hidden; border: 1px solid #333;
-            position: sticky; top: 120px; z-index: 900; box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            width: 100%; max-width: 900px; margin: 0 auto 20px; aspect-ratio: 16/9;
+            background: #000; border-radius: 10px; overflow: hidden; border: 1px solid #333;
+            position: sticky; top: 75px; z-index: 900;
         }
         .player-area.hidden { display: none; }
         iframe { width: 100%; height: 100%; border: none; }
 
-        /* Sugerencias */
-        #searchSuggestions {
-            display: none; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 10px; margin-bottom: 25px; padding: 15px; background: #111;
-            border-radius: 10px; border: 1px dashed #333;
-        }
+        /* Grid de eventos */
+        .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+        .card { background: var(--card-bg); border-radius: 10px; padding: 12px; border: 1px solid #222; }
 
-        .btn-ch-sugg {
-            padding: 8px 12px; background: #1e1e1e; color: #fff; font-size: 12px;
-            border-radius: 6px; cursor: pointer; border: 1px solid #333;
-            display: flex; align-items: center; gap: 10px;
-        }
-
-        .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
-        .card { background: var(--card-bg); border-radius: 12px; padding: 15px; border: 1px solid #222; }
-
-        /* AJUSTES MÓVILES CORREGIDOS */
+        /* MEDIA QUERIES CORREGIDOS */
         @media (max-width: 768px) {
-            .navbar {
-                flex-direction: column; /* Apilado vertical */
-                padding: 10px 15px 15px 15px;
-                gap: 12px;
-            }
+            .navbar { height: auto; padding: 10px; flex-wrap: wrap; justify-content: space-around; }
+            .logo { order: 1; font-size: 14px; margin-bottom: 5px; }
+            .menu-toggle { order: 1; }
+            .search-box { order: 2; flex: 1 1 100%; margin-top: 5px; max-width: 100%; }
             
-            .menu-toggle {
-                position: absolute;
-                left: 15px;
-                top: 12px;
-            }
-
-            .logo {
-                font-size: 16px;
-                justify-content: center;
-                width: 100%;
-                margin-top: 2px;
-            }
-
-            .search-box {
-                max-width: 90%; /* Ancho estético en móvil */
-                margin: 0 auto;
-            }
-
             .main-wrapper { grid-template-columns: 1fr; }
-            
-            .sidebar {
-                position: fixed; left: 0; top: 0; height: 100%; width: 280px;
-                z-index: 2100; transform: translateX(-100%); transition: transform 0.3s;
-            }
+            .sidebar { position: fixed; left: 0; top: 0; width: 260px; z-index: 2500; transform: translateX(-100%); transition: 0.3s; }
             .sidebar.active { transform: translateX(0); }
             
-            .player-area { top: 125px; border-radius: 0; margin-bottom: 15px; }
+            .player-area { top: 110px; border-radius: 0; }
         }
 
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2050; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2100; }
         .overlay.active { display: block; }
     </style>
 </head>
@@ -175,13 +131,11 @@
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
 <nav class="navbar">
-    <div class="menu-toggle" onclick="toggleMenu()">
-        <i class="fa-solid fa-bars-staggered"></i>
-    </div>
+    <div class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars-staggered"></i></div>
     <div class="logo">AMANTES DEL FUTB<div class="ball-icon"></div>L</div>
     <div class="search-box">
         <i class="fa-solid fa-search"></i>
-        <input type="text" id="searchInput" placeholder="Buscar equipo o canal...">
+        <input type="text" id="searchInput" placeholder="Buscar...">
     </div>
 </nav>
 
@@ -189,23 +143,18 @@
     <aside class="sidebar" id="sideMenu">Cargando...</aside>
     <main class="content">
         <div class="player-area" id="player">
-            <div style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#333;">
+            <div style="height:100%; display:flex; justify-content:center; align-items:center; opacity:0.3;">
                 <i class="fa-solid fa-play-circle fa-3x"></i>
-                <p style="font-size: 14px; margin-top: 10px;">Selecciona un canal para ver</p>
             </div>
         </div>
-
-        <div id="searchSuggestions"></div>
-
-        <h3 id="sectionTitle" style="border-left: 4px solid var(--primary); padding-left: 10px; font-size: 15px;">EVENTOS DE HOY</h3>
+        <div id="searchSuggestions" style="display:none; grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); gap:8px; margin-bottom:20px;"></div>
+        <h3 id="sectionTitle" style="border-left: 3px solid var(--primary); padding-left: 8px; font-size: 14px; margin-bottom:15px;">EVENTOS EN DIRECTO</h3>
         <div class="events-grid" id="eventsGrid"></div>
     </main>
 </div>
 
 <script>
     const AUTH = "user=cdnlivetv&plan=free";
-    const API_CH = `https://api.cdn-live.tv/api/v1/channels/?${AUTH}`;
-    const API_EV = `https://api.cdn-live.tv/api/v1/events/sports/?${AUTH}`;
     let allChannels = [];
 
     function toggleMenu() {
@@ -213,12 +162,25 @@
         document.getElementById('overlay').classList.toggle('active');
     }
 
+    // CORRECCIÓN DE HORA (Ajuste de zona horaria)
+    function fixTime(timeStr) {
+        if(!timeStr || !timeStr.includes(':')) return timeStr;
+        let [h, m] = timeStr.split(':').map(Number);
+        // Restamos 1 hora para corregir el adelanto que mencionas
+        h = (h - 1 + 24) % 24;
+        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+    }
+
     async function init() {
         try {
-            const [rCh, rEv] = await Promise.all([fetch(API_CH), fetch(API_EV)]);
+            const [rCh, rEv] = await Promise.all([
+                fetch(`https://api.cdn-live.tv/api/v1/channels/?${AUTH}`),
+                fetch(`https://api.cdn-live.tv/api/v1/events/sports/?${AUTH}`)
+            ]);
             const dCh = await rCh.json();
             const dEv = await rEv.json();
             allChannels = dCh.channels;
+            
             renderSidebar(allChannels);
             renderEvents(dEv['cdn-live-tv']);
         } catch (e) { console.error(e); }
@@ -232,11 +194,11 @@
             acc[c].push(ch);
             return acc;
         }, {});
-        side.innerHTML = `<h3 style="color:var(--primary); font-size:16px; margin-bottom:15px;">CANALES</h3>` + 
+        side.innerHTML = `<h3 style="color:var(--primary); font-size:14px;">CANALES TV</h3>` + 
             Object.keys(grouped).sort().map(code => `
-            <details>
-                <summary><img src="https://flagcdn.com/w20/${code}.png" class="flag"> ${code.toUpperCase()}</summary>
-                ${grouped[code].map(ch => `<div class="ch-link" onclick="load('${ch.url}')">${ch.name}</div>`).join('')}
+            <details style="margin-bottom:5px; background:#1a1a1a; border-radius:5px;">
+                <summary style="padding:10px; font-size:12px; cursor:pointer;"><img src="https://flagcdn.com/w20/${code}.png" style="width:16px;"> ${code.toUpperCase()}</summary>
+                ${grouped[code].map(ch => `<div style="padding:8px 15px; font-size:11px; border-top:1px solid #222; cursor:pointer;" onclick="load('${ch.url}')">${ch.name}</div>`).join('')}
             </details>
         `).join('');
     }
@@ -254,17 +216,17 @@
             card.className = "card";
             card.setAttribute('data-search', `${ev.homeTeam} ${ev.awayTeam} ${ev.tournament}`.toLowerCase());
             card.innerHTML = `
-                <div style="font-size:10px; display:flex; justify-content:space-between; opacity:0.6; margin-bottom:10px;">
+                <div style="font-size:9px; display:flex; justify-content:space-between; opacity:0.5; margin-bottom:8px;">
                     <span>${ev.tournament}</span>
-                    <span style="color:var(--primary); font-weight:bold;">${ev.time}</span>
+                    <span style="color:var(--primary); font-weight:bold;">${fixTime(ev.time)}</span>
                 </div>
-                <div style="display:flex; justify-content:space-around; align-items:center; margin-bottom:15px;">
-                    <div style="text-align:center; flex:1; font-size:12px;">${ev.homeTeam}</div>
-                    <div style="color:var(--primary); font-weight:900; font-size:11px;">VS</div>
-                    <div style="text-align:center; flex:1; font-size:12px;">${ev.awayTeam}</div>
+                <div style="display:flex; justify-content:space-around; align-items:center; margin-bottom:12px; font-size:11px; text-align:center;">
+                    <div style="flex:1;">${ev.homeTeam}</div>
+                    <div style="color:var(--primary); font-weight:900; padding:0 5px;">VS</div>
+                    <div style="flex:1;">${ev.awayTeam}</div>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
-                    ${ev.channels.map(ch => `<div class="btn-ch" onclick="load('${ch.url}')" style="background:#1e1e1e; padding:8px; border-radius:5px; font-size:10px; text-align:center; cursor:pointer; border:1px solid #333;">${ch.channel_name}</div>`).join('')}
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px;">
+                    ${ev.channels.map(ch => `<div onclick="load('${ch.url}')" style="background:#1e1e1e; padding:6px; border-radius:4px; font-size:9px; text-align:center; cursor:pointer; border:1px solid #333;">${ch.channel_name}</div>`).join('')}
                 </div>
             `;
             grid.appendChild(card);
@@ -275,32 +237,30 @@
         const p = document.getElementById('player');
         p.classList.remove('hidden');
         p.innerHTML = `<iframe src="${url}" allowfullscreen allow="encrypted-media"></iframe>`;
-        document.getElementById('searchInput').value = "";
-        triggerSearch("");
-        if(window.innerWidth < 768) p.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if(window.innerWidth < 768) {
+            p.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if(document.getElementById('sideMenu').classList.contains('active')) toggleMenu();
+        }
     }
 
     function triggerSearch(val) {
         const playerArea = document.getElementById('player');
         const suggCont = document.getElementById('searchSuggestions');
         
-        if(val.length > 0) {
-            playerArea.classList.add('hidden');
-        } else {
-            playerArea.classList.remove('hidden');
-        }
+        if(val.length > 0) { playerArea.classList.add('hidden'); } 
+        else { playerArea.classList.remove('hidden'); }
 
         document.querySelectorAll('.card').forEach(c => {
             c.style.display = c.getAttribute('data-search').includes(val) ? "block" : "none";
         });
 
         if(val.length > 1) {
-            const filteredCh = allChannels.filter(ch => ch.name.toLowerCase().includes(val)).slice(0, 10);
+            const filteredCh = allChannels.filter(ch => ch.name.toLowerCase().includes(val)).slice(0, 8);
             if(filteredCh.length > 0) {
                 suggCont.style.display = 'grid';
                 suggCont.innerHTML = filteredCh.map(ch => `
-                    <div class="btn-ch-sugg" onclick="load('${ch.url}')">
-                        <img src="https://flagcdn.com/w20/${(ch.code || 'un').toLowerCase()}.png" class="flag">
+                    <div onclick="load('${ch.url}')" style="padding:8px; background:#1e1e1e; border-radius:6px; font-size:10px; display:flex; align-items:center; gap:8px; cursor:pointer; border:1px solid #333;">
+                        <img src="https://flagcdn.com/w20/${(ch.code || 'un').toLowerCase()}.png" style="width:15px">
                         <span>${ch.name}</span>
                     </div>
                 `).join('');
