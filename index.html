@@ -21,6 +21,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            overflow-x: hidden; /* Evita cualquier desplazamiento lateral */
         }
 
         /* NAVBAR */
@@ -80,49 +81,86 @@
         .search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--primary); font-size: 12px; }
 
         /* LAYOUT */
-        .main-wrapper { display: grid; grid-template-columns: 280px 1fr; flex: 1; }
+        .main-wrapper { display: grid; grid-template-columns: 280px 1fr; flex: 1; width: 100%; }
 
         .sidebar {
             background: var(--card-bg);
             border-right: 1px solid #222;
             padding: 15px;
-            height: calc(100vh - 100px);
+            height: calc(100vh - 105px);
             overflow-y: auto;
             position: sticky;
             top: 105px;
         }
 
-        .content { padding: 15px; background: #0a0a0a; }
+        .content { 
+            padding: 20px; 
+            background: #0a0a0a; 
+            width: 100%; 
+            box-sizing: border-box; 
+        }
 
         /* REPRODUCTOR */
-        .player-container { width: 100%; margin-bottom: 25px; position: relative; }
+        .player-container { 
+            width: 100%; 
+            max-width: 900px; 
+            margin: 0 auto 25px; 
+            position: relative; 
+        }
+
         .player-area {
-            width: 100%; max-width: 900px; margin: 0 auto; aspect-ratio: 16/9;
-            background: #000; border-radius: 12px; overflow: hidden; border: 1px solid #333;
+            width: 100%; 
+            aspect-ratio: 16/9;
+            background: #000; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            border: 1px solid #333;
         }
         iframe { width: 100%; height: 100%; border: none; }
 
+        /* EVENTOS */
         .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; }
         .card { background: var(--card-bg); border-radius: 12px; padding: 15px; border: 1px solid #222; }
 
-        /* MÓVIL: CORRECCIÓN STICKY */
+        /* MÓVIL: CORRECCIÓN TOTAL DE CENTRADO Y STICKY */
         @media (max-width: 768px) {
             .menu-toggle { display: block; }
-            .main-wrapper { display: block; }
+            
+            .main-wrapper { 
+                display: block; /* Rompemos el grid para evitar el margen izquierdo */
+                width: 100%;
+            }
+
             .sidebar { 
                 position: fixed; left: 0; top: 0; width: 280px; z-index: 2500; 
                 transform: translateX(-100%); transition: 0.3s; border: none;
             }
             .sidebar.active { transform: translateX(0); }
             
-            /* Ajuste exacto para que no se solape con la navbar de dos filas */
+            .content { 
+                padding: 15px; 
+                width: 100%; 
+                box-sizing: border-box; 
+            }
+
             .player-container { 
                 position: sticky; 
-                top: 96px; /* Ajustado para móviles */
+                top: 98px; /* Altura de la navbar + buscador */
                 z-index: 1000; 
-                margin: 0 -15px 15px -15px; 
+                margin: 0 auto 20px; /* Centrado automático */
+                width: 100vw; /* Ocupa el ancho visual completo */
+                left: 50%;
+                right: 50%;
+                margin-left: -50vw;
+                margin-right: -50vw;
             }
-            .player-area { border-radius: 0; width: 100%; border-left: none; border-right: none; }
+
+            .player-area { 
+                border-radius: 0; 
+                border-left: none; 
+                border-right: none; 
+                width: 100%;
+            }
         }
 
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2100; }
@@ -159,7 +197,9 @@
                 </div>
             </div>
         </div>
+        
         <div id="searchSuggestions" style="display:none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap:10px; margin-bottom:20px;"></div>
+        
         <h3 style="border-left: 4px solid var(--primary); padding-left: 10px; font-size: 15px; margin-bottom:15px;">PARTIDOS DE HOY</h3>
         <div class="events-grid" id="eventsGrid"></div>
     </main>
@@ -174,7 +214,6 @@
         document.getElementById('overlay').classList.toggle('active');
     }
 
-    // HORA CORREGIDA: +1 Hora
     function fixTime(timeStr) {
         if(!timeStr || !timeStr.includes(':')) return timeStr;
         let [h, m] = timeStr.split(':').map(Number);
@@ -273,7 +312,7 @@
 
     document.getElementById('searchInput').addEventListener('input', (e) => triggerSearch(e.target.value.toLowerCase()));
     fetchData();
-    setInterval(fetchData, 300000); // Auto-actualización cada 5 min
+    setInterval(fetchData, 300000);
 </script>
 </body>
 </html>
