@@ -57,8 +57,9 @@
 
 <script>
 // --- CONFIGURACIÓN DE APIS ---
-const API_CHANNELS = "https://cdn-live.tv/api/v1/channels";
-const API_EVENTS = "https://cdn-live.tv/api/events"; // Asegúrate que esta URL sea accesible
+const PROXY = "https://api.allorigins.win/raw?url=";
+const API_CHANNELS = PROXY + encodeURIComponent("https://cdn-live.tv/api/v1/channels");
+const API_EVENTS = PROXY + encodeURIComponent("https://cdn-live.tv/api/events");
 
 // --- LÓGICA DE NAVEGACIÓN ---
 function showTab(tab) {
@@ -78,8 +79,11 @@ async function loadChannels() {
     try {
         const res = await fetch(API_CHANNELS);
         const data = await res.json();
+        // Si los datos vienen dentro de 'contents' (por el proxy), los extraemos
+        const finalData = data.contents ? JSON.parse(data.contents) : data;
+        
         const grid = document.getElementById('tv-grid');
-        grid.innerHTML = data.channels.map(ch => `
+        grid.innerHTML = finalData.channels.map(ch => `
             <div class="card">
                 <img src="${ch.image}" alt="${ch.name}">
                 <div class="card-info">
@@ -89,7 +93,10 @@ async function loadChannels() {
                 </div>
             </div>
         `).join('');
-    } catch (e) { console.error("Error canales", e); }
+    } catch (e) { 
+        console.error("Error canales", e);
+        document.getElementById('tv-grid').innerHTML = "Error al cargar canales.";
+    }
 }
 
 // --- CARGAR EVENTOS (SIMULADO O REAL) ---
