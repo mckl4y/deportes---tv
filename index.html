@@ -40,12 +40,13 @@
         .nav-top {
             width: 100%;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
+            position: relative;
         }
 
         .logo {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 900;
             display: flex;
             align-items: center;
@@ -54,26 +55,29 @@
         }
 
         .ball-icon {
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             background: url('https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg') no-repeat center;
             background-size: contain;
         }
 
         .menu-toggle {
+            display: none; 
             font-size: 20px;
             color: var(--primary);
             cursor: pointer;
+            position: absolute;
+            left: 0;
         }
 
         .search-container { width: 100%; display: flex; justify-content: center; }
-        .search-box { position: relative; width: 100%; max-width: 250px; }
+        .search-box { position: relative; width: 100%; max-width: 280px; }
         .search-box input {
-            width: 100%; padding: 6px 10px 6px 32px; background: #1a1a1a;
+            width: 100%; padding: 7px 10px 7px 35px; background: #1a1a1a;
             border: 1px solid #333; border-radius: 20px; color: white;
             outline: none; font-size: 13px; text-align: center;
         }
-        .search-box i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--primary); font-size: 12px; }
+        .search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--primary); font-size: 12px; }
 
         /* LAYOUT */
         .main-wrapper { display: grid; grid-template-columns: 280px 1fr; flex: 1; }
@@ -85,30 +89,25 @@
             height: calc(100vh - 100px);
             overflow-y: auto;
             position: sticky;
-            top: 100px;
+            top: 105px;
         }
 
         .content { padding: 15px; background: #0a0a0a; }
 
-        /* REPRODUCTOR NORMAL (PC) */
-        .player-container {
-            position: relative; /* Cambiado de sticky a relative para PC */
-            width: 100%;
-            margin-bottom: 25px;
-        }
-
+        /* REPRODUCTOR */
+        .player-container { width: 100%; margin-bottom: 25px; position: relative; }
         .player-area {
             width: 100%; max-width: 900px; margin: 0 auto; aspect-ratio: 16/9;
             background: #000; border-radius: 12px; overflow: hidden; border: 1px solid #333;
         }
         iframe { width: 100%; height: 100%; border: none; }
 
-        /* EVENTOS */
         .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; }
         .card { background: var(--card-bg); border-radius: 12px; padding: 15px; border: 1px solid #222; }
 
-        /* MÓVIL: REPRODUCTOR STICKY */
+        /* MÓVIL: CORRECCIÓN STICKY */
         @media (max-width: 768px) {
+            .menu-toggle { display: block; }
             .main-wrapper { display: block; }
             .sidebar { 
                 position: fixed; left: 0; top: 0; width: 280px; z-index: 2500; 
@@ -116,12 +115,11 @@
             }
             .sidebar.active { transform: translateX(0); }
             
-            /* En móvil sí lo mantenemos sticky si así lo prefieres, 
-               o puedes cambiarlo a relative también aquí */
+            /* Ajuste exacto para que no se solape con la navbar de dos filas */
             .player-container { 
                 position: sticky; 
-                top: 105px; 
-                z-index: 1000;
+                top: 96px; /* Ajustado para móviles */
+                z-index: 1000; 
                 margin: 0 -15px 15px -15px; 
             }
             .player-area { border-radius: 0; width: 100%; border-left: none; border-right: none; }
@@ -142,7 +140,6 @@
     <div class="nav-top">
         <div class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars-staggered"></i></div>
         <div class="logo">AMANTES DEL FUTB<div class="ball-icon"></div>L</div>
-        <div style="width:20px;"></div>
     </div>
     <div class="search-container">
         <div class="search-box">
@@ -153,7 +150,7 @@
 </nav>
 
 <div class="main-wrapper">
-    <aside class="sidebar" id="sideMenu">Cargando...</aside>
+    <aside class="sidebar" id="sideMenu">Cargando canales...</aside>
     <main class="content">
         <div class="player-container">
             <div class="player-area" id="player">
@@ -162,9 +159,7 @@
                 </div>
             </div>
         </div>
-
         <div id="searchSuggestions" style="display:none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap:10px; margin-bottom:20px;"></div>
-        
         <h3 style="border-left: 4px solid var(--primary); padding-left: 10px; font-size: 15px; margin-bottom:15px;">PARTIDOS DE HOY</h3>
         <div class="events-grid" id="eventsGrid"></div>
     </main>
@@ -179,6 +174,7 @@
         document.getElementById('overlay').classList.toggle('active');
     }
 
+    // HORA CORREGIDA: +1 Hora
     function fixTime(timeStr) {
         if(!timeStr || !timeStr.includes(':')) return timeStr;
         let [h, m] = timeStr.split(':').map(Number);
@@ -208,7 +204,7 @@
             acc[c].push(ch);
             return acc;
         }, {});
-        side.innerHTML = `<h3 style="color:var(--primary); font-size:14px;">CANALES</h3>` + 
+        side.innerHTML = `<h3 style="color:var(--primary); font-size:14px; margin-top:0;">CANALES TV</h3>` + 
             Object.keys(grouped).sort().map(code => `
             <details style="margin-bottom:5px; background:#1a1a1a; border-radius:5px;">
                 <summary style="padding:10px; font-size:12px; cursor:pointer;"><img src="https://flagcdn.com/w20/${code}.png" style="width:16px;"> ${code.toUpperCase()}</summary>
@@ -277,7 +273,7 @@
 
     document.getElementById('searchInput').addEventListener('input', (e) => triggerSearch(e.target.value.toLowerCase()));
     fetchData();
-    setInterval(fetchData, 300000);
+    setInterval(fetchData, 300000); // Auto-actualización cada 5 min
 </script>
 </body>
 </html>
