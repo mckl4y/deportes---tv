@@ -11,6 +11,7 @@
             --dark-bg: #080808;
             --card-bg: #121212;
             --text: #ffffff;
+            --nav-height: 110px; /* Ajuste para el sticky */
         }
 
         body {
@@ -35,7 +36,7 @@
             gap: 15px;
             position: sticky;
             top: 0;
-            z-index: 1000;
+            z-index: 2000;
         }
 
         .logo {
@@ -60,7 +61,7 @@
             font-size: 24px;
             color: var(--primary);
             cursor: pointer;
-            width: 30px; /* Para equilibrar el centrado */
+            width: 30px;
         }
 
         .search-box {
@@ -98,6 +99,7 @@
             position: sticky;
             top: 80px;
             transition: transform 0.3s ease;
+            z-index: 1000;
         }
 
         details { margin-bottom: 8px; background: #1a1a1a; border-radius: 8px; overflow: hidden; }
@@ -107,6 +109,7 @@
 
         .content { padding: 15px; background: #0a0a0a; }
 
+        /* REPRODUCTOR SIEMPRE ACOMPAÑA (STICKY) */
         .player-area {
             width: 100%;
             max-width: 950px;
@@ -117,7 +120,11 @@
             overflow: hidden;
             border: 1px solid #333;
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            scroll-margin-top: 120px;
+            
+            /* Esta es la magia del Sticky */
+            position: sticky;
+            top: 100px; 
+            z-index: 900;
         }
         iframe { width: 100%; height: 100%; border: none; }
 
@@ -141,23 +148,32 @@
         .btn-ch { padding: 10px 5px; background: #1e1e1e; color: #ccc; text-align: center; font-size: 10px; border-radius: 6px; cursor: pointer; border: 1px solid #333; }
         .btn-ch:hover { background: var(--primary); color: #000; }
 
-        /* Ajustes para Móviles Corregidos */
+        /* Ajustes para Móviles */
         @media (max-width: 768px) {
-            .menu-toggle { display: block; position: absolute; left: 15px; }
+            .menu-toggle { display: block; position: absolute; left: 15px; top: 18px; }
             .navbar { 
                 flex-direction: column; 
-                padding: 15px 10px; 
-                position: relative;
-                justify-content: center;
+                padding: 15px 10px 20px 10px;
+                position: sticky;
+                top: 0;
             }
             .logo { 
                 font-size: 17px; 
-                margin-bottom: 12px;
+                margin-bottom: 15px;
                 width: 100%;
-                justify-content: center; /* Centra el logo */
+                justify-content: center;
             }
-            .search-box { max-width: 100%; }
+            .search-box { 
+                max-width: 100%; 
+                margin-top: 10px;
+            }
             
+            .player-area {
+                top: 135px; /* Ajuste para que se pegue justo debajo del menu móvil */
+                margin-bottom: 20px;
+                border-radius: 0; /* Opcional: queda mejor sin bordes en móvil cuando es sticky */
+            }
+
             .main-wrapper { grid-template-columns: 1fr; }
             
             .sidebar {
@@ -166,7 +182,7 @@
                 top: 0;
                 height: 100%;
                 width: 280px;
-                z-index: 2000;
+                z-index: 2100;
                 transform: translateX(-100%);
             }
             .sidebar.active { transform: translateX(0); }
@@ -178,7 +194,7 @@
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7);
-            z-index: 1500;
+            z-index: 2050;
         }
         .overlay.active { display: block; }
     </style>
@@ -194,16 +210,16 @@
     <div class="logo">AMANTES DEL FUTB<div class="ball-icon"></div>L</div>
     <div class="search-box">
         <i class="fa-solid fa-search"></i>
-        <input type="text" id="searchInput" placeholder="Busca tu equipo...">
+        <input type="text" id="searchInput" placeholder="Busca tu equipo o liga...">
     </div>
 </nav>
 
 <div class="main-wrapper">
-    <aside class="sidebar" id="sideMenu">Cargando...</aside>
+    <aside class="sidebar" id="sideMenu">Cargando canales...</aside>
     <main class="content">
         <div class="player-area" id="player">
             <div style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#333; text-align: center; padding: 20px;">
-                <i class="fa-solid fa-circle-play fa-4x"></i>
+                <i class="fa-solid fa-circle-play fa-4x" style="margin-bottom:10px;"></i>
                 <p>Selecciona un partido para comenzar</p>
             </div>
         </div>
@@ -312,7 +328,7 @@
     function load(url) {
         const playerArea = document.getElementById('player');
         playerArea.innerHTML = `<iframe src="${url}" allowfullscreen allow="encrypted-media" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>`;
-        playerArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Ya no hace falta el scroll automático forzado porque el reproductor te acompaña
     }
 
     document.getElementById('searchInput').addEventListener('input', (e) => {
