@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amantes del Futbol | En Vivo</title>
+    <title>Amantes del Futbol | Pro Edition</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -28,13 +28,20 @@
             background: #000;
             padding: 10px 15px;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: space-between;
             border-bottom: 2px solid var(--primary);
             position: sticky;
             top: 0;
             z-index: 2000;
-            min-height: 60px;
+            gap: 10px;
+        }
+
+        .nav-top {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .logo {
@@ -47,8 +54,8 @@
         }
 
         .ball-icon {
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
             background: url('https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg') no-repeat center;
             background-size: contain;
         }
@@ -57,79 +64,63 @@
             font-size: 20px;
             color: var(--primary);
             cursor: pointer;
-            padding: 5px;
         }
 
-        /* BUSCADOR */
-        .search-box {
-            position: relative;
-            flex: 0 1 300px;
-        }
-
+        .search-container { width: 100%; display: flex; justify-content: center; }
+        .search-box { position: relative; width: 100%; max-width: 250px; }
         .search-box input {
-            width: 100%;
-            padding: 8px 12px 8px 35px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 20px;
-            color: white;
-            outline: none;
-            font-size: 14px;
+            width: 100%; padding: 6px 10px 6px 32px; background: #1a1a1a;
+            border: 1px solid #333; border-radius: 20px; color: white;
+            outline: none; font-size: 13px; text-align: center;
         }
+        .search-box i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--primary); font-size: 12px; }
 
-        .search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--primary); }
-
-        /* LAYOUT SIN LÍNEAS RESIDUALES */
-        .main-wrapper { 
-            display: grid; 
-            grid-template-columns: 280px 1fr; 
-            flex: 1; 
-        }
+        /* LAYOUT */
+        .main-wrapper { display: grid; grid-template-columns: 280px 1fr; flex: 1; }
 
         .sidebar {
             background: var(--card-bg);
             border-right: 1px solid #222;
             padding: 15px;
-            height: calc(100vh - 60px);
+            height: calc(100vh - 100px);
             overflow-y: auto;
             position: sticky;
-            top: 60px;
+            top: 100px;
         }
 
         .content { padding: 15px; background: #0a0a0a; }
 
-        /* REPRODUCTOR */
+        /* REPRODUCTOR STICKY PARA PC */
+        .player-container {
+            position: sticky;
+            top: 110px; /* Se queda fijo debajo de la navbar al hacer scroll */
+            z-index: 1000;
+            margin-bottom: 25px;
+        }
+
         .player-area {
-            width: 100%; max-width: 900px; margin: 0 auto 20px; aspect-ratio: 16/9;
+            width: 100%; max-width: 900px; margin: 0 auto; aspect-ratio: 16/9;
             background: #000; border-radius: 12px; overflow: hidden; border: 1px solid #333;
-            position: sticky; top: 75px; z-index: 900;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         .player-area.hidden { display: none; }
         iframe { width: 100%; height: 100%; border: none; }
 
         /* EVENTOS */
-        .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
-        .card { background: var(--card-bg); border-radius: 12px; padding: 15px; border: 1px solid #222; }
+        .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 15px; border: 1px solid #222; transition: 0.3s; }
+        .card:hover { border-color: var(--primary); }
 
-        /* MÓVIL CORREGIDO (Sin líneas blancas) */
+        /* MÓVIL */
         @media (max-width: 768px) {
-            .navbar { flex-wrap: wrap; padding: 10px; border-bottom: 2px solid var(--primary); }
-            .logo { order: 1; flex: 1; justify-content: center; margin-left: -30px; }
-            .menu-toggle { order: 1; }
-            .search-box { order: 2; flex: 1 1 100%; margin-top: 10px; max-width: 100%; }
-            
-            .main-wrapper { 
-                display: block; /* Eliminamos el grid que causa la línea central */
-            }
-            
+            .main-wrapper { display: block; }
             .sidebar { 
                 position: fixed; left: 0; top: 0; width: 280px; z-index: 2500; 
-                transform: translateX(-100%); transition: 0.3s; 
-                border-right: none; /* Quitamos borde en móvil */
+                transform: translateX(-100%); transition: 0.3s; border: none;
             }
             .sidebar.active { transform: translateX(0); }
-            
-            .player-area { top: 120px; border-radius: 0; margin: 0 -15px 15px -15px; width: calc(100% + 30px); }
+            .player-container { top: 115px; margin: 0 -15px 15px -15px; }
+            .player-area { border-radius: 0; width: 100%; }
         }
 
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2100; }
@@ -144,24 +135,34 @@
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
 <nav class="navbar">
-    <div class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars-staggered"></i></div>
-    <div class="logo">AMANTES DEL FUTB<div class="ball-icon"></div>L</div>
-    <div class="search-box">
-        <i class="fa-solid fa-search"></i>
-        <input type="text" id="searchInput" placeholder="Buscar equipo o canal...">
+    <div class="nav-top">
+        <div class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars-staggered"></i></div>
+        <div class="logo">AMANTES DEL FUTB<div class="ball-icon"></div>L</div>
+        <div style="width:20px;"></div>
+    </div>
+    <div class="search-container">
+        <div class="search-box">
+            <i class="fa-solid fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Buscar equipo o canal...">
+        </div>
     </div>
 </nav>
 
 <div class="main-wrapper">
-    <aside class="sidebar" id="sideMenu">Cargando...</aside>
+    <aside class="sidebar" id="sideMenu">Cargando canales...</aside>
     <main class="content">
-        <div class="player-area" id="player">
-            <div style="height:100%; display:flex; justify-content:center; align-items:center; opacity:0.2;">
-                <i class="fa-solid fa-play-circle fa-4x"></i>
+        <div class="player-container" id="playerAnchor">
+            <div class="player-area" id="player">
+                <div style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; opacity:0.1;">
+                    <i class="fa-solid fa-play-circle fa-4x"></i>
+                    <p style="margin-top:10px; font-weight:bold;">SISTEMA LISTO</p>
+                </div>
             </div>
         </div>
-        <div id="searchSuggestions" style="display:none; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap:10px; margin-bottom:20px;"></div>
-        <h3 id="sectionTitle" style="border-left: 4px solid var(--primary); padding-left: 10px; font-size: 16px; margin-bottom:20px;">PARTIDOS DE HOY</h3>
+
+        <div id="searchSuggestions" style="display:none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap:10px; margin-bottom:20px;"></div>
+        
+        <h3 style="border-left: 4px solid var(--primary); padding-left: 10px; font-size: 15px; margin-bottom:15px;">PARTIDOS DE HOY</h3>
         <div class="events-grid" id="eventsGrid"></div>
     </main>
 </div>
@@ -175,11 +176,10 @@
         document.getElementById('overlay').classList.toggle('active');
     }
 
-    // CORRECCIÓN DE HORA: Sumamos 2 horas para corregir el retraso
     function fixTime(timeStr) {
         if(!timeStr || !timeStr.includes(':')) return timeStr;
         let [h, m] = timeStr.split(':').map(Number);
-        h = (h + 2) % 24; // Suma 2 horas
+        h = (h + 1) % 24; 
         return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
     }
 
@@ -205,7 +205,7 @@
             acc[c].push(ch);
             return acc;
         }, {});
-        side.innerHTML = `<h3 style="color:var(--primary); font-size:15px;">CANALES</h3>` + 
+        side.innerHTML = `<h3 style="color:var(--primary); font-size:14px;">CANALES TV</h3>` + 
             Object.keys(grouped).sort().map(code => `
             <details style="margin-bottom:5px; background:#1a1a1a; border-radius:5px;">
                 <summary style="padding:10px; font-size:12px; cursor:pointer;"><img src="https://flagcdn.com/w20/${code}.png" style="width:16px;"> ${code.toUpperCase()}</summary>
@@ -236,13 +236,13 @@
                 <div style="font-size:10px; display:flex; justify-content:space-between; opacity:0.6; margin-bottom:10px;">
                     <span>${ev.tournament}</span>
                     <span style="color:${isLive ? '#ff4757' : 'var(--primary)'}; font-weight:bold;">
-                        ${isLive ? '<i class="fa-solid fa-circle live-dot"></i> EN VIVO' : adjustedTime}
+                        ${isLive ? '<i class="fa-solid fa-circle live-dot"></i> LIVE' : adjustedTime}
                     </span>
                 </div>
                 <div style="display:flex; justify-content:space-around; align-items:center; margin-bottom:12px; text-align:center;">
-                    <div style="flex:1; font-size:12px;">${ev.homeTeam}</div>
+                    <div style="flex:1; font-size:12px; font-weight:bold;">${ev.homeTeam}</div>
                     <div style="color:var(--primary); font-weight:900; padding:0 10px;">VS</div>
-                    <div style="flex:1; font-size:12px;">${ev.awayTeam}</div>
+                    <div style="flex:1; font-size:12px; font-weight:bold;">${ev.awayTeam}</div>
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
                     ${ev.channels.map(ch => `<div onclick="load('${ch.url}')" style="background:#1e1e1e; padding:8px; border-radius:5px; font-size:9px; text-align:center; cursor:pointer; border:1px solid #333;">${ch.channel_name}</div>`).join('')}
@@ -256,18 +256,21 @@
         const p = document.getElementById('player');
         p.classList.remove('hidden');
         p.innerHTML = `<iframe src="${url}" allowfullscreen allow="encrypted-media"></iframe>`;
+        
+        // Efecto de subida automática al reproductor
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+
         if(window.innerWidth < 768) {
-            p.scrollIntoView({ behavior: 'smooth', block: 'start' });
             if(document.getElementById('sideMenu').classList.contains('active')) toggleMenu();
         }
     }
 
     function triggerSearch(val) {
-        const playerArea = document.getElementById('player');
         const suggCont = document.getElementById('searchSuggestions');
-        if(val.length > 0) playerArea.classList.add('hidden');
-        else playerArea.classList.remove('hidden');
-
+        
         document.querySelectorAll('.card').forEach(c => {
             c.style.display = c.getAttribute('data-search').includes(val) ? "block" : "none";
         });
@@ -287,7 +290,6 @@
     }
 
     document.getElementById('searchInput').addEventListener('input', (e) => triggerSearch(e.target.value.toLowerCase()));
-
     fetchData();
     setInterval(fetchData, 300000);
 </script>
