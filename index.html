@@ -21,7 +21,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            overflow-x: hidden; /* Evita cualquier desplazamiento lateral */
+            overflow-x: hidden;
         }
 
         /* NAVBAR */
@@ -93,79 +93,33 @@
             top: 105px;
         }
 
-        .content { 
-            padding: 20px; 
-            background: #0a0a0a; 
-            width: 100%; 
-            box-sizing: border-box; 
-        }
+        .content { padding: 20px; background: #0a0a0a; width: 100%; box-sizing: border-box; }
 
         /* REPRODUCTOR */
-        .player-container { 
-            width: 100%; 
-            max-width: 900px; 
-            margin: 0 auto 25px; 
-            position: relative; 
-        }
-
-        .player-area {
-            width: 100%; 
-            aspect-ratio: 16/9;
-            background: #000; 
-            border-radius: 12px; 
-            overflow: hidden; 
-            border: 1px solid #333;
-        }
+        .player-container { width: 100%; max-width: 900px; margin: 0 auto 25px; position: relative; }
+        .player-area { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; border: 1px solid #333; }
         iframe { width: 100%; height: 100%; border: none; }
 
         /* EVENTOS */
         .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; }
         .card { background: var(--card-bg); border-radius: 12px; padding: 15px; border: 1px solid #222; }
 
-        /* MÓVIL: CORRECCIÓN TOTAL DE CENTRADO Y STICKY */
+        /* MÓVIL */
         @media (max-width: 768px) {
             .menu-toggle { display: block; }
-            
-            .main-wrapper { 
-                display: block; /* Rompemos el grid para evitar el margen izquierdo */
-                width: 100%;
-            }
-
-            .sidebar { 
-                position: fixed; left: 0; top: 0; width: 280px; z-index: 2500; 
-                transform: translateX(-100%); transition: 0.3s; border: none;
-            }
+            .main-wrapper { display: block; width: 100%; }
+            .sidebar { position: fixed; left: 0; top: 0; width: 280px; z-index: 2500; transform: translateX(-100%); transition: 0.3s; }
             .sidebar.active { transform: translateX(0); }
-            
-            .content { 
-                padding: 15px; 
-                width: 100%; 
-                box-sizing: border-box; 
-            }
-
+            .content { padding: 15px; width: 100%; box-sizing: border-box; }
             .player-container { 
-                position: sticky; 
-                top: 98px; /* Altura de la navbar + buscador */
-                z-index: 1000; 
-                margin: 0 auto 20px; /* Centrado automático */
-                width: 100vw; /* Ocupa el ancho visual completo */
-                left: 50%;
-                right: 50%;
-                margin-left: -50vw;
-                margin-right: -50vw;
+                position: sticky; top: 98px; z-index: 1000; 
+                margin: 0 auto 20px; width: 100vw; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;
             }
-
-            .player-area { 
-                border-radius: 0; 
-                border-left: none; 
-                border-right: none; 
-                width: 100%;
-            }
+            .player-area { border-radius: 0; border-left: none; border-right: none; }
         }
 
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2100; }
         .overlay.active { display: block; }
-
         @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
         .live-dot { color: #ff4757; animation: pulse-red 1s infinite; font-size: 8px; margin-right: 4px; }
     </style>
@@ -197,10 +151,7 @@
                 </div>
             </div>
         </div>
-        
-        <div id="searchSuggestions" style="display:none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap:10px; margin-bottom:20px;"></div>
-        
-        <h3 style="border-left: 4px solid var(--primary); padding-left: 10px; font-size: 15px; margin-bottom:15px;">PARTIDOS DE HOY</h3>
+        <h3 style="border-left: 4px solid var(--primary); padding-left: 10px; font-size: 15px; margin-bottom:15px;">PARTIDOS DE HOY (UTC+1)</h3>
         <div class="events-grid" id="eventsGrid"></div>
     </main>
 </div>
@@ -214,11 +165,55 @@
         document.getElementById('overlay').classList.toggle('active');
     }
 
-    function fixTime(timeStr) {
-        if(!timeStr || !timeStr.includes(':')) return timeStr;
-        let [h, m] = timeStr.split(':').map(Number);
-        h = (h + 1) % 24; 
-        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+    // Obtener la hora actual exacta en UTC+1 sin importar el país del usuario
+    function getUTC1Time() {
+        const now = new Date();
+        const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+        return new Date(utc + (3600000 * 1)); // UTC + 1 hora
+    }
+
+    function renderEvents(data) {
+        const grid = document.getElementById('eventsGrid');
+        grid.innerHTML = "";
+        const all = [];
+        ["Soccer", "NBA", "NFL", "NHL"].forEach(cat => {
+            if(data[cat]) data[cat].forEach(e => { e.cat = cat; all.push(e); });
+        });
+
+        const nowUTC1 = getUTC1Time();
+        const nowTotalMinutes = (nowUTC1.getHours() * 60) + nowUTC1.getMinutes();
+
+        all.forEach(ev => {
+            // Ajuste de hora API a UTC+1 (Sumamos 1 hora a lo que viene de la API)
+            let [h, m] = ev.time.split(':').map(Number);
+            h = (h + 1) % 24;
+            const eventTimeStr = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+            const eventTotalMinutes = (h * 60) + m;
+
+            // Lógica de "En Vivo": si ya empezó y no han pasado más de 125 minutos
+            const isLive = nowTotalMinutes >= eventTotalMinutes && nowTotalMinutes < (eventTotalMinutes + 125);
+
+            const card = document.createElement('div');
+            card.className = "card";
+            card.setAttribute('data-search', `${ev.homeTeam} ${ev.awayTeam}`.toLowerCase());
+            card.innerHTML = `
+                <div style="font-size:10px; display:flex; justify-content:space-between; opacity:0.6; margin-bottom:10px;">
+                    <span>${ev.tournament}</span>
+                    <span style="color:${isLive ? '#ff4757' : 'var(--primary)'}; font-weight:bold;">
+                        ${isLive ? '<i class="fa-solid fa-circle live-dot"></i> EN VIVO' : eventTimeStr}
+                    </span>
+                </div>
+                <div style="display:flex; justify-content:space-around; align-items:center; margin-bottom:12px; text-align:center;">
+                    <div style="flex:1; font-size:12px; font-weight:bold;">${ev.homeTeam}</div>
+                    <div style="color:var(--primary); font-weight:900;">VS</div>
+                    <div style="flex:1; font-size:12px; font-weight:bold;">${ev.awayTeam}</div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
+                    ${ev.channels.map(ch => `<div onclick="load('${ch.url}')" style="background:#1e1e1e; padding:8px; border-radius:5px; font-size:9px; text-align:center; cursor:pointer; border:1px solid #333;">${ch.channel_name}</div>`).join('')}
+                </div>
+            `;
+            grid.appendChild(card);
+        });
     }
 
     async function fetchData() {
@@ -252,40 +247,6 @@
         `).join('');
     }
 
-    function renderEvents(data) {
-        const grid = document.getElementById('eventsGrid');
-        grid.innerHTML = "";
-        const all = [];
-        ["Soccer", "NBA", "NFL", "NHL"].forEach(cat => {
-            if(data[cat]) data[cat].forEach(e => { e.cat = cat; all.push(e); });
-        });
-        const currentHour = new Date().getHours();
-        all.forEach(ev => {
-            const adjustedTime = fixTime(ev.time);
-            const isLive = parseInt(adjustedTime.split(':')[0]) === currentHour;
-            const card = document.createElement('div');
-            card.className = "card";
-            card.setAttribute('data-search', `${ev.homeTeam} ${ev.awayTeam}`.toLowerCase());
-            card.innerHTML = `
-                <div style="font-size:10px; display:flex; justify-content:space-between; opacity:0.6; margin-bottom:10px;">
-                    <span>${ev.tournament}</span>
-                    <span style="color:${isLive ? '#ff4757' : 'var(--primary)'}; font-weight:bold;">
-                        ${isLive ? '<i class="fa-solid fa-circle live-dot"></i> EN VIVO' : adjustedTime}
-                    </span>
-                </div>
-                <div style="display:flex; justify-content:space-around; align-items:center; margin-bottom:12px; text-align:center;">
-                    <div style="flex:1; font-size:12px; font-weight:bold;">${ev.homeTeam}</div>
-                    <div style="color:var(--primary); font-weight:900;">VS</div>
-                    <div style="flex:1; font-size:12px; font-weight:bold;">${ev.awayTeam}</div>
-                </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
-                    ${ev.channels.map(ch => `<div onclick="load('${ch.url}')" style="background:#1e1e1e; padding:8px; border-radius:5px; font-size:9px; text-align:center; cursor:pointer; border:1px solid #333;">${ch.channel_name}</div>`).join('')}
-                </div>
-            `;
-            grid.appendChild(card);
-        });
-    }
-
     function load(url) {
         document.getElementById('player').innerHTML = `<iframe src="${url}" allowfullscreen allow="encrypted-media"></iframe>`;
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -293,26 +254,14 @@
     }
 
     function triggerSearch(val) {
-        const suggCont = document.getElementById('searchSuggestions');
         document.querySelectorAll('.card').forEach(c => {
             c.style.display = c.getAttribute('data-search').includes(val) ? "block" : "none";
         });
-        if(val.length > 1) {
-            const filteredCh = allChannels.filter(ch => ch.name.toLowerCase().includes(val)).slice(0, 8);
-            if(filteredCh.length > 0) {
-                suggCont.style.display = 'grid';
-                suggCont.innerHTML = filteredCh.map(ch => `
-                    <div onclick="load('${ch.url}')" style="padding:10px; background:#1e1e1e; border-radius:8px; font-size:10px; display:flex; align-items:center; gap:8px; cursor:pointer; border:1px solid #333;">
-                        <img src="https://flagcdn.com/w20/${(ch.code || 'un').toLowerCase()}.png" style="width:18px">
-                        <span>${ch.name}</span>
-                    </div>`).join('');
-            } else { suggCont.style.display = 'none'; }
-        } else { suggCont.style.display = 'none'; }
     }
 
     document.getElementById('searchInput').addEventListener('input', (e) => triggerSearch(e.target.value.toLowerCase()));
     fetchData();
-    setInterval(fetchData, 300000);
+    setInterval(fetchData, 60000); // Actualiza cada minuto para precisión de tiempo
 </script>
 </body>
 </html>
