@@ -17,56 +17,51 @@
 
         /* Fondos Dinámicos */
         .bg-futbol { background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1200'); }
-        .bg-nba { background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=1200'); }
-        .bg-nfl { background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1566577739112-5180d4bf9390?q=80&w=1200'); }
+        .bg-baloncesto { background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=1200'); }
+        .bg-americano { background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1566577739112-5180d4bf9390?q=80&w=1200'); }
+        .bg-tenis { background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1592709823125-a191f07a2a5e?q=80&w=1200'); }
         .bg-default { background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('https://wallpaperaccess.com/full/1331828.jpg'); }
 
-        header { padding: 40px 20px 10px; text-align: center; }
-        header h1 { font-size: 24px; font-weight: 900; letter-spacing: 1px; }
+        header { padding: 30px 20px 10px; text-align: center; }
+        header h1 { font-size: 22px; font-weight: 900; letter-spacing: 1px; }
         .ball { color: var(--accent); }
 
-        /* Categorías Dinámicas */
         .category-nav {
             display: flex; gap: 10px; overflow-x: auto; padding: 15px 20px;
             position: sticky; top: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(15px);
-            z-index: 100; border-bottom: 1px solid #222;
+            z-index: 100; border-bottom: 1px solid #222; scrollbar-width: none;
         }
-        .category-nav::-webkit-scrollbar { display: none; }
         .cat-btn {
             background: #1a1a1a; border: none; color: white; padding: 10px 20px; 
             border-radius: 25px; font-size: 13px; font-weight: 700; white-space: nowrap; cursor: pointer;
         }
         .cat-btn.active { background: var(--accent); color: black; box-shadow: 0 0 15px var(--accent); }
 
-        .container { padding: 20px; max-width: 800px; margin: auto; }
+        .container { padding: 15px; max-width: 800px; margin: auto; }
 
-        /* Tarjeta de Evento */
         .event-card { 
             background: var(--card-bg); border-radius: 20px; padding: 20px; margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.05); animation: fadeIn 0.4s ease;
+            border: 1px solid rgba(255,255,255,0.05);
         }
-        .event-top { display: flex; justify-content: space-between; font-size: 11px; color: var(--accent); font-weight: 800; margin-bottom: 15px; }
+        .countdown { font-size: 10px; color: var(--accent); margin-bottom: 5px; font-weight: bold; }
         
         .event-main { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; text-align: center; }
-        .team img { width: 50px; height: 50px; object-fit: contain; margin-bottom: 10px; }
-        .score-time { font-size: 22px; font-weight: 900; background: #000; padding: 5px 15px; border-radius: 8px; border: 1px solid #333; }
+        .team img { width: 45px; height: 45px; object-fit: contain; margin-bottom: 5px; }
+        .team-name { font-size: 13px; font-weight: 600; display: block; }
+        .score-time { font-size: 18px; font-weight: 900; background: #000; padding: 5px 12px; border-radius: 8px; border: 1px solid #333; }
 
-        .event-footer { margin-top: 15px; font-size: 12px; color: var(--text-dim); text-align: center; border-top: 1px solid #222; padding-top: 15px; }
-
-        /* Desplegables de Canales */
         .acc-item { background: #111; border-radius: 12px; margin-bottom: 10px; border: 1px solid #222; overflow: hidden; }
-        .acc-header { padding: 15px; cursor: pointer; display: flex; justify-content: space-between; font-weight: 700; font-size: 14px; }
+        .acc-header { padding: 15px; cursor: pointer; display: flex; justify-content: space-between; font-weight: 700; font-size: 13px; }
         .acc-content { display: none; padding: 15px; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; background: #080808; }
         .acc-content.open { display: grid; }
-        .chan-card { background: #1a1a1a; padding: 10px; border-radius: 8px; text-align: center; text-decoration: none; color: white; border: 1px solid #333; }
-        .chan-card img { height: 35px; margin-bottom: 8px; object-fit: contain; }
+        .chan-card { background: #1a1a1a; padding: 10px; border-radius: 8px; text-align: center; text-decoration: none; color: white; border: 1px solid #333; font-size: 11px; }
+        .chan-card img { height: 30px; margin-bottom: 5px; }
 
-        .tab-bar { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0 35px; border-top: 1px solid #222; }
+        .tab-bar { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0 30px; border-top: 1px solid #222; z-index: 1000; }
         .tab-btn { background: none; border: none; color: #555; font-weight: bold; cursor: pointer; }
         .tab-btn.active { color: white; border-bottom: 2px solid var(--accent); }
 
         .hidden { display: none; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="bg-default">
@@ -92,90 +87,112 @@
     const API_SPORTS = "https://api.cdn-live.tv/api/v1/events/sports/?user=cdnlivetv&plan=free";
     const API_CHANNELS = "https://api.cdn-live.tv/api/v1/channels/?user=cdnlivetv&plan=free";
 
-    const FLAGS = { "es": "🇪🇸", "mx": "🇲🇽", "us": "🇺🇸", "ar": "🇦🇷", "gb": "🇬🇧", "it": "🇮🇹", "fr": "🇫🇷", "de": "🇩🇪", "br": "🇧🇷" };
-    const TRANSLATE = { "Soccer": "Fútbol", "NBA": "Baloncesto", "NFL": "Fútbol Americano", "Tennis": "Tenis", "Cricket": "Cricket", "NHL": "Hockey" };
+    const COUNTRY_MAP = { 
+        "es": ["España", "🇪🇸"], "mx": ["México", "🇲🇽"], "us": ["EE.UU.", "🇺🇸"], "ar": ["Argentina", "🇦🇷"], 
+        "gb": ["Reino Unido", "🇬🇧"], "it": ["Italia", "🇮🇹"], "fr": ["Francia", "🇫🇷"], "de": ["Alemania", "🇩🇪"], 
+        "br": ["Brasil", "🇧🇷"], "co": ["Colombia", "🇨🇴"], "cl": ["Chile", "🇨🇱"], "pe": ["Perú", "🇵🇪"]
+    };
+
+    const TRANSLATE = { "Soccer": "Fútbol", "NBA": "Baloncesto", "NFL": "Americano", "Tennis": "Tenis", "Cricket": "Cricket", "NHL": "Hockey" };
 
     let db = { sports: {}, channels: [] };
-    let currentCat = '';
+    let currentCat = 'Soccer';
+
+    // Función de caché inteligente
+    function saveCache() { localStorage.setItem('agus_tv_cache', JSON.stringify({ db, time: Date.now() })); }
+    function loadCache() {
+        const cached = localStorage.getItem('agus_tv_cache');
+        if (cached) {
+            const data = JSON.parse(cached);
+            db = data.db;
+            render();
+            return (Date.now() - data.time) < 300000; // Si tiene menos de 5 min, es fresca
+        }
+        return false;
+    }
 
     async function init() {
-        try {
-            const [sRes, cRes] = await Promise.all([
-                fetch(PROXY + encodeURIComponent(API_SPORTS)).then(r => r.json()),
-                fetch(PROXY + encodeURIComponent(API_CHANNELS)).then(r => r.json())
-            ]);
-            
-            const sportsRaw = JSON.parse(sRes.contents);
-            db.sports = sportsRaw['cdn-live-tv'] || sportsRaw;
-            db.channels = JSON.parse(cRes.contents).channels || [];
+        const isFresh = loadCache();
+        if (!isFresh) {
+            try {
+                const [sRes, cRes] = await Promise.all([
+                    fetch(PROXY + encodeURIComponent(API_SPORTS)).then(r => r.json()),
+                    fetch(PROXY + encodeURIComponent(API_CHANNELS)).then(r => r.json())
+                ]);
+                const sData = JSON.parse(sRes.contents);
+                db.sports = sData['cdn-live-tv'] || sData;
+                db.channels = JSON.parse(cRes.contents).channels || [];
+                saveCache();
+                render();
+            } catch (e) { console.error("Error API"); }
+        }
+    }
 
-            // Filtrar y traducir categorías
-            const categories = Object.keys(db.sports).filter(cat => !cat.includes('total_'));
-            const nav = document.getElementById('cat-nav');
-            
-            if (categories.length > 0) {
-                currentCat = categories[0];
-                nav.innerHTML = categories.map(cat => `
-                    <button class="cat-btn ${cat === currentCat ? 'active' : ''}" onclick="setCat('${cat}')">
-                        ${TRANSLATE[cat] || cat}
-                    </button>
-                `).join('');
-                setCat(currentCat);
-            }
-            renderTV();
-        } catch (e) { console.error("Error en init"); }
+    function render() {
+        const categories = Object.keys(db.sports).filter(cat => !cat.includes('total_') && !cat.includes('cached') && !cat.includes('timestamp'));
+        const nav = document.getElementById('cat-nav');
+        nav.innerHTML = categories.map(cat => `
+            <button class="cat-btn ${cat === currentCat ? 'active' : ''}" onclick="setCat('${cat}')">
+                ${TRANSLATE[cat] || cat}
+            </button>
+        `).join('');
+        renderSports();
+        renderTV();
     }
 
     function setCat(cat) {
         currentCat = cat;
-        // Cambiar fondo según categoría
-        const bgKey = cat.toLowerCase();
-        document.body.className = `bg-${bgKey.includes('soccer') ? 'futbol' : bgKey.includes('nba') ? 'nba' : bgKey.includes('nfl') ? 'nfl' : 'default'}`;
-        
-        document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.toggle('active', btn.innerText === (TRANSLATE[cat] || cat)));
-        renderSports();
+        const name = (TRANSLATE[cat] || cat).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        document.body.className = `bg-${name}`;
+        render();
+    }
+
+    function updateCountdowns() {
+        document.querySelectorAll('.countdown').forEach(el => {
+            const timeStr = el.getAttribute('data-time');
+            if (!timeStr || timeStr.includes(':')) {
+                const now = new Date();
+                const [h, m] = timeStr.split(':');
+                const target = new Date();
+                target.setHours(h, m, 0);
+                if (target < now) target.setDate(target.getDate() + 1);
+                const diff = target - now;
+                const hours = Math.floor(diff / 3600000);
+                const mins = Math.floor((diff % 3600000) / 60000);
+                el.innerText = `EMPIEZA EN: ${hours}h ${mins}m`;
+            }
+        });
     }
 
     function renderSports() {
         let events = db.sports[currentCat] || [];
-        
-        // ORDENAR POR HORA (Orden cronológico)
+        events = events.filter(e => e.status.toLowerCase() !== 'finished');
         events.sort((a, b) => (a.time || "").localeCompare(b.time || ""));
 
         let html = "";
         events.forEach(e => {
-            if (e.status.toLowerCase() === 'finished') return;
             const isLive = e.status.toLowerCase() === 'live';
-            
             html += `
             <div class="event-card">
-                <div class="event-top">
-                    <span>${isLive ? '🔴 EN VIVO' : 'PRÓXIMO'}</span>
-                    <span style="color:white">${e.tournament}</span>
-                </div>
+                <div class="countdown" data-time="${isLive ? '' : e.time}">${isLive ? '🔴 EN VIVO' : ''}</div>
+                <div style="font-size:10px; color:#666; margin-bottom:10px;">${e.tournament}</div>
                 <div class="event-main">
-                    <div class="team"><img src="${e.homeTeamIMG}"><span class="team-name">${e.homeTeam}</span></div>
+                    <div class="team"><img src="${e.homeTeamIMG}"> <span class="team-name">${e.homeTeam}</span></div>
                     <div class="score-time">${isLive ? (e.score || 'vs') : e.time}</div>
-                    <div class="team"><img src="${e.awayTeamIMG}"><span class="team-name">${e.awayTeam}</span></div>
-                </div>
-                <div class="event-footer">
-                    🏟️ ${e.stadium || 'Estadio TBA'} | 📍 ${e.country || 'Internacional'}
+                    <div class="team"><img src="${e.awayTeamIMG}"> <span class="team-name">${e.awayTeam}</span></div>
                 </div>
                 <div class="acc-item" style="margin-top:15px; border-color:var(--accent)">
                     <div class="acc-header" onclick="this.nextElementSibling.classList.toggle('open')" style="color:var(--accent)">
                         VER CANALES <span>▼</span>
                     </div>
                     <div class="acc-content">
-                        ${e.channels ? e.channels.map(ch => `
-                            <a href="${ch.url}" target="_blank" class="chan-card">
-                                ${FLAGS[ch.channel_code] || '🌐'} <br> <small>${ch.channel_name}</small>
-                            </a>
-                        `).join('') : '<p>No hay canales</p>'}
+                        ${e.channels ? e.channels.map(ch => `<a href="${ch.url}" target="_blank" class="chan-card">📺 ${ch.channel_name}</a>`).join('') : '<p>Próximamente</p>'}
                     </div>
                 </div>
             </div>`;
         });
-        document.getElementById('agenda-content').innerHTML = html || "<p style='text-align:center'>No hay eventos hoy.</p>";
+        document.getElementById('agenda-content').innerHTML = html || "<p style='text-align:center'>No hay eventos próximos.</p>";
+        updateCountdowns();
     }
 
     function renderTV() {
@@ -187,18 +204,18 @@
         }, {});
 
         let html = "";
-        Object.keys(grouped).sort().forEach(country => {
-            const flag = FLAGS[country] || "🌐";
+        Object.keys(grouped).sort().forEach(code => {
+            const countryData = COUNTRY_MAP[code] || [code.toUpperCase(), "🌐"];
             html += `
             <div class="acc-item">
                 <div class="acc-header" onclick="this.nextElementSibling.classList.toggle('open')">
-                    <span>${flag} ${country.toUpperCase()}</span> <span>▼</span>
+                    <span>${countryData[1]} ${countryData[0]}</span> <span>▼</span>
                 </div>
                 <div class="acc-content">
-                    ${grouped[country].map(c => `
+                    ${grouped[code].map(c => `
                         <a href="${c.url}" target="_blank" class="chan-card">
-                            <img src="${c.image}" onerror="this.src='https://via.placeholder.com/40'"><br>
-                            <small>${c.name}</small>
+                            <img src="${c.image}" onerror="this.src='https://via.placeholder.com/40'"> <br>
+                            ${c.name}
                         </a>
                     `).join('')}
                 </div>
@@ -214,6 +231,7 @@
     }
 
     init();
+    setInterval(updateCountdowns, 60000);
 </script>
 </body>
 </html>
