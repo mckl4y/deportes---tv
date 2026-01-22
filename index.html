@@ -12,16 +12,16 @@
         .container { padding: 15px; max-width: 800px; margin: auto; }
         .hidden { display: none; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
-        .card { background: var(--card); border-radius: 8px; overflow: hidden; transition: 0.3s; border: 1px solid #333; }
+        .card { background: var(--card); border-radius: 8px; overflow: hidden; transition: 0.3s; border: 1px solid #333; display: flex; flex-direction: column; }
         .card img { width: 100%; height: 100px; object-fit: contain; background: #222; padding: 5px; }
-        .card-info { padding: 10px; font-size: 14px; }
+        .card-info { padding: 10px; font-size: 14px; text-align: center; }
         .event-row { background: var(--card); margin-bottom: 10px; padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 10px; border-left: 4px solid var(--primary); }
         .event-row img { width: 40px; height: 40px; object-fit: contain; }
-        .btn-play { background: var(--primary); color: white; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; }
-        .tab-bar { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #333; }
+        .btn-play { background: var(--primary); color: white; text-decoration: none; padding: 8px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 5px; }
+        .tab-bar { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #333; z-index: 1000; }
         .tab-btn { color: #888; background: none; border: none; font-size: 14px; cursor: pointer; outline: none; }
         .tab-btn.active { color: var(--primary); font-weight: bold; }
-        h3 { border-bottom: 1px solid #333; padding-bottom: 5px; margin-top: 25px; color: var(--primary); }
+        h3 { border-bottom: 1px solid #333; padding-bottom: 5px; margin-top: 25px; color: var(--primary); text-transform: uppercase; font-size: 16px; }
     </style>
 </head>
 <body>
@@ -34,6 +34,7 @@
     <div id="section-agenda">
         <div id="agenda-list">Cargando eventos...</div>
     </div>
+
     <div id="section-tv" class="hidden">
         <div class="grid" id="tv-grid">Cargando canales...</div>
     </div>
@@ -45,6 +46,7 @@
 </nav>
 
 <script>
+// Usamos un proxy para evitar bloqueos de seguridad (CORS)
 const PROXY = "https://api.allorigins.win/raw?url=";
 const API_CHANNELS = PROXY + encodeURIComponent("https://cdn-live.tv/api/v1/channels");
 const API_EVENTS = PROXY + encodeURIComponent("https://cdn-live.tv/api/events");
@@ -54,41 +56,47 @@ function showTab(tab) {
     document.getElementById('section-agenda').classList.toggle('hidden', !isAgenda);
     document.getElementById('section-tv').classList.toggle('hidden', isAgenda);
     document.getElementById('view-title').innerText = isAgenda ? "📅 Agenda Deportiva" : "📺 Canales en Directo";
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', 
-        (isAgenda && b.innerText.includes('Agenda')) || (!isAgenda && b.innerText.includes('Canales'))
-    ));
+    
+    document.querySelectorAll('.tab-btn').forEach(b => {
+        const isTarget = (isAgenda && b.innerText.includes('Agenda')) || (!isAgenda && b.innerText.includes('Canales'));
+        b.classList.toggle('active', isTarget);
+    });
 }
 
 async function loadChannels() {
     try {
-        const res = await fetch(API_CHANNELS);
+        // Forzamos que no use caché para evitar el error del Service Worker
+        const res = await fetch(API_CHANNELS, { cache: "no-store" });
         const data = await res.json();
         const grid = document.getElementById('tv-grid');
+        
+        if (!data.channels) throw new Error("Datos inválidos");
+
         grid.innerHTML = data.channels.map(ch => `
             <div class="card">
-                <img src="${ch.image}" alt="${ch.name}">
+                <img src="${ch.image}" onerror="this.src='https://via.placeholder.com/150?text=TV'">
                 <div class="card-info">
                     <strong>${ch.name}</strong><br>
-                    <small>${ch.code.toUpperCase()}</small><br><br>
+                    <small>${ch.code.toUpperCase()}</small><br>
                     <a href="vlc://${ch.url}" class="btn-play">▶ ABRIR VLC</a>
                 </div>
             </div>
         `).join('');
     } catch (e) {
-        document.getElementById('tv-grid').innerHTML = "Error al cargar canales.";
+        console.error("Error canales:", e);
+        document.getElementById('tv-grid').innerHTML = "<p style='text-align:center'>Error al cargar canales. Intenta refrescar.</p>";
     }
 }
 
 async function loadEvents() {
     try {
-        const res = await fetch(API_EVENTS);
+        const res = await fetch(API_EVENTS, { cache: "no-store" });
         const data = await res.json();
         const list = document.getElementById('agenda-list');
         
-        // Manejar la estructura de la API cdn-live
         const sportsData = data["cdn-live-tv"];
         if (!sportsData) {
-            list.innerHTML = "No se encontraron datos de eventos.";
+            list.innerHTML = "No hay eventos disponibles ahora.";
             return;
         }
 
@@ -100,11 +108,11 @@ async function loadEvents() {
                 html += `<h3>${sport}</h3>`;
                 sportsData[sport].forEach(ev => {
                     const canalUrl = ev.channels && ev.channels[0] ? ev.channels[0].url : "#";
-                    const canalNombre = ev.channels && ev.channels[0] ? ev.channels[0].channel_name : "Ver";
+                    const canalNombre = ev.channels && ev.channels[0] ? ev.channels[0].channel_name : "En directo";
                     
                     html += `
                         <div class="event-row">
-                            <img src="${ev.homeTeamIMG}" onerror="this.src='https://via.placeholder.com/40?text=TV'">
+                            <img src="${ev.homeTeamIMG}" onerror="this.src='https://via.placeholder.com/40?text=Sport'">
                             <div style="flex-grow:1">
                                 <strong>${ev.homeTeam} vs ${ev.awayTeam}</strong><br>
                                 <small>${ev.time} · ${ev.tournament}</small>
@@ -118,17 +126,22 @@ async function loadEvents() {
         
         list.innerHTML = html || "No hay eventos en vivo en este momento.";
     } catch (e) {
-        console.error(e);
-        document.getElementById('agenda-list').innerHTML = "Error al cargar la agenda.";
+        console.error("Error eventos:", e);
+        document.getElementById('agenda-list').innerHTML = "<p>Error al cargar la agenda.</p>";
     }
 }
 
+// Iniciar carga de datos
 loadChannels();
 loadEvents();
 
+// Intentamos registrar el service worker solo si el archivo existe y no está vacío
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./service-worker.js');
+    navigator.serviceWorker.register('./service-worker.js').catch(() => {
+        console.log("Service worker desactivado intencionalmente.");
+    });
 }
 </script>
+
 </body>
 </html>
