@@ -8,14 +8,13 @@
     <style>
         :root { --primary: #2ecc71; --dark-bg: #080808; --card-bg: #121212; --text: #ffffff; }
         
-        body { background-color: var(--dark-bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        body { background-color: var(--dark-bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
 
         /* NAVBAR */
         .navbar { background: #000; padding: 12px 0; border-bottom: 2px solid var(--primary); position: sticky; top: 0; z-index: 3000; }
         .nav-container { width: 100%; padding: 0 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; box-sizing: border-box; }
         .nav-top { width: 100%; display: flex; justify-content: center; align-items: center; position: relative; }
         
-        /* LOGO PERSONALIZADO CON BALÓN */
         .logo { font-size: 22px; font-weight: 900; display: flex; align-items: center; text-transform: uppercase; letter-spacing: 1px; }
         .ball-icon { width: 20px; height: 20px; background: url('https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg') no-repeat center; background-size: contain; display: inline-block; margin: 0 2px; }
         
@@ -25,15 +24,20 @@
         .search-box input { width: 100%; padding: 10px 15px 10px 40px; background: #1a1a1a; border: 1px solid #333; border-radius: 20px; color: white; outline: none; box-sizing: border-box; }
         .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--primary); }
 
-        /* LAYOUT PC */
-        .main-wrapper { display: grid; grid-template-columns: 260px 1fr; width: 100%; flex: 1; }
-        .sidebar { background: var(--card-bg); border-right: 1px solid #222; padding: 15px; height: calc(100vh - 130px); overflow-y: auto; position: sticky; top: 130px; }
+        /* LAYOUT */
+        .main-wrapper { display: grid; grid-template-columns: 280px 1fr; width: 100%; flex: 1; }
 
-        .channel-item { padding: 8px; font-size: 13px; cursor: pointer; border-radius: 4px; transition: 0.2s; display: flex; align-items: center; gap: 8px; }
+        /* SIDEBAR DE CANALES POR PAÍSES */
+        .sidebar { background: var(--card-bg); border-right: 1px solid #222; padding: 10px; height: calc(100vh - 130px); overflow-y: auto; position: sticky; top: 130px; }
+        .country-group { margin-bottom: 20px; }
+        .country-title { color: var(--primary); font-size: 11px; font-weight: 800; text-transform: uppercase; padding: 5px 10px; background: rgba(46, 204, 113, 0.1); border-radius: 4px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        
+        .channel-item { padding: 8px 10px; font-size: 13px; cursor: pointer; border-radius: 6px; transition: 0.2s; display: flex; align-items: center; gap: 12px; margin-bottom: 2px; }
         .channel-item:hover { background: #1a1a1a; color: var(--primary); }
+        .channel-logo { width: 24px; height: 24px; object-fit: contain; border-radius: 3px; background: #222; }
 
-        /* REPRODUCTOR ANTI-ADS */
-        .player-container { width: 100%; background: #000; aspect-ratio: 16/9; position: relative; }
+        /* REPRODUCTOR */
+        .player-container { width: 100%; background: #000; aspect-ratio: 16/9; }
         iframe { width: 100%; height: 100%; border: none; }
         
         /* EVENTOS */
@@ -41,10 +45,7 @@
         .sport-header { background: #1a1a1a; padding: 10px 15px; color: var(--primary); font-weight: bold; border-left: 4px solid var(--primary); margin: 20px 0 10px 0; text-transform: uppercase; font-size: 14px; }
         .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
         
-        .card { 
-            background: var(--card-bg); border-radius: 12px; padding: 12px; border: 1px solid #222; 
-            display: flex; flex-direction: column; height: 280px; 
-        }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 12px; border: 1px solid #222; display: flex; flex-direction: column; height: 280px; }
         .card-header { display: flex; justify-content: space-between; font-size: 10px; opacity: 0.6; margin-bottom: 10px; }
         .teams-row { display: flex; justify-content: space-around; align-items: center; margin-bottom: 10px; }
         .team { display: flex; flex-direction: column; align-items: center; flex: 1; text-align: center; gap: 5px; }
@@ -59,7 +60,7 @@
 
         @media (max-width: 992px) {
             .main-wrapper { grid-template-columns: 1fr; }
-            .sidebar { position: fixed; left: -100%; top: 0; width: 280px; height: 100%; z-index: 5000; transition: 0.4s; background: #0a0a0a; padding-top: 50px; }
+            .sidebar { position: fixed; left: -100%; top: 0; width: 280px; height: 100%; z-index: 5000; transition: 0.4s; background: #0a0a0a; padding-top: 60px; }
             .sidebar.active { left: 0; }
             .overlay.active { display: block; }
             .player-container { position: sticky; top: 115px; z-index: 1000; }
@@ -79,7 +80,7 @@
         <div class="search-wrapper">
             <div class="search-box">
                 <i class="fa-solid fa-search"></i>
-                <input type="text" id="masterSearch" placeholder="Busca equipo o liga..." onkeyup="filterContent()">
+                <input type="text" id="masterSearch" placeholder="Busca equipo, liga o canal..." onkeyup="filterContent()">
             </div>
         </div>
     </div>
@@ -93,7 +94,7 @@
     <main class="content">
         <div id="player" class="player-container">
              <div style="height:100%; display:flex; justify-content:center; align-items:center; opacity:0.2;">
-                <i class="fa-solid fa-shield-halved fa-4x"></i>
+                <i class="fa-solid fa-tv fa-4x"></i>
              </div>
         </div>
         <div class="events-section" id="eventsContainer"></div>
@@ -108,16 +109,8 @@
     function openSidebar() { document.getElementById('sideMenu').classList.add('active'); document.getElementById('overlay').classList.add('active'); }
     function closeSidebar() { document.getElementById('sideMenu').classList.remove('active'); document.getElementById('overlay').classList.remove('active'); }
 
-    // FUNCIÓN DE CARGA CON SANDBOX (BLOQUEO DE POP-UPS Y PUBLICIDAD EXTERNA)
     function load(url) {
-        const player = document.getElementById('player');
-        player.innerHTML = `<iframe 
-            src="${url}" 
-            allowfullscreen 
-            allow="encrypted-media" 
-            sandbox="allow-scripts allow-same-origin allow-forms"
-            title="Reproductor Seguro"></iframe>`;
-        
+        document.getElementById('player').innerHTML = `<iframe src="${url}" allowfullscreen allow="encrypted-media" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>`;
         window.scrollTo({ top: 0, behavior: 'smooth' });
         if (window.innerWidth <= 992) closeSidebar();
     }
@@ -145,10 +138,36 @@
     }
 
     function renderSidebar(channels) {
-        let html = `<h3 style="font-size:12px; opacity:0.5; margin-bottom:10px;">CANALES TV</h3>`;
-        channels.forEach(ch => {
-            html += `<div class="channel-item" onclick="load('${ch.url}')"><i class="fa-solid fa-tv"></i> ${ch.name}</div>`;
+        // Agrupar canales por el código de país (code)
+        const groups = channels.reduce((acc, ch) => {
+            const country = ch.code ? ch.code.toUpperCase() : 'OTROS';
+            if (!acc[country]) acc[country] = [];
+            acc[country].push(ch);
+            return acc;
+        }, {});
+
+        let html = `<h3 style="font-size:14px; margin:0 0 15px 10px;">CANALES TV</h3>`;
+        
+        Object.keys(groups).sort().forEach(country => {
+            html += `
+            <div class="country-group">
+                <div class="country-title">
+                    <i class="fa-solid fa-globe"></i> ${country}
+                </div>`;
+            
+            groups[country].forEach(ch => {
+                // Generar un logo si no viene en la API (usando un servicio de iconos o una imagen genérica)
+                const channelImg = ch.img || `https://ui-avatars.com/api/?name=${ch.name}&background=1a1a1a&color=2ecc71&bold=true`;
+                
+                html += `
+                <div class="channel-item" onclick="load('${ch.url}')">
+                    <img class="channel-logo" src="${channelImg}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'">
+                    <span>${ch.name}</span>
+                </div>`;
+            });
+            html += `</div>`;
         });
+        
         document.getElementById('channelsList').innerHTML = html;
     }
 
@@ -185,7 +204,7 @@
                                 <span>${ev.awayTeam}</span>
                             </div>
                         </div>
-                        <div class="links-container">${linksHtml || '<p style="font-size:10px; opacity:0.3; text-align:center;">Sin enlaces</p>'}</div>
+                        <div class="links-container">${linksHtml || '<p style="font-size:10px; opacity:0.3; text-align:center;">Cargando...</p>'}</div>
                     </div>`;
             });
             section.appendChild(grid);
@@ -195,11 +214,17 @@
 
     function filterContent() {
         const query = document.getElementById('masterSearch').value.toLowerCase();
-        const filtered = {};
+        
+        // Filtrar canales
+        const filteredCh = allChannels.filter(c => c.name.toLowerCase().includes(query));
+        renderSidebar(filteredCh);
+
+        // Filtrar eventos
+        const filteredEv = {};
         for (const s in allEvents) {
-            filtered[s] = allEvents[s].filter(e => e.homeTeam.toLowerCase().includes(query) || e.awayTeam.toLowerCase().includes(query));
+            filteredEv[s] = allEvents[s].filter(e => e.homeTeam.toLowerCase().includes(query) || e.awayTeam.toLowerCase().includes(query));
         }
-        renderEvents(filtered);
+        renderEvents(filteredEv);
     }
 
     fetchData();
