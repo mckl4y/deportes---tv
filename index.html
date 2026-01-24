@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amantes del Futbol | Logos Pro</title>
+    <title>Amantes del Futbol | Logos Corregidos</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -46,30 +46,8 @@
             position: relative;
         }
 
-        .logo {
-            font-size: 20px;
-            font-weight: 900;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            text-transform: uppercase;
-        }
-
-        .ball-icon {
-            width: 22px;
-            height: 22px;
-            background: url('https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg') no-repeat center;
-            background-size: contain;
-        }
-
-        .menu-toggle {
-            display: none; 
-            font-size: 20px;
-            color: var(--primary);
-            cursor: pointer;
-            position: absolute;
-            left: 0;
-        }
+        .logo { font-size: 20px; font-weight: 900; display: flex; align-items: center; gap: 6px; text-transform: uppercase; }
+        .ball-icon { width: 22px; height: 22px; background: url('https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg') no-repeat center; background-size: contain; }
 
         .search-container { width: 100%; display: flex; justify-content: center; }
         .search-box { position: relative; width: 100%; max-width: 280px; }
@@ -80,7 +58,7 @@
         }
         .search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--primary); font-size: 12px; }
 
-        /* LAYOUT ORIGINAL MANTENIDO */
+        /* LAYOUT */
         .main-wrapper { display: grid; grid-template-columns: 280px 1fr; flex: 1; width: 100%; }
 
         .sidebar {
@@ -102,19 +80,12 @@
             border-bottom: 1px solid #222;
         }
 
-        .player-area { 
-            width: 100%; 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            aspect-ratio: 16/9; 
-            background: #000; 
-        }
-
+        .player-area { width: 100%; max-width: 1200px; margin: 0 auto; aspect-ratio: 16/9; background: #000; }
         iframe { width: 100%; height: 100%; border: none; background: #000; }
 
         .events-section { padding: 0 20px 40px 20px; }
 
-        /* NUEVA ESTRUCTURA DE PLEGADO ESTILO CIRIACO */
+        /* PLEGADO POR DEPORTES */
         .sport-group { margin-bottom: 20px; }
         .sport-header {
             background: #1a1a1a;
@@ -128,6 +99,8 @@
             font-weight: bold;
             margin-bottom: 10px;
             border: 1px solid #333;
+            text-transform: uppercase;
+            font-size: 13px;
         }
         .sport-group.collapsed .events-grid { display: none; }
         .sport-group.collapsed .fa-chevron-down { transform: rotate(-90deg); }
@@ -135,32 +108,26 @@
         .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .card { background: var(--card-bg); border-radius: 12px; padding: 18px; border: 1px solid #222; }
 
-        /* ESTILO DE LOGOS */
-        .team-box { display: flex; flex-direction: column; align-items: center; flex: 1; gap: 5px; }
-        .team-logo { width: 35px; height: 35px; object-fit: contain; }
-
-        @media (max-width: 768px) {
-            .menu-toggle { display: block; }
-            .main-wrapper { display: block; }
-            .sidebar { position: fixed; left: 0; top: 0; width: 280px; z-index: 2500; transform: translateX(-100%); transition: 0.3s; }
-            .sidebar.active { transform: translateX(0); }
-            .player-container { position: sticky; top: 98px; z-index: 1000; width: 100vw; left: 0; }
-            .player-area { width: 100vw; max-width: 100vw; margin: 0; }
+        /* LOGOS */
+        .team-box { display: flex; flex-direction: column; align-items: center; flex: 1; gap: 8px; }
+        .team-logo { 
+            width: 45px; 
+            height: 45px; 
+            object-fit: contain; 
+            filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
         }
 
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2100; }
-        .overlay.active { display: block; }
-        @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-        .live-dot { color: #ff4757; animation: pulse-red 1s infinite; font-size: 8px; margin-right: 4px; }
+        @media (max-width: 768px) {
+            .main-wrapper { display: block; }
+            .sidebar { display: none; }
+            .player-container { position: sticky; top: 98px; z-index: 1000; width: 100vw; }
+        }
     </style>
 </head>
 <body>
 
-<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-
 <nav class="navbar">
     <div class="nav-top">
-        <div class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars-staggered"></i></div>
         <div class="logo">AMANTES DEL FUTB<div class="ball-icon"></div>L</div>
     </div>
     <div class="search-container">
@@ -184,7 +151,7 @@
         </div>
 
         <div class="events-section">
-            <h3 style="border-left: 4px solid var(--primary); padding-left: 10px; font-size: 16px; margin-bottom:20px;">PARTIDOS DE HOY</h3>
+            <h3 style="border-left: 4px solid var(--primary); padding-left: 10px; font-size: 16px; margin-bottom:20px;">AGENDA DEPORTIVA</h3>
             <div id="eventsContainer"></div>
         </div>
     </main>
@@ -192,32 +159,30 @@
 
 <script>
     const AUTH = "user=cdnlivetv&plan=free";
-    // Repositorios de Logos
-    const REPO_SOCCER = "https://raw.githubusercontent.com/luukhopman/football-logos/master/logos";
-    const REPO_USA = "https://raw.githubusercontent.com/klunn91/team-logos/master";
 
-    function toggleMenu() {
-        document.getElementById('sideMenu').classList.toggle('active');
-        document.getElementById('overlay').classList.toggle('active');
-    }
-
-    function getUTC1Time() {
-        const now = new Date();
-        const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-        return new Date(utc + (3600000 * 1)); 
-    }
-
+    // Función mejorada para obtener logos con múltiples fuentes de respaldo
     function getLogo(name, sport) {
-        const clean = encodeURIComponent(name.replace(/\(W\)/g, "").trim());
-        if (sport === "NBA") return `${REPO_USA}/nba/${clean}.png`;
-        if (sport === "NFL") return `${REPO_USA}/nfl/${clean}.png`;
-        // Para fútbol usamos el repositorio de La Liga por defecto o el logo de la API si existe
-        return `${REPO_SOCCER}/Spain/La Liga/${clean}.png`;
+        const cleanName = name.toLowerCase()
+            .replace(/\(w\)/g, "")
+            .replace(/\s+/g, '-')
+            .replace(/[^\w-]/g, '');
+
+        // Fuente 1: GitHub para Fútbol (formato específico)
+        if (sport === "Soccer") {
+            return `https://raw.githubusercontent.com/luukhopman/football-logos/master/logos/Spain/La%20Liga/${name}.png`;
+        }
+        
+        // Fuente 2: GitHub para NBA/NFL
+        if (sport === "NBA" || sport === "NFL") {
+            return `https://raw.githubusercontent.com/klunn91/team-logos/master/${sport.toLowerCase()}/${cleanName}.png`;
+        }
+
+        // Fuente 3: Backup Universal (Logo de deporte genérico si falla)
+        return `https://www.thesportsdb.com/images/media/league/badge/7j1690145241.png`;
     }
 
     function load(url) {
-        document.getElementById('player').innerHTML = `
-            <iframe src="${url}" allowfullscreen allow="encrypted-media" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>`;
+        document.getElementById('player').innerHTML = `<iframe src="${url}" allowfullscreen allow="encrypted-media"></iframe>`;
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -257,14 +222,12 @@
     function renderEvents(data) {
         const container = document.getElementById('eventsContainer');
         container.innerHTML = "";
-        const nowUTC1 = getUTC1Time();
-        const nowMinutes = (nowUTC1.getHours() * 60) + nowUTC1.getMinutes();
 
         Object.keys(data).sort().forEach(sport => {
             const group = document.createElement('div');
             group.className = "sport-group";
             group.innerHTML = `<div class="sport-header" onclick="this.parentElement.classList.toggle('collapsed')">
-                <span>${sport.toUpperCase()}</span>
+                <span><i class="fa-solid fa-trophy"></i> ${sport}</span>
                 <i class="fa-solid fa-chevron-down"></i>
             </div>`;
             
@@ -272,29 +235,24 @@
             grid.className = "events-grid";
 
             data[sport].forEach(ev => {
-                let [h, m] = ev.time.split(':').map(Number);
-                h = (h + 1) % 24;
-                const evMinutes = (h * 60) + m;
-                const isLive = nowMinutes >= evMinutes && nowMinutes < (evMinutes + 130);
-
                 const card = document.createElement('div');
                 card.className = "card";
                 card.innerHTML = `
-                    <div style="font-size:10px; display:flex; justify-content:space-between; opacity:0.6; margin-bottom:10px;">
+                    <div style="font-size:10px; display:flex; justify-content:space-between; opacity:0.6; margin-bottom:12px;">
                         <span>${ev.tournament}</span>
-                        <span style="color:${isLive ? '#ff4757' : 'var(--primary)'}; font-weight:bold;">
-                            ${isLive ? '<i class="fa-solid fa-circle live-dot"></i> EN VIVO' : `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`}
-                        </span>
+                        <span style="color:var(--primary); font-weight:bold;">${ev.time}</span>
                     </div>
-                    <div style="display:flex; justify-content:space-around; align-items:center; margin-bottom:15px; text-align:center;">
+                    <div style="display:flex; justify-content:space-around; align-items:center; margin-bottom:18px; text-align:center;">
                         <div class="team-box">
-                            <img class="team-logo" src="${getLogo(ev.homeTeam, sport)}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'">
-                            <div style="font-size:11px; font-weight:bold;">${ev.homeTeam}</div>
+                            <img class="team-logo" src="${getLogo(ev.homeTeam, sport)}" 
+                                 onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'">
+                            <div style="font-size:11px; font-weight:bold; color:#fff;">${ev.homeTeam}</div>
                         </div>
-                        <div style="color:var(--primary); font-weight:900;">VS</div>
+                        <div style="color:var(--primary); font-weight:900; font-size:14px;">VS</div>
                         <div class="team-box">
-                            <img class="team-logo" src="${getLogo(ev.awayTeam, sport)}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'">
-                            <div style="font-size:11px; font-weight:bold;">${ev.awayTeam}</div>
+                            <img class="team-logo" src="${getLogo(ev.awayTeam, sport)}" 
+                                 onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'">
+                            <div style="font-size:11px; font-weight:bold; color:#fff;">${ev.awayTeam}</div>
                         </div>
                     </div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
@@ -306,6 +264,14 @@
             container.appendChild(group);
         });
     }
+
+    // Buscador instantáneo
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        const val = e.target.value.toLowerCase();
+        document.querySelectorAll('.card').forEach(c => {
+            c.style.display = c.innerText.toLowerCase().includes(val) ? "block" : "none";
+        });
+    });
 
     fetchData();
     setInterval(fetchData, 60000);
