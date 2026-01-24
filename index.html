@@ -27,14 +27,14 @@
         /* LAYOUT */
         .main-wrapper { display: grid; grid-template-columns: 280px 1fr; width: 100%; flex: 1; }
 
-        /* SIDEBAR DE CANALES POR PAÍSES */
+        /* SIDEBAR DE CANALES */
         .sidebar { background: var(--card-bg); border-right: 1px solid #222; padding: 10px; height: calc(100vh - 130px); overflow-y: auto; position: sticky; top: 130px; }
         .country-group { margin-bottom: 20px; }
-        .country-title { color: var(--primary); font-size: 11px; font-weight: 800; text-transform: uppercase; padding: 5px 10px; background: rgba(46, 204, 113, 0.1); border-radius: 4px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .country-title { color: var(--primary); font-size: 11px; font-weight: 800; text-transform: uppercase; padding: 6px 10px; background: rgba(46, 204, 113, 0.05); border-radius: 4px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #222; }
         
-        .channel-item { padding: 8px 10px; font-size: 13px; cursor: pointer; border-radius: 6px; transition: 0.2s; display: flex; align-items: center; gap: 12px; margin-bottom: 2px; }
-        .channel-item:hover { background: #1a1a1a; color: var(--primary); }
-        .channel-logo { width: 24px; height: 24px; object-fit: contain; border-radius: 3px; background: #222; }
+        .channel-item { padding: 8px 10px; font-size: 13px; cursor: pointer; border-radius: 8px; transition: 0.2s; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; border: 1px solid transparent; }
+        .channel-item:hover { background: #1a1a1a; border-color: #333; color: var(--primary); }
+        .channel-logo { width: 28px; height: 28px; object-fit: contain; border-radius: 4px; background: #000; padding: 2px; border: 1px solid #222; }
 
         /* REPRODUCTOR */
         .player-container { width: 100%; background: #000; aspect-ratio: 16/9; }
@@ -42,7 +42,7 @@
         
         /* EVENTOS */
         .events-section { padding: 20px; }
-        .sport-header { background: #1a1a1a; padding: 10px 15px; color: var(--primary); font-weight: bold; border-left: 4px solid var(--primary); margin: 20px 0 10px 0; text-transform: uppercase; font-size: 14px; }
+        .sport-header { background: #1a1a1a; padding: 10px 15px; color: var(--primary); font-weight: bold; border-left: 4px solid var(--primary); margin: 20px 0 10px 0; text-transform: uppercase; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
         .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
         
         .card { background: var(--card-bg); border-radius: 12px; padding: 12px; border: 1px solid #222; display: flex; flex-direction: column; height: 280px; }
@@ -52,8 +52,11 @@
         .team img { width: 35px; height: 35px; object-fit: contain; }
         .team span { font-size: 12px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; }
 
-        .links-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; margin-top: 5px; }
-        .btn-ch { background: #1a1a1a; color: #fff; padding: 8px; border-radius: 6px; font-size: 11px; text-align: center; cursor: pointer; border: 1px solid #333; font-weight: bold; text-decoration: none; }
+        .links-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; margin-top: 5px; padding-right: 4px; }
+        .links-container::-webkit-scrollbar { width: 3px; }
+        .links-container::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        .btn-ch { background: #1a1a1a; color: #fff; padding: 8px; border-radius: 6px; font-size: 11px; text-align: center; cursor: pointer; border: 1px solid #333; font-weight: bold; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-ch:hover { background: var(--primary); color: #000; border-color: var(--primary); }
 
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 4000; }
@@ -80,7 +83,7 @@
         <div class="search-wrapper">
             <div class="search-box">
                 <i class="fa-solid fa-search"></i>
-                <input type="text" id="masterSearch" placeholder="Busca equipo, liga o canal..." onkeyup="filterContent()">
+                <input type="text" id="masterSearch" placeholder="Busca canales, ligas o equipos..." onkeyup="filterContent()">
             </div>
         </div>
     </div>
@@ -93,8 +96,9 @@
     
     <main class="content">
         <div id="player" class="player-container">
-             <div style="height:100%; display:flex; justify-content:center; align-items:center; opacity:0.2;">
+             <div style="height:100%; display:flex; justify-content:center; align-items:center; opacity:0.2; flex-direction:column; gap:10px;">
                 <i class="fa-solid fa-tv fa-4x"></i>
+                <span style="font-weight:bold; font-size:12px;">SELECCIONA UN CANAL O PARTIDO</span>
              </div>
         </div>
         <div class="events-section" id="eventsContainer"></div>
@@ -110,6 +114,7 @@
     function closeSidebar() { document.getElementById('sideMenu').classList.remove('active'); document.getElementById('overlay').classList.remove('active'); }
 
     function load(url) {
+        // Protección contra popups y anuncios
         document.getElementById('player').innerHTML = `<iframe src="${url}" allowfullscreen allow="encrypted-media" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>`;
         window.scrollTo({ top: 0, behavior: 'smooth' });
         if (window.innerWidth <= 992) closeSidebar();
@@ -134,34 +139,35 @@
             allEvents = (await rEv.json())['cdn-live-tv'] || {};
             renderSidebar(allChannels);
             renderEvents(allEvents);
-        } catch (e) { console.error("Error API"); }
+        } catch (e) { console.error("Error cargando API"); }
     }
 
     function renderSidebar(channels) {
         // Agrupar canales por el código de país (code)
         const groups = channels.reduce((acc, ch) => {
-            const country = ch.code ? ch.code.toUpperCase() : 'OTROS';
+            const country = ch.code ? ch.code.toUpperCase() : 'INTERNACIONAL';
             if (!acc[country]) acc[country] = [];
             acc[country].push(ch);
             return acc;
         }, {});
 
-        let html = `<h3 style="font-size:14px; margin:0 0 15px 10px;">CANALES TV</h3>`;
+        let html = `<div style="padding:10px; font-weight:bold; font-size:14px; border-bottom:1px solid #222; margin-bottom:10px;">DIRECTO TV</div>`;
         
         Object.keys(groups).sort().forEach(country => {
             html += `
             <div class="country-group">
                 <div class="country-title">
-                    <i class="fa-solid fa-globe"></i> ${country}
+                    <span>${country}</span>
+                    <i class="fa-solid fa-caret-down"></i>
                 </div>`;
             
             groups[country].forEach(ch => {
-                // Generar un logo si no viene en la API (usando un servicio de iconos o una imagen genérica)
-                const channelImg = ch.img || `https://ui-avatars.com/api/?name=${ch.name}&background=1a1a1a&color=2ecc71&bold=true`;
+                // CORRECCIÓN: Usar la imagen de la API (ch.img o ch.image)
+                const imgSource = ch.img || ch.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(ch.name)}&background=1a1a1a&color=2ecc71&bold=true`;
                 
                 html += `
                 <div class="channel-item" onclick="load('${ch.url}')">
-                    <img class="channel-logo" src="${channelImg}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'">
+                    <img class="channel-logo" src="${imgSource}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'">
                     <span>${ch.name}</span>
                 </div>`;
             });
@@ -174,17 +180,21 @@
     function renderEvents(events) {
         const container = document.getElementById('eventsContainer');
         container.innerHTML = "";
+        
         for (const sport in events) {
             if (events[sport].length === 0) continue;
             const section = document.createElement('div');
-            section.innerHTML = `<div class="sport-header">${sport}</div>`;
+            section.innerHTML = `<div class="sport-header">${sport} <i class="fa-solid fa-chevron-right" style="font-size:10px"></i></div>`;
             const grid = document.createElement('div');
             grid.className = "events-grid";
 
             events[sport].forEach(ev => {
                 const channels = ev.channels || [];
                 let linksHtml = channels.map(ch => 
-                    `<div class="btn-ch" onclick="load('${ch.url}')"><i class="fa-solid fa-play"></i> ${ch.channel_name}</div>`
+                    `<div class="btn-ch" onclick="load('${ch.url}')">
+                        <i class="fa-solid fa-circle-play" style="font-size:14px"></i> 
+                        ${ch.channel_name}
+                    </div>`
                 ).join('');
 
                 grid.innerHTML += `
@@ -198,13 +208,13 @@
                                 <img src="${ev.homeTeamIMG}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'">
                                 <span>${ev.homeTeam}</span>
                             </div>
-                            <div style="color:var(--primary); font-weight:bold;">VS</div>
+                            <div style="color:var(--primary); font-weight:bold; font-size:12px;">VS</div>
                             <div class="team">
                                 <img src="${ev.awayTeamIMG}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'">
                                 <span>${ev.awayTeam}</span>
                             </div>
                         </div>
-                        <div class="links-container">${linksHtml || '<p style="font-size:10px; opacity:0.3; text-align:center;">Cargando...</p>'}</div>
+                        <div class="links-container">${linksHtml || '<div style="font-size:10px; opacity:0.3; text-align:center; margin-top:20px;">Esperando enlaces...</div>'}</div>
                     </div>`;
             });
             section.appendChild(grid);
@@ -215,20 +225,22 @@
     function filterContent() {
         const query = document.getElementById('masterSearch').value.toLowerCase();
         
-        // Filtrar canales
-        const filteredCh = allChannels.filter(c => c.name.toLowerCase().includes(query));
+        const filteredCh = allChannels.filter(c => c.name.toLowerCase().includes(query) || (c.code && c.code.toLowerCase().includes(query)));
         renderSidebar(filteredCh);
 
-        // Filtrar eventos
         const filteredEv = {};
         for (const s in allEvents) {
-            filteredEv[s] = allEvents[s].filter(e => e.homeTeam.toLowerCase().includes(query) || e.awayTeam.toLowerCase().includes(query));
+            filteredEv[s] = allEvents[s].filter(e => 
+                e.homeTeam.toLowerCase().includes(query) || 
+                e.awayTeam.toLowerCase().includes(query) || 
+                e.tournament.toLowerCase().includes(query)
+            );
         }
         renderEvents(filteredEv);
     }
 
     fetchData();
-    setInterval(fetchData, 60000);
+    setInterval(fetchData, 60000); // Actualiza datos cada minuto
 </script>
 </body>
 </html>
