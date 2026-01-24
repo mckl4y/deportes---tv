@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amantes del Futbol | Todo el Deporte en Vivo</title>
+    <title>Amantes del Futbol | Pro Live</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -112,6 +112,7 @@
             max-width: 1100px;
             margin: 0 auto;
             aspect-ratio: 16/9;
+            background: #000;
         }
 
         iframe { width: 100%; height: 100%; border: none; }
@@ -123,7 +124,6 @@
             gap: 20px;
         }
 
-        /* --- CARDS --- */
         .card { 
             background: var(--card-bg); 
             border-radius: 15px; 
@@ -170,7 +170,7 @@
             object-fit: contain;
         }
 
-        .team-name { font-size: 12px; font-weight: bold; text-align: center; color: #eee; }
+        .team-name { font-size: 12px; font-weight: bold; text-align: center; }
 
         .btn-ch {
             background: #1a1a1a;
@@ -181,10 +181,9 @@
             cursor: pointer;
             border: 1px solid #333;
             font-weight: bold;
-            transition: 0.2s;
         }
 
-        .btn-ch:hover { background: var(--primary); color: #000; border-color: var(--primary); }
+        .btn-ch:hover { background: var(--primary); color: #000; }
 
         @media (max-width: 850px) {
             .main-wrapper { display: block; }
@@ -199,7 +198,7 @@
     <div class="logo">AMANTES DEL FUTB<div class="ball-icon"></div>L</div>
     <div class="search-box">
         <i class="fa-solid fa-search"></i>
-        <input type="text" id="searchInput" placeholder="Buscar fútbol, NBA, Tenis, Boxeo, F1...">
+        <input type="text" id="searchInput" placeholder="Buscar partidos, ligas o canales...">
     </div>
 </nav>
 
@@ -210,12 +209,12 @@
             <div class="player-area" id="player">
                 <div style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; opacity:0.3;">
                     <i class="fa-solid fa-circle-play fa-4x" style="margin-bottom: 10px;"></i>
-                    <p>Selecciona un evento para comenzar la transmisión</p>
+                    <p>Selecciona un evento para ver</p>
                 </div>
             </div>
         </div>
         <div class="events-section">
-            <h2 id="dateHeader" style="font-size: 16px; margin-bottom: 25px; border-left: 4px solid var(--primary); padding-left: 15px; text-transform: uppercase;"></h2>
+            <h2 id="dateHeader" style="font-size: 16px; margin-bottom: 25px; border-left: 4px solid var(--primary); padding-left: 15px;"></h2>
             <div class="events-grid" id="eventsGrid"></div>
         </div>
     </main>
@@ -244,20 +243,11 @@
 
     function getLogo(teamName, tournament, sportType, apiLogo) {
         if (apiLogo && !apiLogo.includes('logo.png')) return apiLogo;
-        
         let cleanName = teamName.replace(" (W)", "").replace(" Femenino", "").replace(" Fem", "").replace(" WFC", "").trim();
         const encodedName = encodeURIComponent(cleanName);
-
-        // Lógica por Deporte
         if (sportType === "NBA") return `${REPO_USA}/nba/${encodedName}.png`;
         if (sportType === "NFL") return `${REPO_USA}/nfl/${encodedName}.png`;
         if (sportType === "MLB") return `${REPO_USA}/mlb/${encodedName}.png`;
-        
-        // Iconos Genéricos para otros deportes si no hay logo
-        if (sportType.includes("Box") || sportType.includes("UFC")) return "https://cdn-icons-png.flaticon.com/512/3112/3112942.png";
-        if (sportType.includes("Tenis") || sportType.includes("Tennis")) return "https://cdn-icons-png.flaticon.com/512/3106/3106277.png";
-        if (sportType.includes("Moto") || sportType.includes("F1")) return "https://cdn-icons-png.flaticon.com/512/744/744465.png";
-
         if (sportType === "Soccer") {
             for (let key in LIGA_PATHS) {
                 if (tournament.includes(key)) return `${REPO_SOCCER}/${LIGA_PATHS[key]}/${encodedName}.png`;
@@ -268,22 +258,36 @@
     }
 
     function load(url) {
-        document.getElementById('player').innerHTML = `<iframe src="${url}" allowfullscreen allow="encrypted-media"></iframe>`;
+        // Sandboxing para intentar reducir anuncios que abren pestañas
+        document.getElementById('player').innerHTML = `
+            <iframe src="${url}" 
+                    allowfullscreen 
+                    allow="encrypted-media" 
+                    sandbox="allow-forms allow-scripts allow-same-origin allow-presentation">
+            </iframe>`;
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     async function fetchData() {
         try {
-            const t = new Date().getTime();
+            const cacheBuster = Math.random().toString(36).substring(7);
             const [rCh, rEv] = await Promise.all([
-                fetch(`https://api.cdn-live.tv/api/v1/channels/?${AUTH}&t=${t}`),
-                fetch(`https://api.cdn-live.tv/api/v1/events/sports/?${AUTH}&t=${t}`)
+                fetch(`https://api.cdn-live.tv/api/v1/channels/?${AUTH}&cb=${cacheBuster}`),
+                fetch(`https://api.cdn-live.tv/api/v1/events/sports/?${AUTH}&cb=${cacheBuster}`)
             ]);
+            
             const dCh = await rCh.json();
             const dEv = await rEv.json();
-            renderSidebar(dCh.channels);
-            renderEvents(dEv['cdn-live-tv']);
-        } catch (e) { console.error("Error de conexión:", e); }
+
+            if (dCh && dCh.channels) renderSidebar(dCh.channels);
+            if (dEv && dEv['cdn-live-tv']) {
+                renderEvents(dEv['cdn-live-tv']);
+            } else {
+                document.getElementById('eventsGrid').innerHTML = "<p style='text-align:center; opacity:0.5;'>No hay eventos programados en este momento.</p>";
+            }
+        } catch (e) { 
+            console.error("Error cargando datos:", e);
+        }
     }
 
     function renderSidebar(channels) {
@@ -295,13 +299,13 @@
             return acc;
         }, {});
         
-        side.innerHTML = `<h3 style="color:var(--primary); font-size:14px; margin-bottom:15px;">TV EN DIRECTO</h3>` + 
+        side.innerHTML = `<h3 style="color:var(--primary); font-size:14px; margin-bottom:15px;">TV EN VIVO</h3>` + 
             Object.keys(grouped).sort().map(code => `
             <details style="margin-bottom:6px; background:#1a1a1a; border-radius:8px; border:1px solid #333;">
-                <summary style="padding:10px; cursor:pointer; font-size:12px; font-weight:bold; list-style:none; display:flex; align-items:center;">
-                    <img src="https://flagcdn.com/w20/${code}.png" width="16" style="margin-right:10px;"> ${code.toUpperCase()}
+                <summary style="padding:10px; cursor:pointer; font-size:12px; font-weight:bold; list-style:none;">
+                    <img src="https://flagcdn.com/w20/${code}.png" width="16" style="margin-right:8px;"> ${code.toUpperCase()}
                 </summary>
-                ${grouped[code].map(ch => `<div style="padding:10px 15px; font-size:11px; cursor:pointer; border-top:1px solid #222; color:#ccc;" onclick="load('${ch.url}')"><i class="fa-solid fa-play" style="font-size:8px; margin-right:8px; opacity:0.5;"></i>${ch.name}</div>`).join('')}
+                ${grouped[code].map(ch => `<div style="padding:10px 15px; font-size:11px; cursor:pointer; border-top:1px solid #222;" onclick="load('${ch.url}')">${ch.name}</div>`).join('')}
             </details>`).join('');
     }
 
@@ -310,14 +314,13 @@
         grid.innerHTML = "";
         const all = [];
         
-        // Esta línea es la que detecta TODO (Tenis, Boxeo, etc.)
         Object.keys(data).forEach(cat => {
             data[cat].forEach(e => { e.sportType = cat; all.push(e); });
         });
 
         if(all.length > 0) {
             const d = new Date(all[0].start.replace(/-/g, "/"));
-            document.getElementById('dateHeader').innerText = `EVENTOS: ${d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase()}`;
+            document.getElementById('dateHeader').innerText = `CALENDARIO: ${d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase()}`;
         }
 
         const now = new Date();
@@ -326,7 +329,7 @@
             const start = new Date(ev.start.replace(/-/g, "/"));
             const end = new Date(ev.end.replace(/-/g, "/"));
             const diffMin = (start - now) / 60000;
-            const isWomen = ev.tournament.toLowerCase().includes("women") || ev.tournament.includes("Liga F") || ev.tournament.includes("Reina");
+            const isWomen = ev.tournament.toLowerCase().includes("women") || ev.tournament.includes("Liga F");
 
             let badge = "";
             if (now > end || ev.status === "finished") {
@@ -334,7 +337,7 @@
             } else if (now >= start && now <= end) {
                 badge = `<span class="status-badge" style="color:var(--live)"><i class="dot dot-live"></i> EN VIVO</span>`;
             } else if (diffMin <= 15 && diffMin > 0) {
-                badge = `<span class="status-badge" style="color:var(--pending)"><i class="dot dot-pending"></i> EN BREVE</span>`;
+                badge = `<span class="status-badge" style="color:var(--pending)"><i class="dot dot-pending"></i> PRONTO</span>`;
             } else {
                 badge = `<span class="status-badge" style="opacity:0.4">PROGRAMADO</span>`;
             }
@@ -342,26 +345,25 @@
             const card = document.createElement('div');
             card.className = "card";
             if(isWomen) card.style.borderLeft = `4px solid var(--women)`;
+            card.setAttribute('data-search', `${ev.homeTeam} ${ev.awayTeam} ${ev.tournament}`.toLowerCase());
             
-            card.setAttribute('data-search', `${ev.homeTeam} ${ev.awayTeam} ${ev.tournament} ${ev.sportType}`.toLowerCase());
             card.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                    <span style="font-size:10px; background:rgba(255,255,255,0.08); padding:3px 8px; border-radius:5px; color:var(--primary); font-weight:bold;">${ev.sportType}</span>
+                    <span style="font-size:10px; background:rgba(255,255,255,0.05); padding:3px 8px; border-radius:5px;">${ev.tournament}</span>
                     ${badge}
                 </div>
-                <div style="font-size:10px; margin-bottom:10px; opacity:0.6; text-align:center;">${ev.tournament}</div>
                 <div class="teams-display">
                     <div class="team">
                         <img class="team-logo" src="${getLogo(ev.homeTeam, ev.tournament, ev.sportType, ev.homeTeamIMG)}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'">
                         <span class="team-name">${ev.homeTeam}</span>
                     </div>
-                    <div style="color:var(--primary); font-weight:bold; font-size:16px;">VS</div>
+                    <div style="color:var(--primary); font-weight:bold;">VS</div>
                     <div class="team">
                         <img class="team-logo" src="${getLogo(ev.awayTeam, ev.tournament, ev.sportType, ev.awayTeamIMG)}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'">
                         <span class="team-name">${ev.awayTeam}</span>
                     </div>
                 </div>
-                <div style="text-align:center; font-size:11px; margin-bottom:15px; color:#aaa;"><i class="fa-regular fa-clock"></i> ${ev.time}</div>
+                <div style="text-align:center; font-size:11px; margin-bottom:15px; color:#aaa;">${ev.time}</div>
                 <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap:8px;">
                     ${ev.channels.map(ch => `<div class="btn-ch" onclick="load('${ch.url}')">${ch.channel_name}</div>`).join('')}
                 </div>
