@@ -22,13 +22,13 @@
 
         .search-wrapper { position: relative; width: 100%; max-width: 600px; }
         .search-box input { width: 100%; padding: 10px 15px 10px 40px; background: #1a1a1a; border: 1px solid #333; border-radius: 20px; color: white; outline: none; font-size: 14px; transition: 0.3s; }
-        .search-box input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(46, 204, 113, 0.2); }
+        .search-box input:focus { border-color: var(--primary); }
         .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--primary); }
 
         /* LAYOUT */
         .main-wrapper { display: flex; width: 100%; position: relative; }
 
-        /* SIDEBAR */
+        /* SIDEBAR (TV CANALES) */
         .sidebar { 
             background: var(--card-bg); width: 260px; min-width: 260px; 
             border-right: 1px solid #222; height: calc(100vh - 100px); 
@@ -42,15 +42,14 @@
             cursor: pointer; display: flex; justify-content: space-between; align-items: center;
         }
         .channel-list { display: flex; flex-direction: column; gap: 2px; margin-top: 5px; }
-        .channel-item { 
-            display: flex; align-items: center; gap: 10px; padding: 8px; 
-            border-radius: 6px; cursor: pointer; font-size: 13px;
-        }
+        .channel-item { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 13px; }
         .channel-item:hover { background: rgba(46, 204, 113, 0.1); color: var(--primary); }
         .hidden { display: none !important; }
 
-        /* CONTENIDO */
+        /* CONTENIDO PRINCIPAL */
         .content { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; }
+
+        /* PLAYER FIJO EN MÓVIL */
         .player-container { width: 100%; background: #000; aspect-ratio: 16/9; max-height: 500px; border-bottom: 2px solid #1a1a1a; }
         iframe { width: 100%; height: 100%; border: none; }
 
@@ -61,37 +60,34 @@
             max-width: 1300px;
         }
         
-        .match-card { 
-            background: var(--card-bg); border: 1px solid #222; 
-            border-radius: 12px; padding: 12px; display: flex; 
-            flex-direction: column; transition: 0.3s;
-        }
-        
+        .match-card { background: var(--card-bg); border: 1px solid #222; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; }
         .match-card-top { display: flex; justify-content: space-between; font-size: 10px; opacity: 0.6; margin-bottom: 10px; }
         .match-teams { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .team { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; font-weight: bold; text-align: center; }
         .team img { width: 35px; height: 35px; object-fit: contain; }
 
+        /* DESPLEGABLE DE CANALES EN TARJETA */
         .dropdown-container { position: relative; width: 100%; margin-top: auto; }
         .dropdown-btn { 
             width: 100%; background: #1a1a1a; color: var(--primary); 
             border: 1px solid var(--primary); padding: 8px; border-radius: 8px; 
-            font-size: 11px; font-weight: 800; cursor: pointer; 
-            display: flex; justify-content: center; align-items: center; gap: 8px;
+            font-size: 11px; font-weight: 800; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px;
         }
-        .dropdown-content { 
-            display: none; flex-direction: column; gap: 4px; 
-            margin-top: 8px; max-height: 150px; overflow-y: auto;
-            background: #000; padding: 5px; border-radius: 6px;
-        }
+        .dropdown-content { display: none; flex-direction: column; gap: 4px; margin-top: 8px; max-height: 150px; overflow-y: auto; background: #000; padding: 5px; border-radius: 6px; }
         .btn-link { background: #222; color: white; border: none; padding: 8px; border-radius: 4px; font-size: 10px; cursor: pointer; text-align: left; }
         .btn-link:hover { background: var(--primary); color: #000; }
 
+        /* RESULTADOS DE CANALES EN EL BUSCADOR (PARA MÓVIL) */
+        #searchPreview { width: 100%; max-width: 600px; display: none; flex-direction: column; gap: 5px; padding: 10px; background: #111; border-radius: 10px; margin-top: 5px; border: 1px solid #333; }
+        .preview-item { padding: 10px; background: #1a1a1a; border-radius: 5px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 10px; }
+        .preview-item i { color: var(--primary); }
+
+        /* RESPONSIVE MÓVIL */
         @media (max-width: 992px) {
             .menu-toggle { display: block; }
-            .sidebar { position: fixed; left: -260px; top: 0; bottom: 0; z-index: 11000; width: 260px; height: 100vh; transition: 0.3s; }
+            .sidebar { position: fixed; left: -270px; top: 0; bottom: 0; z-index: 11000; width: 260px; height: 100vh; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
             .sidebar.active { left: 0; }
-            .player-container { position: sticky; top: 95px; z-index: 999; }
+            .player-container { position: sticky; top: 95px; z-index: 999; box-shadow: 0 4px 15px rgba(0,0,0,0.7); }
             .events-grid { grid-template-columns: 1fr; padding: 10px; }
         }
 
@@ -112,8 +108,9 @@
         <div class="search-wrapper">
             <div class="search-box">
                 <i class="fa-solid fa-search"></i>
-                <input type="text" id="masterSearch" placeholder="Busca canales o equipos (mín. 3 letras)..." onkeyup="dynamicSearch()">
+                <input type="text" id="masterSearch" placeholder="Busca canales o equipos..." onkeyup="smartSearch()">
             </div>
+            <div id="searchPreview"></div>
         </div>
     </div>
 </nav>
@@ -127,7 +124,7 @@
         <div id="player" class="player-container">
             <div style="height:100%; display:flex; justify-content:center; align-items:center; opacity:0.3; flex-direction:column;">
                 <i class="fa-solid fa-play-circle fa-4x"></i>
-                <p>SELECCIONA UN EVENTO</p>
+                <p>SELECCIONA SEÑAL</p>
             </div>
         </div>
         <div id="eventsContainer" class="events-grid"></div>
@@ -146,7 +143,8 @@
 
     function load(url) {
         document.getElementById('player').innerHTML = `<iframe src="${url}" allowfullscreen allow="encrypted-media" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>`;
-        if(window.innerWidth <= 992) toggleMenu();
+        document.getElementById('searchPreview').style.display = 'none';
+        if(window.innerWidth <= 992 && document.getElementById('sidebar').classList.contains('active')) toggleMenu();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -164,10 +162,8 @@
                 fetch(`https://api.cdn-live.tv/api/v1/channels/?${AUTH}&t=${t}`),
                 fetch(`https://api.cdn-live.tv/api/v1/events/sports/?${AUTH}&t=${t}`)
             ]);
-            const chData = await rCh.json();
-            allChannels = chData.channels || [];
-            const evData = await rEv.json();
-            allEvents = evData['cdn-live-tv'] || evData['data'] || evData;
+            allChannels = (await rCh.json()).channels || [];
+            allEvents = (await rEv.json())['cdn-live-tv'] || (await rEv.json());
             renderChannels();
             renderEvents(allEvents);
         } catch (e) { console.error("Error API"); }
@@ -180,25 +176,19 @@
             acc[country].push(ch);
             return acc;
         }, {});
-
         let html = '<h3 style="font-size:12px; color:var(--primary); margin:10px;">CANALES TV</h3>';
         Object.keys(groups).sort().forEach(country => {
             html += `
-            <div class="country-group" data-country="${country}">
-                <div class="country-header" onclick="toggleCountry(this)">
+            <div class="country-group">
+                <div class="country-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'flex' : 'none'">
                     ${country} <i class="fa-solid fa-chevron-down"></i>
                 </div>
                 <div class="channel-list" style="display: none;">
-                    ${groups[country].map(ch => `<div class="channel-item" data-name="${ch.name.toLowerCase()}" onclick="load('${ch.url}')">${ch.name}</div>`).join('')}
+                    ${groups[country].map(ch => `<div class="channel-item" onclick="load('${ch.url}')">${ch.name}</div>`).join('')}
                 </div>
             </div>`;
         });
         document.getElementById('channelsList').innerHTML = html;
-    }
-
-    function toggleCountry(el) {
-        const list = el.nextElementSibling;
-        list.style.display = list.style.display === 'none' ? 'flex' : 'none';
     }
 
     function renderEvents(data) {
@@ -228,50 +218,38 @@
         }
     }
 
-    // BUSCADOR DINÁMICO DUAL
-    function dynamicSearch() {
+    // BUSCADOR INTELIGENTE CON PREVISUALIZACIÓN
+    function smartSearch() {
         const q = document.getElementById('masterSearch').value.toLowerCase();
+        const preview = document.getElementById('searchPreview');
         
-        // 1. Filtrar Canales del Sidebar
-        const channelItems = document.querySelectorAll('.channel-item');
-        const countryGroups = document.querySelectorAll('.country-group');
-
-        if (q.length >= 3) {
-            // Filtrar canales
-            channelItems.forEach(item => {
-                const name = item.getAttribute('data-name');
-                const isMatch = name.includes(q);
-                item.classList.toggle('hidden', !isMatch);
-            });
-
-            // Mostrar/Ocultar grupos de países y abrir los que tengan coincidencias
-            countryGroups.forEach(group => {
-                const hasVisibleChannels = group.querySelectorAll('.channel-item:not(.hidden)').length > 0;
-                group.classList.toggle('hidden', !hasVisibleChannels);
-                if(hasVisibleChannels) group.querySelector('.channel-list').style.display = 'flex';
-            });
-
-            // 2. Filtrar Eventos
-            const filteredEvents = {};
-            for (const sport in allEvents) {
-                const matches = allEvents[sport].filter(m => 
-                    m.homeTeam.toLowerCase().includes(q) || 
-                    m.awayTeam.toLowerCase().includes(q) || 
-                    (m.tournament && m.tournament.toLowerCase().includes(q))
-                );
-                if (matches.length > 0) filteredEvents[sport] = matches;
-            }
-            renderEvents(filteredEvents);
-
-        } else if (q.length === 0) {
-            // Resetear todo al borrar búsqueda
-            channelItems.forEach(item => item.classList.remove('hidden'));
-            countryGroups.forEach(group => {
-                group.classList.remove('hidden');
-                group.querySelector('.channel-list').style.display = 'none';
-            });
+        if (q.length < 3) {
+            preview.style.display = 'none';
             renderEvents(allEvents);
+            return;
         }
+
+        // 1. Filtrar Canales para Previsualización (Móvil/PC)
+        const matchChannels = allChannels.filter(ch => ch.name.toLowerCase().includes(q)).slice(0, 5);
+        if (matchChannels.length > 0) {
+            preview.style.display = 'flex';
+            preview.innerHTML = `<span style="font-size:10px; color:var(--primary); font-weight:bold; margin-bottom:5px;">CANALES ENCONTRADOS:</span>`;
+            matchChannels.forEach(ch => {
+                preview.innerHTML += `<div class="preview-item" onclick="load('${ch.url}')"><i class="fa-solid fa-tv"></i> ${ch.name}</div>`;
+            });
+        } else {
+            preview.style.display = 'none';
+        }
+
+        // 2. Filtrar Eventos en la Grilla Principal
+        const filtered = {};
+        for (const sport in allEvents) {
+            const matches = allEvents[sport].filter(m => 
+                m.homeTeam.toLowerCase().includes(q) || m.awayTeam.toLowerCase().includes(q) || (m.tournament && m.tournament.toLowerCase().includes(q))
+            );
+            if (matches.length > 0) filtered[sport] = matches;
+        }
+        renderEvents(filtered);
     }
 
     fetchData();
