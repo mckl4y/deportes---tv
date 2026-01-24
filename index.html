@@ -11,23 +11,23 @@
         body { background-color: var(--dark-bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; min-height: 100vh; }
 
         /* NAVBAR */
-        .navbar { background: #000; padding: 10px 0; border-bottom: 2px solid var(--primary); position: sticky; top: 0; z-index: 9999; width: 100%; }
+        .navbar { background: #000; padding: 10px 0; border-bottom: 2px solid var(--primary); position: sticky; top: 0; z-index: 10000; width: 100%; }
         .nav-container { width: 100%; padding: 0 15px; display: flex; flex-direction: column; align-items: center; gap: 8px; box-sizing: border-box; }
         .nav-top { width: 100%; display: flex; justify-content: center; align-items: center; position: relative; }
         
-        .logo { font-size: 20px; font-weight: 900; display: flex; align-items: center; text-transform: uppercase; letter-spacing: 1px; }
-        .ball-icon { width: 18px; height: 18px; background: url('https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg') no-repeat center; background-size: contain; display: inline-block; margin: 0 2px; }
+        .logo { font-size: 22px; font-weight: 900; display: flex; align-items: center; text-transform: uppercase; letter-spacing: 1px; }
+        .ball-icon { width: 20px; height: 20px; background: url('https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg') no-repeat center; background-size: contain; display: inline-block; margin: 0 2px; }
         
-        .menu-btn { font-size: 20px; color: var(--primary); cursor: pointer; position: absolute; left: 0; padding: 5px; }
+        .menu-btn { font-size: 22px; color: var(--primary); cursor: pointer; position: absolute; left: 0; }
 
         .search-wrapper { position: relative; width: 100%; max-width: 600px; }
-        .search-box input { width: 100%; padding: 8px 15px 8px 35px; background: #1a1a1a; border: 1px solid #333; border-radius: 20px; color: white; outline: none; box-sizing: border-box; font-size: 14px; }
-        .search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--primary); font-size: 12px; }
+        .search-box input { width: 100%; padding: 10px 15px 10px 40px; background: #1a1a1a; border: 1px solid #333; border-radius: 20px; color: white; outline: none; box-sizing: border-box; font-size: 14px; }
+        .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--primary); }
 
-        /* MAIN LAYOUT */
-        .main-wrapper { display: flex; flex-direction: row; width: 100%; position: relative; }
+        /* LAYOUT */
+        .main-wrapper { display: flex; width: 100%; min-height: calc(100vh - 100px); }
 
-        /* SIDEBAR (MOVIL Y PC) */
+        /* SIDEBAR */
         .sidebar { 
             background: var(--card-bg); width: 280px; min-width: 280px; 
             border-right: 1px solid #222; padding: 15px; 
@@ -35,49 +35,48 @@
             position: sticky; top: 100px; 
         }
 
-        /* CONTENIDO PRINCIPAL */
-        .content { flex: 1; width: 100%; min-width: 0; }
+        /* CONTENT */
+        .content { flex: 1; min-width: 0; background: var(--dark-bg); }
 
-        /* REPRODUCTOR */
-        .player-container { width: 100%; background: #000; aspect-ratio: 16/9; position: sticky; top: 95px; z-index: 100; border-bottom: 1px solid #222; }
+        /* PLAYER */
+        .player-container { width: 100%; background: #000; aspect-ratio: 16/9; position: sticky; top: 90px; z-index: 900; border-bottom: 2px solid #222; }
         iframe { width: 100%; height: 100%; border: none; }
         
-        /* SECCIONES Y EVENTOS */
-        .events-section { padding: 15px; }
-        .sport-header { background: #1a1a1a; padding: 10px; color: var(--primary); font-weight: bold; border-left: 4px solid var(--primary); margin: 15px 0 10px 0; text-transform: uppercase; font-size: 13px; }
-        .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+        /* EVENTOS */
+        .events-section { padding: 20px; }
+        .sport-header { background: #1a1a1a; padding: 12px; color: var(--primary); font-weight: bold; border-left: 4px solid var(--primary); margin: 20px 0 15px 0; text-transform: uppercase; font-size: 14px; }
+        .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
         
-        .card { background: var(--card-bg); border-radius: 10px; padding: 12px; border: 1px solid #222; display: flex; flex-direction: column; height: 260px; }
-        .card-header { display: flex; justify-content: space-between; font-size: 10px; opacity: 0.6; margin-bottom: 8px; }
-        .teams-row { display: flex; justify-content: space-around; align-items: center; margin-bottom: 10px; }
-        .team { display: flex; flex-direction: column; align-items: center; flex: 1; text-align: center; gap: 4px; }
-        .team img { width: 32px; height: 32px; object-fit: contain; }
-        .team span { font-size: 11px; font-weight: bold; }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 15px; border: 1px solid #222; display: flex; flex-direction: column; height: 280px; transition: 0.3s; }
+        .card:hover { border-color: var(--primary); }
+        .card-header { display: flex; justify-content: space-between; font-size: 10px; opacity: 0.6; margin-bottom: 12px; }
+        .teams-row { display: flex; justify-content: space-around; align-items: center; margin-bottom: 15px; }
+        .team { display: flex; flex-direction: column; align-items: center; flex: 1; text-align: center; gap: 6px; }
+        .team img { width: 40px; height: 40px; object-fit: contain; }
+        .team span { font-size: 12px; font-weight: bold; }
 
-        .links-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; }
-        .btn-ch { background: #1a1a1a; color: #fff; padding: 8px; border-radius: 6px; font-size: 11px; text-align: center; cursor: pointer; border: 1px solid #333; font-weight: bold; text-decoration: none; }
-        .btn-ch:hover { background: var(--primary); color: #000; }
+        .links-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-right: 5px; }
+        .links-container::-webkit-scrollbar { width: 4px; }
+        .links-container::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
 
-        /* CANALES SIDEBAR */
-        .country-title { color: var(--primary); font-size: 10px; font-weight: 800; text-transform: uppercase; padding: 5px; background: rgba(255,255,255,0.03); margin-top: 10px; }
-        .channel-item { padding: 8px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 10px; border-radius: 5px; }
+        .btn-ch { background: #1a1a1a; color: #fff; padding: 10px; border-radius: 6px; font-size: 11px; text-align: center; cursor: pointer; border: 1px solid #333; font-weight: bold; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-ch:hover { background: var(--primary); color: #000; border-color: var(--primary); }
+
+        /* SIDEBAR CHANNELS */
+        .country-title { color: var(--primary); font-size: 11px; font-weight: 800; text-transform: uppercase; padding: 8px 10px; background: rgba(255,255,255,0.03); margin-top: 15px; border-radius: 4px; }
+        .channel-item { padding: 10px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 12px; border-radius: 8px; transition: 0.2s; }
         .channel-item:hover { background: #1a1a1a; }
-        .channel-logo { width: 22px; height: 22px; object-fit: contain; background: #000; border-radius: 3px; }
+        .channel-logo { width: 26px; height: 26px; object-fit: contain; background: #000; border-radius: 4px; padding: 2px; }
 
-        /* OVERLAY PARA MOVIL */
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 11000; }
 
-        /* RESPONSIVE DESIGN (ESTO ARREGLA EL VACÍO EN MÓVIL) */
+        /* FIX MOBILE */
         @media (max-width: 992px) {
             .main-wrapper { flex-direction: column; }
-            .sidebar { 
-                position: fixed; left: -300px; top: 0; bottom: 0; 
-                z-index: 10001; transition: 0.3s; width: 280px; 
-                height: 100vh; box-shadow: 5px 0 15px rgba(0,0,0,0.5); 
-            }
+            .sidebar { position: fixed; left: -300px; top: 0; bottom: 0; z-index: 12000; transition: 0.4s; width: 280px; height: 100vh; }
             .sidebar.active { left: 0; }
             .overlay.active { display: block; }
-            .player-container { top: 90px; }
+            .player-container { top: 90px; position: sticky; }
             .content { width: 100%; }
         }
     </style>
@@ -95,7 +94,7 @@
         <div class="search-wrapper">
             <div class="search-box">
                 <i class="fa-solid fa-search"></i>
-                <input type="text" id="masterSearch" placeholder="Buscar equipo o canal..." onkeyup="filterContent()">
+                <input type="text" id="masterSearch" placeholder="Busca un partido o canal..." onkeyup="filterContent()">
             </div>
         </div>
     </div>
@@ -108,13 +107,16 @@
     
     <main class="content">
         <div id="player" class="player-container">
-             <div style="height:100%; display:flex; justify-content:center; align-items:center; opacity:0.3; flex-direction:column; gap:8px;">
-                <i class="fa-solid fa-circle-play fa-3x"></i>
-                <span style="font-size:10px;">SELECCIONA CONTENIDO</span>
+             <div style="height:100%; display:flex; justify-content:center; align-items:center; opacity:0.2; flex-direction:column; gap:15px;">
+                <i class="fa-solid fa-play-circle fa-4x"></i>
+                <span style="font-weight:bold; letter-spacing:1px; font-size:12px;">SELECCIONA UN EVENTO</span>
              </div>
         </div>
         <div id="eventsContainer" class="events-section">
-            <p style="text-align:center; opacity:0.5; margin-top:50px;">Cargando eventos...</p>
+            <div style="text-align:center; padding:50px; opacity:0.5;">
+                <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+                <p>Buscando transmisiones en directo...</p>
+            </div>
         </div>
     </main>
 </div>
@@ -153,12 +155,14 @@
             allChannels = chData.channels || [];
             
             const evData = await rEv.json();
-            allEvents = evData['cdn-live-tv'] || {};
+            // Lógica dinámica: Si 'cdn-live-tv' no existe, toma el primer objeto que encuentre
+            allEvents = evData['cdn-live-tv'] || evData[Object.keys(evData)[0]] || {};
             
             renderSidebar(allChannels);
             renderEvents(allEvents);
         } catch (e) { 
-            document.getElementById('eventsContainer').innerHTML = "Error al conectar con la señal.";
+            console.error("Error en API");
+            document.getElementById('eventsContainer').innerHTML = "<p style='text-align:center;'>Error de conexión. Reintentando...</p>";
         }
     }
 
@@ -170,7 +174,7 @@
             return acc;
         }, {});
 
-        let html = `<div style="padding:5px; font-weight:800; font-size:12px; border-bottom:1px solid #333;">CANALES TV</div>`;
+        let html = `<div style="font-weight:900; font-size:14px; margin-bottom:15px; color:var(--primary);">TELEVISIÓN</div>`;
         Object.keys(groups).sort().forEach(country => {
             html += `<div class="country-title">${country}</div>`;
             groups[country].forEach(ch => {
@@ -189,31 +193,31 @@
         const container = document.getElementById('eventsContainer');
         container.innerHTML = "";
         
-        const keys = Object.keys(events);
-        if(keys.length === 0) {
-            container.innerHTML = "<p style='text-align:center; opacity:0.3;'>No hay partidos ahora.</p>";
+        const sports = Object.keys(events);
+        if(sports.length === 0) {
+            container.innerHTML = "<div style='text-align:center; opacity:0.3; margin-top:50px;'>No hay eventos programados en este momento.</div>";
             return;
         }
 
-        keys.forEach(sport => {
-            if (events[sport].length === 0) return;
+        sports.forEach(sport => {
+            if (!events[sport] || events[sport].length === 0) return;
             const section = document.createElement('div');
             section.innerHTML = `<div class="sport-header">${sport}</div>`;
             const grid = document.createElement('div');
             grid.className = "events-grid";
 
             events[sport].forEach(ev => {
-                const links = ev.channels || [];
-                const buttons = links.map(ch => `<div class="btn-ch" onclick="load('${ch.url}')">${ch.channel_name}</div>`).join('');
+                const channels = ev.channels || [];
+                const buttons = channels.map(ch => `<div class="btn-ch" onclick="load('${ch.url}')"><i class="fa-solid fa-play"></i> ${ch.channel_name}</div>`).join('');
                 grid.innerHTML += `
                     <div class="card">
-                        <div class="card-header"><span>${ev.tournament}</span><span>${fixTime(ev.time)}</span></div>
+                        <div class="card-header"><span>${ev.tournament || 'Evento'}</span><span style="color:var(--primary)">${fixTime(ev.time)}</span></div>
                         <div class="teams-row">
                             <div class="team"><img src="${ev.homeTeamIMG}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'"><span>${ev.homeTeam}</span></div>
-                            <div style="color:var(--primary); font-weight:bold;">VS</div>
+                            <div style="font-weight:bold; color:var(--primary); font-size:12px;">VS</div>
                             <div class="team"><img src="${ev.awayTeamIMG}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'"><span>${ev.awayTeam}</span></div>
                         </div>
-                        <div class="links-container">${buttons || '<p style="font-size:10px; opacity:0.3; text-align:center;">Cargando links...</p>'}</div>
+                        <div class="links-container">${buttons || '<p style="font-size:10px; opacity:0.3; text-align:center; margin-top:20px;">Sin links aún</p>'}</div>
                     </div>`;
             });
             section.appendChild(grid);
@@ -225,7 +229,11 @@
         const query = document.getElementById('masterSearch').value.toLowerCase();
         const fEv = {};
         for (const s in allEvents) {
-            fEv[s] = allEvents[s].filter(e => e.homeTeam.toLowerCase().includes(query) || e.awayTeam.toLowerCase().includes(query));
+            fEv[s] = allEvents[s].filter(e => 
+                (e.homeTeam && e.homeTeam.toLowerCase().includes(query)) || 
+                (e.awayTeam && e.awayTeam.toLowerCase().includes(query)) ||
+                (e.tournament && e.tournament.toLowerCase().includes(query))
+            );
         }
         renderEvents(fEv);
     }
