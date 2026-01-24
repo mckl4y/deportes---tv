@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amantes del Futbol | Pro Live</title>
+    <title>Amantes del Futbol | Pro Search</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --primary: #2ecc71; --dark-bg: #080808; --card-bg: #121212; --text: #ffffff; }
@@ -27,7 +27,7 @@
         }
         .search-box i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--primary); }
 
-        /* SUGERENCIAS DEL BUSCADOR */
+        /* SUGERENCIAS CON PAÍS */
         #searchSuggestions {
             position: absolute; top: 110%; left: 0; width: 100%; background: #161616;
             border-radius: 12px; border: 1px solid var(--primary); max-height: 380px;
@@ -36,12 +36,12 @@
         .suggest-item { padding: 12px; border-bottom: 1px solid #222; cursor: pointer; display: flex; align-items: center; gap: 12px; }
         .suggest-item:hover { background: #222; }
         .suggest-item img.logo-ch { width: 28px; height: 28px; object-fit: contain; }
-        .suggest-info { flex: 1; display: flex; flex-direction: column; }
+        .suggest-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
         .suggest-name { font-size: 14px; font-weight: bold; }
         .suggest-country { font-size: 10px; opacity: 0.6; display: flex; align-items: center; gap: 5px; text-transform: uppercase; }
         .flag-min { width: 14px; height: 10px; object-fit: cover; border-radius: 2px; }
 
-        /* LAYOUT PRINCIPAL */
+        /* LAYOUT */
         .main-wrapper { display: grid; grid-template-columns: 280px 1fr; flex: 1; }
         .sidebar { background: var(--card-bg); border-right: 1px solid #222; padding: 15px; height: calc(100vh - 140px); overflow-y: auto; position: sticky; top: 140px; }
 
@@ -89,7 +89,7 @@
         <div class="search-wrapper">
             <div class="search-box">
                 <i class="fa-solid fa-search"></i>
-                <input type="text" id="masterSearch" placeholder="Busca canal, país o equipo...">
+                <input type="text" id="masterSearch" placeholder="Busca equipo, canal (con país) o liga...">
             </div>
             <div id="searchSuggestions"></div>
         </div>
@@ -149,22 +149,13 @@
             return acc;
         }, {});
         
-        // El atributo 'open' hace que los detalles estén ya desplegados
-        side.innerHTML = `<h3 style="color:var(--primary); font-size:14px; margin-bottom:15px; padding-left:5px;">CANALES TV</h3>` + 
+        side.innerHTML = `<h3 style="color:var(--primary); font-size:14px; margin-bottom:15px;">CANALES TV</h3>` + 
             Object.keys(grouped).sort().map(code => `
-            <details open style="margin-bottom:10px; background:#1a1a1a; border-radius:8px; border: 1px solid #222;">
-                <summary style="padding:12px; cursor:pointer; font-size:12px; font-weight:bold; display:flex; align-items:center; gap:8px; border-bottom: 1px solid #222;">
-                    <img src="https://flagcdn.com/w20/${code}.png" style="width:18px;"> ${code.toUpperCase()}
+            <details style="margin-bottom:8px; background:#1a1a1a; border-radius:8px;">
+                <summary style="padding:12px; cursor:pointer; font-size:12px; font-weight:bold; display:flex; align-items:center; gap:8px;">
+                    <img src="https://flagcdn.com/w20/${code}.png" style="width:16px;"> ${code.toUpperCase()}
                 </summary>
-                <div style="padding:5px 0;">
-                ${grouped[code].map(ch => `
-                    <div style="padding:8px 15px; font-size:11px; cursor:pointer; display:flex; align-items:center; gap:10px; transition: 0.2s;" 
-                         onclick="load('${ch.url}')" 
-                         onmouseover="this.style.color='var(--primary)'" 
-                         onmouseout="this.style.color='white'">
-                        <img src="${ch.image}" style="width:16px; height:16px; object-fit:contain; opacity:0.8;"> ${ch.name}
-                    </div>`).join('')}
-                </div>
+                ${grouped[code].map(ch => `<div style="padding:10px 15px; font-size:11px; cursor:pointer; border-top:1px solid #222;" onclick="load('${ch.url}')">${ch.name}</div>`).join('')}
             </details>`).join('');
     }
 
@@ -184,9 +175,9 @@
                 card.innerHTML = `
                     <div style="display:flex; justify-content:space-between; font-size:11px; opacity:0.6; margin-bottom:10px;"><span>${ev.tournament}</span><span style="color:var(--primary); font-weight:bold;">${ev.time}</span></div>
                     <div class="teams-row">
-                        <div class="team"><img src="${ev.homeTeamIMG}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'"><span>${ev.homeTeam}</span></div>
+                        <div class="team"><img src="${ev.homeTeamIMG}"><span>${ev.homeTeam}</span></div>
                         <div style="color:var(--primary); font-weight:bold;">VS</div>
-                        <div class="team"><img src="${ev.awayTeamIMG}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'"><span>${ev.awayTeam}</span></div>
+                        <div class="team"><img src="${ev.awayTeamIMG}"><span>${ev.awayTeam}</span></div>
                     </div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
                         ${ev.channels.map(ch => `<div class="btn-ch" onclick="load('${ch.url}')">${ch.channel_name}</div>`).join('')}
@@ -198,11 +189,14 @@
         });
     }
 
+    // BUSCADOR CON DIFERENCIACIÓN DE PAÍS
     searchInput.addEventListener('input', () => {
         const val = searchInput.value.toLowerCase().trim();
         if (val.length < 3) { suggestions.style.display = 'none'; return; }
         
         let matches = "";
+        
+        // Filtrar Canales con Info de País
         allChannels.filter(c => c.name.toLowerCase().includes(val)).slice(0, 6).forEach(c => {
             const countryCode = (c.code || 'un').toLowerCase();
             matches += `
@@ -210,12 +204,15 @@
                 <img src="${c.image}" class="logo-ch" onerror="this.src='https://cdn-icons-png.flaticon.com/512/716/716429.png'">
                 <div class="suggest-info">
                     <span class="suggest-name">${c.name}</span>
-                    <span class="suggest-country"><img src="https://flagcdn.com/w20/${countryCode}.png" class="flag-min"> ${countryCode}</span>
+                    <span class="suggest-country">
+                        <img src="https://flagcdn.com/w20/${countryCode}.png" class="flag-min"> ${countryCode}
+                    </span>
                 </div>
                 <small style="opacity:0.4; font-size:9px;">CANAL</small>
             </div>`;
         });
 
+        // Filtrar Eventos
         ["Soccer", "NBA", "NFL", "NHL"].forEach(s => {
             if(!allEvents[s]) return;
             allEvents[s].filter(e => e.homeTeam.toLowerCase().includes(val) || e.awayTeam.toLowerCase().includes(val)).slice(0, 3).forEach(e => {
