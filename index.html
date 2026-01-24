@@ -18,7 +18,6 @@
         .logo { font-size: 22px; font-weight: 900; display: flex; align-items: center; text-transform: uppercase; letter-spacing: 1px; }
         .ball-icon { width: 20px; height: 20px; background: url('https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg') no-repeat center; background-size: contain; display: inline-block; margin: 0 2px; }
         
-        /* Botón Menú Móvil */
         .menu-toggle { position: absolute; left: 0; color: var(--primary); font-size: 24px; cursor: pointer; display: none; }
 
         .search-wrapper { position: relative; width: 100%; max-width: 600px; }
@@ -28,73 +27,81 @@
         /* LAYOUT */
         .main-wrapper { display: flex; width: 100%; position: relative; }
 
-        /* SIDEBAR IZQUIERDA */
+        /* SIDEBAR */
         .sidebar { 
-            background: var(--card-bg); width: 280px; min-width: 280px; 
+            background: var(--card-bg); width: 260px; min-width: 260px; 
             border-right: 1px solid #222; height: calc(100vh - 100px); 
             overflow-y: auto; position: sticky; top: 100px; padding: 10px;
-            transition: transform 0.3s ease;
         }
 
-        .country-group { margin-bottom: 15px; }
+        .country-group { margin-bottom: 10px; }
         .country-header { 
-            background: #1a1a1a; padding: 8px 12px; font-size: 11px; 
-            font-weight: 800; color: var(--primary); border-radius: 4px; 
+            background: #1a1a1a; padding: 10px; font-size: 11px; 
+            font-weight: 800; color: var(--primary); border-radius: 6px; 
             cursor: pointer; display: flex; justify-content: space-between; align-items: center;
         }
         .channel-list { display: flex; flex-direction: column; gap: 2px; margin-top: 5px; }
         .channel-item { 
             display: flex; align-items: center; gap: 10px; padding: 8px; 
-            border-radius: 6px; cursor: pointer; font-size: 13px; transition: 0.2s;
+            border-radius: 6px; cursor: pointer; font-size: 13px;
         }
         .channel-item:hover { background: rgba(46, 204, 113, 0.1); color: var(--primary); }
-        .channel-logo { width: 24px; height: 24px; object-fit: contain; }
 
         /* CONTENIDO */
         .content { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; }
 
         /* PLAYER */
-        .player-container { width: 100%; background: #000; aspect-ratio: 16/9; max-height: 550px; border-bottom: 2px solid #1a1a1a; }
+        .player-container { width: 100%; background: #000; aspect-ratio: 16/9; max-height: 500px; border-bottom: 2px solid #1a1a1a; }
         iframe { width: 100%; height: 100%; border: none; }
 
-        /* EVENTOS */
+        /* EVENTOS - DISEÑO COMPACTO */
         .events-grid { 
             display: grid; width: 100%; padding: 20px; box-sizing: border-box;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; 
-            max-width: 1200px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; 
+            max-width: 1300px;
         }
         
-        .match-card { background: var(--card-bg); border: 1px solid #222; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; }
-        .match-card-top { display: flex; justify-content: space-between; font-size: 10px; opacity: 0.6; margin-bottom: 12px; }
-        .match-teams { display: flex; justify-content: space-around; align-items: center; margin-bottom: 15px; }
-        .team { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 12px; font-weight: bold; text-align: center; }
-        .team img { width: 40px; height: 40px; object-fit: contain; }
-
-        .links-container { display: flex; flex-direction: column; gap: 6px; }
-        .btn-link { 
-            background: #1a1a1a; color: white; border: 1px solid #333; padding: 8px; 
-            border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer;
-            text-align: center; transition: 0.3s;
+        .match-card { 
+            background: var(--card-bg); border: 1px solid #222; 
+            border-radius: 12px; padding: 12px; display: flex; 
+            flex-direction: column; transition: 0.3s;
         }
-        .btn-link:hover { background: var(--primary); color: #000; border-color: var(--primary); }
+        
+        .match-card-top { display: flex; justify-content: space-between; font-size: 10px; opacity: 0.6; margin-bottom: 10px; }
+        
+        .match-teams { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .team { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; font-weight: bold; text-align: center; }
+        .team img { width: 35px; height: 35px; object-fit: contain; }
 
-        /* MOBILE OPTIMIZATION */
+        /* DESPLEGABLE DE CANALES DENTRO DE LA TARJETA */
+        .dropdown-container { position: relative; width: 100%; margin-top: auto; }
+        .dropdown-btn { 
+            width: 100%; background: #1a1a1a; color: var(--primary); 
+            border: 1px solid var(--primary); padding: 8px; border-radius: 8px; 
+            font-size: 11px; font-weight: 800; cursor: pointer; 
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+        }
+        .dropdown-content { 
+            display: none; flex-direction: column; gap: 4px; 
+            margin-top: 8px; max-height: 150px; overflow-y: auto;
+            background: #000; padding: 5px; border-radius: 6px;
+        }
+        .btn-link { 
+            background: #222; color: white; border: none; padding: 8px; 
+            border-radius: 4px; font-size: 10px; cursor: pointer; text-align: left;
+        }
+        .btn-link:hover { background: var(--primary); color: #000; }
+
+        /* MOBILE */
         @media (max-width: 992px) {
             .menu-toggle { display: block; }
-            .sidebar { 
-                position: fixed; left: 0; top: 0; bottom: 0; z-index: 11000; 
-                transform: translateX(-100%); width: 260px; height: 100vh;
-            }
-            .sidebar.active { transform: translateX(0); }
-            
+            .sidebar { position: fixed; left: -260px; top: 0; bottom: 0; z-index: 11000; width: 260px; height: 100vh; transition: 0.3s; }
+            .sidebar.active { left: 0; }
             .player-container { position: sticky; top: 95px; z-index: 999; }
             .events-grid { grid-template-columns: 1fr; padding: 10px; }
         }
 
-        .overlay { 
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
-            background: rgba(0,0,0,0.8); z-index: 10500; display: none; 
-        }
+        .overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 10500; display: none; }
         .overlay.active { display: block; }
     </style>
 </head>
@@ -119,7 +126,6 @@
 
 <div class="main-wrapper">
     <aside class="sidebar" id="sidebar">
-        <h3 style="font-size: 14px; padding: 0 10px; color: var(--primary)">CANALES TV</h3>
         <div id="channelsList"></div>
     </aside>
     
@@ -127,7 +133,7 @@
         <div id="player" class="player-container">
             <div style="height:100%; display:flex; justify-content:center; align-items:center; opacity:0.3; flex-direction:column;">
                 <i class="fa-solid fa-play-circle fa-4x"></i>
-                <p>SELECCIONA SEÑAL</p>
+                <p>SELECCIONA UN EVENTO</p>
             </div>
         </div>
         <div id="eventsContainer" class="events-grid"></div>
@@ -146,8 +152,15 @@
 
     function load(url) {
         document.getElementById('player').innerHTML = `<iframe src="${url}" allowfullscreen allow="encrypted-media" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>`;
-        if (window.innerWidth <= 992) toggleMenu();
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleDropdown(btn) {
+        const content = btn.nextElementSibling;
+        const isVisible = content.style.display === 'flex';
+        // Cerrar otros abiertos si quieres, o solo alternar el actual
+        content.style.display = isVisible ? 'none' : 'flex';
+        btn.innerHTML = isVisible ? `VER CANALES <i class="fa-solid fa-chevron-down"></i>` : `CERRAR <i class="fa-solid fa-chevron-up"></i>`;
     }
 
     async function fetchData() {
@@ -176,7 +189,7 @@
             return acc;
         }, {});
 
-        let html = '';
+        let html = '<h3 style="font-size:12px; color:var(--primary); margin:10px;">CANALES TV</h3>';
         Object.keys(groups).sort().forEach(country => {
             html += `
             <div class="country-group">
@@ -184,12 +197,7 @@
                     ${country} <i class="fa-solid fa-chevron-down"></i>
                 </div>
                 <div class="channel-list" style="display: none;">
-                    ${groups[country].map(ch => `
-                        <div class="channel-item" onclick="load('${ch.url}')">
-                            <img class="channel-logo" src="${ch.img || ch.image}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'">
-                            ${ch.name}
-                        </div>
-                    `).join('')}
+                    ${groups[country].map(ch => `<div class="channel-item" onclick="load('${ch.url}')">${ch.name}</div>`).join('')}
                 </div>
             </div>`;
         });
@@ -209,11 +217,14 @@
                     <div class="match-card-top"><span>${ev.tournament || sport}</span><span style="color:var(--primary)">${ev.time || ''}</span></div>
                     <div class="match-teams">
                         <div class="team"><img src="${ev.homeTeamIMG}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'"><span>${ev.homeTeam}</span></div>
-                        <div style="font-weight:900; color:var(--primary)">VS</div>
+                        <div style="font-weight:900; color:var(--primary); font-size:10px;">VS</div>
                         <div class="team"><img src="${ev.awayTeamIMG}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'"><span>${ev.awayTeam}</span></div>
                     </div>
-                    <div class="links-container">
-                        ${(ev.channels || []).map(link => `<button class="btn-link" onclick="load('${link.url}')">${link.channel_name}</button>`).join('')}
+                    <div class="dropdown-container">
+                        <button class="dropdown-btn" onclick="toggleDropdown(this)">VER CANALES <i class="fa-solid fa-chevron-down"></i></button>
+                        <div class="dropdown-content">
+                            ${(ev.channels || []).map(link => `<button class="btn-link" onclick="load('${link.url}')"><i class="fa-solid fa-play"></i> ${link.channel_name}</button>`).join('')}
+                        </div>
                     </div>
                 `;
                 container.appendChild(card);
@@ -223,19 +234,13 @@
 
     function filterContent() {
         const q = document.getElementById('masterSearch').value.toLowerCase();
-        if (q.length > 0 && q.length < 3) return; // Regla de 3 caracteres
-        
-        if (q.length === 0) {
-            renderEvents(allEvents);
-            return;
-        }
+        if (q.length > 0 && q.length < 3) return;
+        if (q.length === 0) { renderEvents(allEvents); return; }
 
         const filtered = {};
         for (const sport in allEvents) {
             const matches = allEvents[sport].filter(m => 
-                m.homeTeam.toLowerCase().includes(q) || 
-                m.awayTeam.toLowerCase().includes(q) || 
-                (m.tournament && m.tournament.toLowerCase().includes(q))
+                m.homeTeam.toLowerCase().includes(q) || m.awayTeam.toLowerCase().includes(q) || (m.tournament && m.tournament.toLowerCase().includes(q))
             );
             if (matches.length > 0) filtered[sport] = matches;
         }
