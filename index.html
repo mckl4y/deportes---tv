@@ -129,7 +129,6 @@
             .sidebar { position: fixed; left: 0; top: 0; width: 280px; z-index: 2500; transform: translateX(-100%); transition: 0.3s; }
             .sidebar.active { transform: translateX(0); }
             
-            /* Corrección para que el reproductor no se mueva en móvil */
             .player-container { 
                 position: sticky; 
                 top: 98px; 
@@ -201,7 +200,6 @@
 
     function load(url) {
         const playerDiv = document.getElementById('player');
-        // Sandbox activado para bloquear redirecciones de anuncios
         playerDiv.innerHTML = `
             <iframe 
                 src="${url}" 
@@ -219,16 +217,18 @@
 
     async function fetchData() {
         try {
+            // Añadimos un timestamp (&t=...) para evitar que el navegador use datos viejos (cache)
+            const timestamp = new Date().getTime();
             const [rCh, rEv] = await Promise.all([
-                fetch(`https://api.cdn-live.tv/api/v1/channels/?${AUTH}`),
-                fetch(`https://api.cdn-live.tv/api/v1/events/sports/?${AUTH}`)
+                fetch(`https://api.cdn-live.tv/api/v1/channels/?${AUTH}&t=${timestamp}`),
+                fetch(`https://api.cdn-live.tv/api/v1/events/sports/?${AUTH}&t=${timestamp}`)
             ]);
             const dCh = await rCh.json();
             const dEv = await rEv.json();
             allChannels = dCh.channels;
             renderSidebar(allChannels);
             renderEvents(dEv['cdn-live-tv']);
-        } catch (e) { console.error(e); }
+        } catch (e) { console.error("Error al refrescar datos:", e); }
     }
 
     function renderSidebar(channels) {
@@ -254,8 +254,9 @@
         const grid = document.getElementById('eventsGrid');
         grid.innerHTML = "";
         const all = [];
+        // Verificamos que existan las categorías para evitar errores
         ["Soccer", "NBA", "NFL", "NHL"].forEach(cat => {
-            if(data[cat]) data[cat].forEach(e => { e.cat = cat; all.push(e); });
+            if(data && data[cat]) data[cat].forEach(e => { e.cat = cat; all.push(e); });
         });
 
         const nowUTC1 = getUTC1Time();
@@ -297,6 +298,7 @@
 
     document.getElementById('searchInput').addEventListener('input', (e) => triggerSearch(e.target.value.toLowerCase()));
     fetchData();
+    // Actualización automática cada 60 segundos para asegurar que los "En Vivo" cambien a tiempo
     setInterval(fetchData, 60000);
 </script>
 </body>
