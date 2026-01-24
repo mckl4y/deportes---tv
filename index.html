@@ -8,9 +8,9 @@
     <style>
         :root { --primary: #2ecc71; --dark-bg: #080808; --card-bg: #121212; --text: #ffffff; }
         
-        body { background-color: var(--dark-bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        body { background-color: var(--dark-bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
 
-        /* NAVBAR CENTRADA */
+        /* NAVBAR */
         .navbar { 
             background: #000; 
             padding: 15px 0; 
@@ -20,7 +20,7 @@
             z-index: 3000; 
         }
         .nav-container { 
-            max-width: 1200px; 
+            max-width: 100%; 
             margin: 0 auto; 
             padding: 0 20px;
             display: flex; 
@@ -35,55 +35,53 @@
             align-items: center; 
             position: relative;
         }
-        .logo { font-size: 20px; font-weight: 900; display: flex; align-items: center; gap: 5px; text-transform: uppercase; }
-        .ball-icon { width: 22px; height: 22px; background: url('https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg') no-repeat center; background-size: contain; display: inline-block; }
+        /* LOGO CON BALON EN LA O */
+        .logo { font-size: 22px; font-weight: 900; display: flex; align-items: center; letter-spacing: 1px; text-transform: uppercase; }
+        .logo span { display: flex; align-items: center; }
+        .ball-icon { 
+            width: 20px; height: 20px; 
+            background: url('https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg') no-repeat center; 
+            background-size: contain; 
+            display: inline-block; 
+            margin: 0 1px;
+        }
         
-        .menu-btn { font-size: 22px; color: var(--primary); cursor: pointer; position: absolute; left: 0; display: none; }
+        .menu-btn { font-size: 22px; color: var(--primary); cursor: pointer; position: absolute; left: 0; }
 
-        .search-wrapper { position: relative; width: 100%; max-width: 600px; }
+        .search-wrapper { position: relative; width: 100%; max-width: 800px; }
         .search-box input {
             width: 100%; padding: 12px 15px 12px 45px; background: #1a1a1a;
             border: 2px solid #333; border-radius: 30px; color: white; outline: none; box-sizing: border-box;
         }
         .search-box i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--primary); }
 
-        /* LAYOUT PC: Sidebar Fijo */
+        /* LAYOUT PC: Sidebar Fijo y contenido amplio */
         .main-wrapper { 
             display: grid; 
             grid-template-columns: 280px 1fr; 
             flex: 1; 
-            max-width: 1400px; 
-            margin: 0 auto; 
             width: 100%; 
         }
+
         .sidebar { 
             background: var(--card-bg); 
             border-right: 1px solid #222; 
             padding: 15px; 
-            height: calc(100vh - 120px); 
+            height: calc(100vh - 140px); 
             overflow-y: auto; 
             position: sticky; 
-            top: 120px; 
+            top: 140px; 
         }
 
-        /* Estilos de la lista de canales (Sin comportamiento de flecha en PC) */
         .channel-group { margin-bottom: 20px; }
         .group-title { 
-            font-size: 12px; 
-            font-weight: bold; 
-            color: var(--primary); 
-            display: flex; 
-            align-items: center; 
-            gap: 8px; 
-            margin-bottom: 10px;
-            text-transform: uppercase;
+            font-size: 12px; font-weight: bold; color: var(--primary); 
+            display: flex; align-items: center; gap: 8px; 
+            margin-bottom: 10px; text-transform: uppercase;
         }
         .channel-item { 
-            padding: 8px 10px; 
-            font-size: 13px; 
-            cursor: pointer; 
-            border-radius: 4px; 
-            transition: 0.2s; 
+            padding: 10px; font-size: 13px; cursor: pointer; 
+            border-radius: 4px; transition: 0.2s; border-bottom: 1px solid #1a1a1a;
         }
         .channel-item:hover { background: #1a1a1a; color: var(--primary); }
 
@@ -91,34 +89,47 @@
         .overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:4000; }
 
         /* CONTENIDO PRINCIPAL */
-        .player-container { width: 100%; background: #000; aspect-ratio: 16/9; border-bottom: 1px solid #222; }
+        .player-container { width: 100%; background: #000; aspect-ratio: 16/9; }
         iframe { width: 100%; height: 100%; border: none; }
+        
         .events-section { padding: 20px; }
-        .sport-group { margin-bottom: 25px; }
-        .sport-header { background: #1a1a1a; padding: 12px; color: var(--primary); font-weight: bold; border-radius: 8px 8px 0 0; border-bottom: 1px solid var(--primary); }
-        .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px; padding: 15px; background: #0a0a0a; border-radius: 0 0 8px 8px; }
-        .card { background: var(--card-bg); border-radius: 12px; padding: 15px; border: 1px solid #222; }
+        .sport-group { margin-bottom: 30px; }
+        .sport-header { 
+            background: linear-gradient(90deg, #1a1a1a, transparent); 
+            padding: 12px; color: var(--primary); font-weight: bold; 
+            border-left: 4px solid var(--primary); margin-bottom: 15px;
+        }
+        .events-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+            gap: 20px; 
+        }
+        .card { 
+            background: var(--card-bg); border-radius: 12px; padding: 15px; 
+            border: 1px solid #222; transition: 0.3s;
+        }
+        .card:hover { border-color: var(--primary); transform: translateY(-3px); }
+        
         .teams-row { display: flex; justify-content: space-around; align-items: center; margin: 15px 0; }
-        .team { display: flex; flex-direction: column; align-items: center; flex: 1; text-align: center; font-size: 12px; font-weight: bold; }
-        .team img { width: 40px; height: 40px; object-fit: contain; margin-bottom: 5px; }
+        .team { display: flex; flex-direction: column; align-items: center; flex: 1; text-align: center; font-size: 13px; font-weight: bold; }
+        .team img { width: 45px; height: 45px; object-fit: contain; margin-bottom: 8px; }
 
         .btn-ch {
-            background: #222; color: #fff; padding: 10px; border-radius: 6px; font-size: 11px;
-            text-align: center; cursor: pointer; border: 1px solid #444; font-weight: bold;
+            background: #1a1a1a; color: #fff; padding: 10px; border-radius: 6px; font-size: 12px;
+            text-align: center; cursor: pointer; border: 1px solid #333; font-weight: bold;
             display: block; text-decoration: none; margin-top: 8px; transition: 0.2s;
         }
         .btn-ch:hover { background: var(--primary); color: #000; border-color: var(--primary); }
 
-        /* RESPONSIVE MÓVIL */
+        /* RESPONSIVE */
         @media (max-width: 992px) {
-            .menu-btn { display: block; }
             .main-wrapper { grid-template-columns: 1fr; }
             .sidebar { 
                 position: fixed; left: -100%; top: 0; width: 280px; height: 100%; 
                 z-index: 5000; transition: 0.4s; background: #0a0a0a; 
             }
             .sidebar.active { left: 0; }
-            .sidebar.active + .overlay { display: block; }
+            .overlay.active { display: block; }
             .close-sidebar { display: block; text-align: right; font-size: 24px; color: var(--primary); margin-bottom: 15px; cursor: pointer; }
             .player-container { position: sticky; top: 125px; z-index: 1000; }
         }
@@ -126,18 +137,18 @@
 </head>
 <body>
 
-<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
 
 <nav class="navbar">
     <div class="nav-container">
         <div class="nav-top">
-            <div class="menu-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars-staggered"></i></div>
+            <div class="menu-btn" onclick="openSidebar()"><i class="fa-solid fa-bars-staggered"></i></div>
             <div class="logo">AMANTES DEL FUTB<div class="ball-icon"></div>L</div>
         </div>
         <div class="search-wrapper">
             <div class="search-box">
                 <i class="fa-solid fa-search"></i>
-                <input type="text" id="masterSearch" placeholder="Busca canal o equipo...">
+                <input type="text" id="masterSearch" placeholder="Busca canales o partidos..." onkeyup="filterContent()">
             </div>
         </div>
     </div>
@@ -145,14 +156,17 @@
 
 <div class="main-wrapper">
     <aside class="sidebar" id="sideMenu">
-        <div class="close-sidebar" onclick="toggleSidebar()"><i class="fa-solid fa-xmark"></i></div>
+        <div class="close-sidebar" onclick="closeSidebar()"><i class="fa-solid fa-xmark"></i></div>
         <div id="channelsList">Cargando canales...</div>
     </aside>
     
     <main class="content">
         <div id="player" class="player-container">
-             <div style="height:100%; display:flex; justify-content:center; align-items:center; opacity:0.2;">
-                <i class="fa-solid fa-play-circle fa-5x"></i>
+             <div style="height:100%; display:flex; justify-content:center; align-items:center; opacity:0.3; background:#000;">
+                <div style="text-align:center">
+                    <i class="fa-solid fa-play-circle fa-4x" style="color:var(--primary)"></i>
+                    <p style="margin-top:10px">Selecciona un canal para empezar</p>
+                </div>
              </div>
         </div>
         <div class="events-section" id="eventsContainer"></div>
@@ -164,20 +178,32 @@
     let allChannels = [];
     let allEvents = {};
 
-    const sideMenu = document.getElementById('sideMenu');
-    const overlay = document.getElementById('overlay');
-
-    function toggleSidebar() {
-        if (window.innerWidth <= 992) {
-            const isActive = sideMenu.classList.toggle('active');
-            overlay.style.display = isActive ? 'block' : 'none';
-        }
+    // Funciones de control de Sidebar (Separadas para evitar conflictos)
+    function openSidebar() {
+        document.getElementById('sideMenu').classList.add('active');
+        document.getElementById('overlay').classList.add('active');
     }
 
+    function closeSidebar() {
+        document.getElementById('sideMenu').classList.remove('active');
+        document.getElementById('overlay').classList.remove('active');
+    }
+
+    // Carga de reproductor (Solo cierra sidebar en móvil si se llama explícitamente)
     function load(url) {
         document.getElementById('player').innerHTML = `<iframe src="${url}" allowfullscreen allow="encrypted-media"></iframe>`;
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        if (window.innerWidth <= 992) toggleSidebar();
+        if (window.innerWidth <= 992) closeSidebar();
+    }
+
+    // Convertir hora API a hora local
+    function getLocalTime(timeStr) {
+        try {
+            const [hours, minutes] = timeStr.split(':');
+            const date = new Date();
+            date.setUTCHours(hours, minutes, 0);
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+        } catch (e) { return timeStr; }
     }
 
     async function fetchData() {
@@ -189,45 +215,45 @@
             ]);
             allChannels = (await rCh.json()).channels || [];
             allEvents = (await rEv.json())['cdn-live-tv'] || {};
-            renderSidebar();
-            renderEvents();
-        } catch (e) { console.error("Error al obtener datos"); }
+            renderSidebar(allChannels);
+            renderEvents(allEvents);
+        } catch (e) { console.error("Error de conexión"); }
     }
 
-    function renderSidebar() {
-        const grouped = allChannels.reduce((acc, ch) => {
+    function renderSidebar(channels) {
+        const grouped = channels.reduce((acc, ch) => {
             const c = (ch.code || 'un').toLowerCase();
             if(!acc[c]) acc[c] = [];
             acc[c].push(ch);
             return acc;
         }, {});
         
-        let html = `<h3 style="color:var(--text); font-size:14px; margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:10px;">CANALES TV</h3>`;
+        let html = `<h3 style="color:var(--text); font-size:14px; margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:10px;">LISTA DE CANALES</h3>`;
         
         Object.keys(grouped).sort().forEach(code => {
             html += `
             <div class="channel-group">
                 <div class="group-title">
-                    <img src="https://flagcdn.com/w20/${code}.png" style="width:18px;"> ${code.toUpperCase()}
+                    <img src="https://flagcdn.com/w20/${code}.png" onerror="this.style.display='none'" style="width:18px;"> ${code.toUpperCase()}
                 </div>
                 <div class="group-content">
                     ${grouped[code].map(ch => `
                         <div class="channel-item" onclick="load('${ch.url}')">
-                            ${ch.name}
+                            <i class="fa-solid fa-tv" style="margin-right:8px; font-size:10px; opacity:0.5"></i> ${ch.name}
                         </div>
                     `).join('')}
                 </div>
             </div>`;
         });
-        
         document.getElementById('channelsList').innerHTML = html;
     }
 
-    function renderEvents() {
+    function renderEvents(events) {
         const container = document.getElementById('eventsContainer');
         container.innerHTML = "";
-        ["Soccer", "NBA", "NFL", "NHL"].forEach(sport => {
-            if (!allEvents[sport] || allEvents[sport].length === 0) return;
+        
+        Object.keys(events).forEach(sport => {
+            if (events[sport].length === 0) return;
             
             const group = document.createElement('div');
             group.className = "sport-group";
@@ -236,26 +262,28 @@
             const grid = document.createElement('div');
             grid.className = "events-grid";
             
-            allEvents[sport].forEach(ev => {
+            events[sport].forEach(ev => {
                 const card = document.createElement('div');
                 card.className = "card";
                 card.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; font-size:10px; opacity:0.6; margin-bottom:10px;">
-                        <span>${ev.tournament}</span>
-                        <span style="color:var(--primary); font-weight:bold;">${ev.time}</span>
+                    <div style="display:flex; justify-content:space-between; font-size:11px; opacity:0.7; margin-bottom:12px;">
+                        <span><i class="fa-solid fa-trophy"></i> ${ev.tournament}</span>
+                        <span style="color:var(--primary); font-weight:bold;"><i class="fa-regular fa-clock"></i> ${getLocalTime(ev.time)}</span>
                     </div>
                     <div class="teams-row">
                         <div class="team">
                             <img src="${ev.homeTeamIMG}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'">
                             <span>${ev.homeTeam}</span>
                         </div>
-                        <div style="color:var(--primary); font-weight:bold; font-size:14px;">VS</div>
+                        <div style="color:var(--primary); font-weight:bold; font-size:14px; opacity:0.5">VS</div>
                         <div class="team">
                             <img src="${ev.awayTeamIMG}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'">
                             <span>${ev.awayTeam}</span>
                         </div>
                     </div>
-                    ${ev.channels.map(ch => `<div class="btn-ch" onclick="load('${ch.url}')">${ch.channel_name}</div>`).join('')}
+                    <div style="margin-top:15px;">
+                        ${ev.channels.map(ch => `<div class="btn-ch" onclick="load('${ch.url}')"><i class="fa-solid fa-play" style="font-size:9px; margin-right:5px"></i> ${ch.channel_name}</div>`).join('')}
+                    </div>
                 `;
                 grid.appendChild(card);
             });
@@ -264,8 +292,25 @@
         });
     }
 
+    function filterContent() {
+        const query = document.getElementById('masterSearch').value.toLowerCase();
+        
+        const filteredChannels = allChannels.filter(ch => ch.name.toLowerCase().includes(query));
+        renderSidebar(filteredChannels);
+
+        const filteredEvents = {};
+        Object.keys(allEvents).forEach(sport => {
+            filteredEvents[sport] = allEvents[sport].filter(ev => 
+                ev.homeTeam.toLowerCase().includes(query) || 
+                ev.awayTeam.toLowerCase().includes(query) ||
+                ev.tournament.toLowerCase().includes(query)
+            );
+        });
+        renderEvents(filteredEvents);
+    }
+
     fetchData();
-    setInterval(fetchData, 60000);
+    setInterval(fetchData, 60000); // Actualiza cada minuto
 </script>
 </body>
 </html>
